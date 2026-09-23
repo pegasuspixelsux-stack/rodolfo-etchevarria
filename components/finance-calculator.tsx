@@ -79,7 +79,7 @@ export function FinanceCalculator() {
                 key={term}
                 type="button"
                 onClick={() => setTermMonths(term)}
-                className={`relative rounded-full px-4 py-2 text-[0.85rem] font-medium transition-colors duration-200 ${
+                className={`relative rounded-none px-4 py-2 text-[0.85rem] font-medium transition-colors duration-200 ${
                   termMonths === term
                     ? "text-accent-foreground"
                     : "text-muted hover:text-foreground"
@@ -88,7 +88,7 @@ export function FinanceCalculator() {
                 {termMonths === term && (
                   <motion.span
                     layoutId="term-pill"
-                    className="absolute inset-0 rounded-full bg-foreground"
+                    className="absolute inset-0 rounded-none bg-foreground"
                     transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                   />
                 )}
@@ -99,7 +99,7 @@ export function FinanceCalculator() {
         </div>
       </div>
 
-      <div className="flex flex-col justify-between gap-6 rounded-2xl border border-border bg-surface/70 p-6 sm:p-7">
+      <div className="flex flex-col justify-between gap-6 rounded-none border border-border bg-surface/70 p-6 sm:p-7">
         <div>
           <p className="text-[0.85rem] font-medium text-muted">
             Cuota Mensual Estimada

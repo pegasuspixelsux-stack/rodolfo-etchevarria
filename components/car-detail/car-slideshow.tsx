@@ -46,7 +46,7 @@ export function CarSlideshow({ images, car }: { images: CarDetailImage[]; car: C
 
   return (
     <div className="mx-auto max-w-[1000px] px-6 pt-8 sm:px-8">
-      <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-surface-2 shadow-lg">
+      <div className="relative aspect-square w-full overflow-hidden rounded-none bg-surface-2 shadow-lg">
         <motion.div
           className="flex h-full w-full cursor-grab active:cursor-grabbing"
           drag="x"
@@ -76,7 +76,7 @@ export function CarSlideshow({ images, car }: { images: CarDetailImage[]; car: C
           onClick={handleShareToInstagram}
           disabled={sharing}
           aria-label="Compartir en Instagram"
-          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-md transition-transform duration-200 hover:scale-105 disabled:cursor-wait"
+          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-none bg-white/90 text-zinc-900 shadow-md transition-transform duration-200 hover:scale-105 disabled:cursor-wait"
         >
           {sharing ? <Loader2 size={18} className="animate-spin" /> : <InstagramGlyph size={18} />}
         </button>
@@ -87,7 +87,7 @@ export function CarSlideshow({ images, car }: { images: CarDetailImage[]; car: C
               type="button"
               aria-label="Foto anterior"
               onClick={() => goTo(index - 1)}
-              className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-md transition-transform duration-200 hover:scale-105"
+              className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-none bg-white/90 text-zinc-900 shadow-md transition-transform duration-200 hover:scale-105"
             >
               <ChevronLeft size={18} />
             </button>
@@ -95,7 +95,7 @@ export function CarSlideshow({ images, car }: { images: CarDetailImage[]; car: C
               type="button"
               aria-label="Foto siguiente"
               onClick={() => goTo(index + 1)}
-              className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-md transition-transform duration-200 hover:scale-105"
+              className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-none bg-white/90 text-zinc-900 shadow-md transition-transform duration-200 hover:scale-105"
             >
               <ChevronRight size={18} />
             </button>
@@ -107,7 +107,7 @@ export function CarSlideshow({ images, car }: { images: CarDetailImage[]; car: C
                   type="button"
                   aria-label={`Ver foto ${i + 1}`}
                   onClick={() => goTo(i)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                  className={`h-1.5 rounded-none transition-all duration-300 ${
                     i === index ? "w-6 bg-white" : "w-1.5 bg-white/50 hover:bg-white/80"
                   }`}
                 />

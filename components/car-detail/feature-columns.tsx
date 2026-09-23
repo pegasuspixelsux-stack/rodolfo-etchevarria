@@ -26,9 +26,9 @@ export function FeatureColumns({ features }: { features: CarFeatureGroup[] }) {
           <motion.div
             key={group.category}
             variants={fadeUp}
-            className="rounded-2xl border border-border bg-surface p-6"
+            className="rounded-none border border-border bg-surface p-6"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 text-foreground">
+            <span className="flex h-10 w-10 items-center justify-center rounded-none bg-surface-2 text-foreground">
               <Icon size={18} />
             </span>
             <h3 className="mt-4 text-[1.05rem] font-semibold text-foreground">

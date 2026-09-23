@@ -147,7 +147,7 @@ export function InstagramPostModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-            className="relative z-10 max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl"
+            className="relative z-10 max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-none border border-slate-200 bg-white shadow-xl"
           >
             <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
               <h2 className="text-lg font-semibold text-slate-900">
@@ -157,7 +157,7 @@ export function InstagramPostModal({
                 type="button"
                 onClick={onClose}
                 aria-label="Cerrar"
-                className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                className="flex h-8 w-8 items-center justify-center rounded-none text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
               >
                 <X size={18} />
               </button>
@@ -166,7 +166,7 @@ export function InstagramPostModal({
             <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
               <div className="mx-auto w-full max-w-[420px]">
                 <div
-                  className={`relative w-full max-h-[70vh] overflow-hidden rounded-2xl bg-slate-100 ${activeFormat.aspectClass}`}
+                  className={`relative w-full max-h-[70vh] overflow-hidden rounded-none bg-slate-100 ${activeFormat.aspectClass}`}
                 >
                   <img
                     src={activeImage.src}
@@ -250,7 +250,7 @@ export function InstagramPostModal({
                   <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
+                    className="h-11 w-full rounded-none border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
                   />
                 </div>
 
@@ -259,21 +259,21 @@ export function InstagramPostModal({
                   <input
                     value={priceText}
                     onChange={(e) => setPriceText(e.target.value)}
-                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
+                    className="h-11 w-full rounded-none border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-slate-600">Identidad de Marca</label>
-                  <div className="flex items-center gap-3 rounded-xl border border-slate-200 p-3">
-                    <div className="flex h-12 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-100">
+                  <div className="flex items-center gap-3 rounded-none border border-slate-200 p-3">
+                    <div className="flex h-12 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-none bg-slate-100">
                       <img src={logoSrc} alt="Logo actual" className="max-h-full max-w-full object-contain" />
                     </div>
                     <div className="flex flex-1 flex-col gap-1.5">
                       <button
                         type="button"
                         onClick={() => setLogoSrc(DEFAULT_LOGO_SRC)}
-                        className="flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
+                        className="flex h-8 items-center justify-center gap-1.5 rounded-none border border-slate-200 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
                       >
                         <RotateCcw size={12} />
                         Usar Logo Predeterminado
@@ -281,7 +281,7 @@ export function InstagramPostModal({
                       <button
                         type="button"
                         onClick={() => logoFileInputRef.current?.click()}
-                        className="flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
+                        className="flex h-8 items-center justify-center gap-1.5 rounded-none border border-slate-200 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
                       >
                         <ImageUp size={12} />
                         Subir Nuevo Logo
@@ -303,7 +303,7 @@ export function InstagramPostModal({
                     value={instagramHandle}
                     onChange={(e) => setInstagramHandle(e.target.value)}
                     placeholder="@drivetime"
-                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
+                    className="h-11 w-full rounded-none border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
                   />
                 </div>
 
@@ -315,7 +315,7 @@ export function InstagramPostModal({
                         key={option.id}
                         type="button"
                         onClick={() => setFormat(option.id)}
-                        className={`rounded-xl border px-2 py-2 text-[0.75rem] font-medium transition-colors ${
+                        className={`rounded-none border px-2 py-2 text-[0.75rem] font-medium transition-colors ${
                           format === option.id
                             ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
                             : "border-slate-200 text-slate-600 hover:border-slate-300"
@@ -329,13 +329,13 @@ export function InstagramPostModal({
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-slate-600">Color del Degradado</label>
-                  <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-2">
+                  <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
                     <input
                       type="color"
                       value={gradientColor}
                       onChange={(e) => setGradientColor(e.target.value)}
                       aria-label="Color del degradado"
-                      className="h-9 w-14 cursor-pointer rounded-lg border border-slate-200 bg-white p-1"
+                      className="h-9 w-14 cursor-pointer rounded-none border border-slate-200 bg-white p-1"
                     />
                     <span className="text-sm font-medium text-slate-900">{gradientColor.toUpperCase()}</span>
                   </div>
@@ -343,7 +343,7 @@ export function InstagramPostModal({
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-slate-600">Intensidad del Degradado</label>
-                  <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-2">
+                  <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
                     <button
                       type="button"
                       onClick={() =>
@@ -351,7 +351,7 @@ export function InstagramPostModal({
                       }
                       disabled={gradientIntensity <= GRADIENT_INTENSITY_MIN}
                       aria-label="Disminuir intensidad"
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <Minus size={14} />
                     </button>
@@ -365,7 +365,7 @@ export function InstagramPostModal({
                       }
                       disabled={gradientIntensity >= GRADIENT_INTENSITY_MAX}
                       aria-label="Aumentar intensidad"
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <Plus size={14} />
                     </button>
@@ -380,7 +380,7 @@ export function InstagramPostModal({
                         key={option.id}
                         type="button"
                         onClick={() => setLogoPosition(option.id)}
-                        className={`rounded-xl border px-2 py-2 text-sm font-medium transition-colors ${
+                        className={`rounded-none border px-2 py-2 text-sm font-medium transition-colors ${
                           logoPosition === option.id
                             ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
                             : "border-slate-200 text-slate-600 hover:border-slate-300"
@@ -400,7 +400,7 @@ export function InstagramPostModal({
                         key={image.src + index}
                         type="button"
                         onClick={() => setSelectedImageIndex(index)}
-                        className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+                        className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-none border-2 transition-colors ${
                           index === selectedImageIndex
                             ? "border-indigo-500"
                             : "border-transparent hover:border-slate-300"
@@ -418,7 +418,7 @@ export function InstagramPostModal({
                   type="button"
                   onClick={handleDownload}
                   disabled={isGenerating}
-                  className="mt-2 flex h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="mt-2 flex h-11 items-center justify-center gap-2 rounded-none bg-indigo-600 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Download size={16} />
                   {isGenerating ? "Generando..." : "Descargar Imagen Final"}

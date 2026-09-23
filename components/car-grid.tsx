@@ -49,7 +49,7 @@ export function CarGrid({ initialCars }: { initialCars?: InventoryItem[] }) {
               key={type}
               type="button"
               onClick={() => setBodyType(type)}
-              className={`rounded-full border px-4 py-2 text-[0.85rem] font-medium transition-colors duration-200 ${
+              className={`rounded-none border px-4 py-2 text-[0.85rem] font-medium transition-colors duration-200 ${
                 bodyType === type
                   ? "border-foreground bg-foreground text-accent-foreground"
                   : "border-border-strong text-muted hover:text-foreground"

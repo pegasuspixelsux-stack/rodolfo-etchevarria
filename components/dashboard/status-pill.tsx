@@ -12,7 +12,7 @@ const TONE_CLASSES: Record<PillTone, string> = {
 export function StatusPill({ label, tone }: { label: string; tone: PillTone }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${TONE_CLASSES[tone]}`}
+      className={`inline-flex items-center rounded-none px-2.5 py-1 text-xs font-medium ${TONE_CLASSES[tone]}`}
     >
       {label}
     </span>

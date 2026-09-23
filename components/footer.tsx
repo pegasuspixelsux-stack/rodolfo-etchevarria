@@ -42,8 +42,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           <div className="flex flex-col gap-4">
-            <span className="text-[1.2rem] font-semibold tracking-tight text-foreground">
-              DriveTime
+            <span className="text-[2rem] leading-none tracking-tight text-foreground [font-family:var(--font-script)]">
+              Rodolfo Etchevarria
             </span>
             <p className="max-w-xs text-[0.9rem] leading-relaxed text-muted">
               Una concesionaria curada de sedanes, SUVs y vehículos de alto
@@ -58,7 +58,7 @@ export function Footer() {
                   target="_blank"
                   rel="noreferrer noopener"
                   aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted transition-colors duration-200 hover:border-border-strong hover:text-foreground"
+                  className="flex h-9 w-9 items-center justify-center rounded-none border border-border text-muted transition-colors duration-200 hover:border-border-strong hover:text-foreground"
                 >
                   <Icon width={16} height={16} />
                 </a>
@@ -119,11 +119,11 @@ export function Footer() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="you@email.com"
-                  className="h-11 flex-1 rounded-xl border border-border-strong bg-surface px-4 text-[0.88rem] text-foreground placeholder:text-muted-2 focus-visible:border-foreground/50 focus-visible:outline-none"
+                  className="h-11 flex-1 rounded-none border border-border-strong bg-surface px-4 text-[0.88rem] text-foreground placeholder:text-muted-2 focus-visible:border-foreground/50 focus-visible:outline-none"
                 />
                 <button
                   type="submit"
-                  className="flex h-11 items-center justify-center rounded-xl bg-foreground px-4 text-[0.85rem] font-medium text-accent-foreground transition-transform duration-150 ease-out hover:scale-[1.03] active:scale-[0.97]"
+                  className="flex h-11 items-center justify-center rounded-none bg-foreground px-4 text-[0.85rem] font-medium text-accent-foreground transition-transform duration-150 ease-out hover:scale-[1.03] active:scale-[0.97]"
                 >
                   Sumarme
                 </button>
@@ -137,7 +137,7 @@ export function Footer() {
                     transition={{ duration: 0.25, ease: "easeOut" }}
                     className="text-[0.82rem] text-muted"
                   >
-                    Ya estás en la lista — te damos la bienvenida a DriveTime.
+                    Ya estás en la lista — te damos la bienvenida a Rodolfo Etchevarria.
                   </motion.p>
                 )}
               </AnimatePresence>
@@ -146,7 +146,7 @@ export function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-[0.82rem] text-muted-2 sm:flex-row">
-          <p>© {new Date().getFullYear()} DriveTime Motors. Todos los derechos reservados.</p>
+          <p>© {new Date().getFullYear()} Rodolfo Etchevarria. Todos los derechos reservados.</p>
           <div className="flex items-center gap-6">
             <Link href="#" className="transition-colors hover:text-foreground">
               Política de Privacidad

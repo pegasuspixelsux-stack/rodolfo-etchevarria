@@ -266,7 +266,7 @@ export default function InventoryPage() {
         <button
           type="button"
           onClick={openAddModal}
-          className="flex h-11 items-center gap-2 rounded-xl bg-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          className="flex h-11 items-center gap-2 rounded-none bg-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
         >
           <Plus size={16} />
           Agregar Vehículo
@@ -303,7 +303,7 @@ export default function InventoryPage() {
         </select>
       </motion.div>
 
-      <motion.div variants={fadeUp} className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <motion.div variants={fadeUp} className="overflow-x-auto rounded-none border border-slate-200 bg-white shadow-sm">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -336,7 +336,7 @@ export default function InventoryPage() {
               <tr key={item.id}>
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="relative h-11 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                    <div className="relative h-11 w-14 flex-shrink-0 overflow-hidden rounded-none bg-slate-100">
                       <Image src={item.image} alt={`${item.make} ${item.model}`} fill sizes="56px" className="object-cover" />
                     </div>
                     <div>
@@ -360,7 +360,7 @@ export default function InventoryPage() {
                         setInstagramItem(item);
                         setInstagramOpen(true);
                       }}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                      className="flex h-8 w-8 items-center justify-center rounded-none text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
                     >
                       <Sparkles size={15} />
                     </button>
@@ -368,7 +368,7 @@ export default function InventoryPage() {
                       type="button"
                       aria-label="Editar vehículo"
                       onClick={() => openEditModal(item)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                      className="flex h-8 w-8 items-center justify-center rounded-none text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
                     >
                       <Pencil size={15} />
                     </button>
@@ -376,7 +376,7 @@ export default function InventoryPage() {
                       type="button"
                       aria-label="Eliminar vehículo"
                       onClick={() => handleDelete(item.id)}
-                      className={`flex h-8 items-center justify-center rounded-lg px-2 text-xs font-medium transition-colors ${
+                      className={`flex h-8 items-center justify-center rounded-none px-2 text-xs font-medium transition-colors ${
                         confirmDeleteId === item.id
                           ? "bg-red-600 text-white hover:bg-red-700"
                           : "text-slate-500 hover:bg-red-50 hover:text-red-600"
@@ -451,7 +451,7 @@ export default function InventoryPage() {
             </DashboardField>
           </div>
           <DashboardField label="Características">
-            <div className="grid grid-cols-1 gap-x-4 gap-y-2 rounded-xl border border-slate-200 p-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-x-4 gap-y-2 rounded-none border border-slate-200 p-3 sm:grid-cols-2">
               {FEATURE_OPTIONS.map((feature) => (
                 <label
                   key={feature}
@@ -461,7 +461,7 @@ export default function InventoryPage() {
                     type="checkbox"
                     checked={draft.features.includes(feature)}
                     onChange={() => toggleFeature(feature)}
-                    className="h-4 w-4 flex-shrink-0 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    className="h-4 w-4 flex-shrink-0 rounded-none border-slate-300 text-indigo-600 focus:ring-indigo-500"
                   />
                   {feature}
                 </label>
@@ -496,7 +496,7 @@ export default function InventoryPage() {
             type="button"
             onClick={handleSave}
             disabled={!isDraftValid || uploading}
-            className="mt-2 flex h-11 items-center justify-center rounded-xl bg-indigo-600 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-indigo-600"
+            className="mt-2 flex h-11 items-center justify-center rounded-none bg-indigo-600 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-indigo-600"
           >
             {editingId ? "Guardar Cambios" : "Agregar Vehículo"}
           </button>

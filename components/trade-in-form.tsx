@@ -43,7 +43,7 @@ export function TradeInForm() {
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="flex flex-col items-center gap-3 py-14 text-center"
       >
-        <span className="glass flex h-12 w-12 items-center justify-center rounded-full text-foreground">
+        <span className="glass flex h-12 w-12 items-center justify-center rounded-none text-foreground">
           <CheckCircle2 size={22} />
         </span>
         <h3 className="text-[1.05rem] font-semibold text-foreground">
@@ -142,7 +142,7 @@ export function TradeInForm() {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           transition={{ duration: 0.15, ease: "easeOut" }}
-          className="mt-2 flex h-12 items-center justify-center rounded-xl bg-foreground text-[0.9rem] font-medium text-accent-foreground"
+          className="mt-2 flex h-12 items-center justify-center rounded-none bg-foreground text-[0.9rem] font-medium text-accent-foreground"
         >
           Obtener Mi Estimación de Tasación
         </motion.button>

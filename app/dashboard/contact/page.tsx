@@ -52,7 +52,7 @@ export default function ContactPage() {
         <p className="mt-1 text-sm text-slate-500">{unreadCount} sin leer de {messages.length} mensajes.</p>
       </div>
 
-      <motion.div variants={fadeUp} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <motion.div variants={fadeUp} className="overflow-hidden rounded-none border border-slate-200 bg-white shadow-sm">
         {loading ? (
           <p className="px-5 py-6 text-center text-sm text-slate-500">Cargando mensajes…</p>
         ) : error ? (
@@ -66,7 +66,7 @@ export default function ContactPage() {
                   onClick={() => openMessage(message)}
                   className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-slate-50"
                 >
-                  <span className={`h-2 w-2 flex-shrink-0 rounded-full ${message.read ? "bg-transparent" : "bg-indigo-600"}`} />
+                  <span className={`h-2 w-2 flex-shrink-0 rounded-none ${message.read ? "bg-transparent" : "bg-indigo-600"}`} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-3">
                       <p className={`truncate text-sm ${message.read ? "font-normal text-slate-700" : "font-semibold text-slate-900"}`}>
@@ -94,7 +94,7 @@ export default function ContactPage() {
             <button
               type="button"
               onClick={() => handleDelete(active.id)}
-              className={`flex h-10 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-colors ${
+              className={`flex h-10 items-center justify-center gap-2 rounded-none text-sm font-medium transition-colors ${
                 confirmDeleteId === active.id
                   ? "bg-red-600 text-white hover:bg-red-700"
                   : "border border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600"

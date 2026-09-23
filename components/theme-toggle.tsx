@@ -14,10 +14,10 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       aria-checked={isLight}
       aria-label="Toggle light theme"
       onClick={toggleTheme}
-      className={`relative flex h-8 w-14 shrink-0 items-center rounded-full border border-border-strong bg-surface-2 p-1 transition-colors duration-300 ${className}`}
+      className={`relative flex h-8 w-14 shrink-0 items-center rounded-none border border-border-strong bg-surface-2 p-1 transition-colors duration-300 ${className}`}
     >
       <span
-        className={`flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-accent-foreground transition-transform duration-300 ease-out ${
+        className={`flex h-6 w-6 items-center justify-center rounded-none bg-foreground text-accent-foreground transition-transform duration-300 ease-out ${
           isLight ? "translate-x-6" : "translate-x-0"
         }`}
       >

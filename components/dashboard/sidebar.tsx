@@ -63,7 +63,7 @@ export function Sidebar({ currentUser }: { currentUser: CurrentUser }) {
               key={link.href}
               href={link.href}
               title={link.label}
-              className={`flex items-center justify-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors lg:justify-start ${
+              className={`flex items-center justify-center gap-3 rounded-none px-3 py-2.5 text-sm font-medium transition-colors lg:justify-start ${
                 active
                   ? "bg-indigo-50 text-indigo-700"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
@@ -77,8 +77,8 @@ export function Sidebar({ currentUser }: { currentUser: CurrentUser }) {
       </nav>
 
       <div className="border-t border-slate-200 p-2 lg:p-4">
-        <div className="flex items-center justify-center gap-3 rounded-xl px-2 py-2 lg:justify-start">
-          <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
+        <div className="flex items-center justify-center gap-3 rounded-none px-2 py-2 lg:justify-start">
+          <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-none bg-indigo-600 text-sm font-semibold text-white">
             {initials}
           </span>
           <div className="hidden min-w-0 flex-1 lg:block">
@@ -91,7 +91,7 @@ export function Sidebar({ currentUser }: { currentUser: CurrentUser }) {
             href="/dashboard/settings"
             aria-label="Configuración"
             title="Configuración"
-            className={`flex h-9 w-9 flex-shrink-0 items-center justify-center gap-2 rounded-lg text-sm transition-colors lg:w-auto lg:flex-1 ${
+            className={`flex h-9 w-9 flex-shrink-0 items-center justify-center gap-2 rounded-none text-sm transition-colors lg:w-auto lg:flex-1 ${
               pathname.startsWith("/dashboard/settings")
                 ? "bg-indigo-50 text-indigo-700"
                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
@@ -105,7 +105,7 @@ export function Sidebar({ currentUser }: { currentUser: CurrentUser }) {
             aria-label="Cerrar sesión"
             title="Cerrar sesión"
             onClick={handleLogout}
-            className="flex h-9 w-9 flex-shrink-0 items-center justify-center gap-2 rounded-lg text-sm text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 lg:w-auto lg:flex-1"
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center gap-2 rounded-none text-sm text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 lg:w-auto lg:flex-1"
           >
             <LogOut size={16} />
             <span className="hidden lg:inline">Cerrar sesión</span>

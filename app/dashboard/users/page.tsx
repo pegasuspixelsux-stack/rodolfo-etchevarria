@@ -64,14 +64,14 @@ export default function UsersPage() {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="flex h-11 items-center gap-2 rounded-xl bg-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          className="flex h-11 items-center gap-2 rounded-none bg-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
         >
           <Plus size={16} />
           Invitar Usuario
         </button>
       </div>
 
-      <motion.div variants={fadeUp} className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <motion.div variants={fadeUp} className="overflow-x-auto rounded-none border border-slate-200 bg-white shadow-sm">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -100,7 +100,7 @@ export default function UsersPage() {
               <tr key={user.id}>
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-none bg-indigo-100 text-xs font-semibold text-indigo-700">
                       {initials(user.name)}
                     </span>
                     <div>
@@ -113,7 +113,7 @@ export default function UsersPage() {
                   <select
                     value={user.role}
                     onChange={(event) => updateRole(user.id, event.target.value as TeamRole)}
-                    className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600 focus-visible:outline-none"
+                    className="rounded-none border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600 focus-visible:outline-none"
                   >
                     {ROLES.map((role) => (
                       <option key={role} value={role}>{ROLE_LABELS[role]}</option>
@@ -128,7 +128,7 @@ export default function UsersPage() {
                     type="button"
                     aria-label="Eliminar usuario"
                     onClick={() => handleDelete(user.id)}
-                    className={`inline-flex h-8 items-center justify-center rounded-lg px-2 text-xs font-medium transition-colors ${
+                    className={`inline-flex h-8 items-center justify-center rounded-none px-2 text-xs font-medium transition-colors ${
                       confirmDeleteId === user.id
                         ? "bg-red-600 text-white hover:bg-red-700"
                         : "text-slate-500 hover:bg-red-50 hover:text-red-600"
@@ -162,7 +162,7 @@ export default function UsersPage() {
             type="button"
             onClick={handleInvite}
             disabled={!isDraftValid}
-            className="mt-2 flex h-11 items-center justify-center rounded-xl bg-indigo-600 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-indigo-600"
+            className="mt-2 flex h-11 items-center justify-center rounded-none bg-indigo-600 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-indigo-600"
           >
             Enviar Invitación
           </button>

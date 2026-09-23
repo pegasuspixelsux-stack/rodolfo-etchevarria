@@ -6,6 +6,7 @@ import { CarGrid } from "@/components/car-grid";
 import { PreFooterHero } from "@/components/pre-footer-hero";
 import { Footer } from "@/components/footer";
 import { getInventoryOnce } from "@/lib/firebase/inventory-read";
+import { getSiteSettingsOnce, DEFAULT_SITE_SETTINGS } from "@/lib/firebase/site-settings";
 import type { InventoryItem } from "@/lib/dashboard-data";
 
 export default async function Home() {
@@ -18,11 +19,19 @@ export default async function Home() {
     // in useInventory() pick up data (and surface its own error) at runtime.
   }
 
+  let initialSiteSettings = DEFAULT_SITE_SETTINGS;
+  try {
+    initialSiteSettings = await getSiteSettingsOnce();
+  } catch {
+    // Same fallback reasoning as above — the client-side subscription in
+    // useSiteSettings() picks up the real value at runtime.
+  }
+
   return (
     <>
       <Navbar />
       <main className="flex-1">
-        <Hero />
+        <Hero initialSettings={initialSiteSettings} />
 
         <CarGrid initialCars={initialCars} />
         <WhyChooseUs />

@@ -10,7 +10,7 @@ import { createLead } from "@/lib/firebase/leads";
 const WHATSAPP_NUMBER = "14155550148";
 
 const fieldClass =
-  "h-12 w-full rounded-xl border border-border-strong bg-surface px-4 text-[0.9rem] text-foreground placeholder:text-muted-2 transition-colors duration-200 focus-visible:border-foreground/50 focus-visible:outline-none";
+  "h-12 w-full rounded-none border border-border-strong bg-surface px-4 text-[0.9rem] text-foreground placeholder:text-muted-2 transition-colors duration-200 focus-visible:border-foreground/50 focus-visible:outline-none";
 
 interface InquiryDraft {
   name: string;
@@ -80,8 +80,8 @@ export function CarInquiryForm({ car }: { car: Car }) {
         viewport={{ once: true, margin: "-80px" }}
         className="mx-auto max-w-[1000px] px-6 py-14 sm:px-8"
       >
-        <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-border bg-surface p-10 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-surface-2 text-foreground">
+        <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-none border border-border bg-surface p-10 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-none bg-surface-2 text-foreground">
             <CheckCircle2 size={22} />
           </span>
           <h3 className="text-[1.05rem] font-semibold text-foreground">
@@ -114,7 +114,7 @@ export function CarInquiryForm({ car }: { car: Car }) {
       viewport={{ once: true, margin: "-80px" }}
       className="mx-auto max-w-[1000px] px-6 py-14 sm:px-8"
     >
-      <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-surface p-8">
+      <div className="mx-auto max-w-2xl rounded-none border border-border bg-surface p-8">
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">
           ¿Te interesa este vehículo?
         </h2>
@@ -178,7 +178,7 @@ export function CarInquiryForm({ car }: { car: Car }) {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
-              className="flex h-12 items-center justify-center gap-2 rounded-xl bg-foreground text-[0.9rem] font-medium text-accent-foreground"
+              className="flex h-12 items-center justify-center gap-2 rounded-none bg-foreground text-[0.9rem] font-medium text-accent-foreground"
             >
               <Send size={16} />
               Enviar por email
@@ -189,7 +189,7 @@ export function CarInquiryForm({ car }: { car: Car }) {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
-              className="flex h-12 items-center justify-center gap-2 rounded-xl bg-emerald-600 text-[0.9rem] font-medium text-white transition-colors hover:bg-emerald-700"
+              className="flex h-12 items-center justify-center gap-2 rounded-none bg-emerald-600 text-[0.9rem] font-medium text-white transition-colors hover:bg-emerald-700"
             >
               <MessageCircle size={16} />
               Enviar por WhatsApp

@@ -92,7 +92,7 @@ export default function ControlPanelPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
-            <motion.div variants={fadeUp} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <motion.div variants={fadeUp} className="rounded-none border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-base font-semibold text-slate-900">Actividad Reciente</h2>
               <ul className="flex flex-col divide-y divide-slate-100">
                 {activity.map((item) => (
@@ -107,12 +107,12 @@ export default function ControlPanelPage() {
               </ul>
             </motion.div>
 
-            <motion.div variants={fadeUp} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <motion.div variants={fadeUp} className="rounded-none border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-base font-semibold text-slate-900">Vehículos Agregados Recientemente</h2>
               <ul className="flex flex-col gap-3">
                 {recentVehicles.map((item) => (
                   <li key={item.id} className="flex items-center gap-3">
-                    <div className="relative h-12 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                    <div className="relative h-12 w-16 flex-shrink-0 overflow-hidden rounded-none bg-slate-100">
                       <Image src={item.image} alt={`${item.make} ${item.model}`} fill sizes="64px" className="object-cover" />
                     </div>
                     <div className="min-w-0 flex-1">

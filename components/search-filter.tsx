@@ -49,7 +49,7 @@ export function SearchFilter() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
-      className="glass rounded-[28px] p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-8"
+      className="glass rounded-none p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-8"
     >
       <button
         type="button"
@@ -58,7 +58,7 @@ export function SearchFilter() {
         className="flex w-full items-center justify-between gap-3 text-left lg:hidden"
       >
         <span className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border-strong text-foreground">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-border-strong text-foreground">
             <SlidersHorizontal size={16} />
           </span>
           <span className="flex flex-col">
@@ -110,7 +110,7 @@ export function SearchFilter() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="flex h-12 items-center justify-center gap-2 rounded-xl bg-foreground px-6 text-[0.9rem] font-medium text-accent-foreground"
+            className="flex h-12 items-center justify-center gap-2 rounded-none bg-foreground px-6 text-[0.9rem] font-medium text-accent-foreground"
           >
             <Search size={16} />
             Search Inventory

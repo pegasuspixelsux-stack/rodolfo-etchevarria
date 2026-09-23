@@ -18,11 +18,11 @@ export function StatCard({
   return (
     <motion.div
       variants={fadeUp}
-      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+      className="rounded-none border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-slate-500">{label}</span>
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700">
+        <span className="flex h-9 w-9 items-center justify-center rounded-none bg-slate-100 text-slate-700">
           <Icon size={18} />
         </span>
       </div>

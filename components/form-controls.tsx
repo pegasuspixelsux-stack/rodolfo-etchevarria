@@ -22,21 +22,23 @@ export function FormSelect({
   options,
   value,
   onChange,
+  labels,
 }: {
   options: string[];
   value: string;
   onChange: (value: string) => void;
+  labels?: Record<string, string>;
 }) {
   return (
     <div className="relative">
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-12 w-full appearance-none rounded-xl border border-border-strong bg-surface px-4 pr-10 text-[0.9rem] text-foreground transition-colors duration-200 hover:border-foreground/30 focus-visible:border-foreground/50 focus-visible:outline-none"
+        className="h-12 w-full appearance-none rounded-none border border-border-strong bg-surface px-4 pr-10 text-[0.9rem] text-foreground transition-colors duration-200 hover:border-foreground/30 focus-visible:border-foreground/50 focus-visible:outline-none"
       >
         {options.map((option) => (
           <option key={option} value={option} className="bg-surface">
-            {option}
+            {labels?.[option] ?? option}
           </option>
         ))}
       </select>
@@ -52,7 +54,7 @@ export function FormInput(props: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className="h-12 w-full rounded-xl border border-border-strong bg-surface px-4 text-[0.9rem] text-foreground placeholder:text-muted-2 transition-colors duration-200 hover:border-foreground/30 focus-visible:border-foreground/50 focus-visible:outline-none"
+      className="h-12 w-full rounded-none border border-border-strong bg-surface px-4 text-[0.9rem] text-foreground placeholder:text-muted-2 transition-colors duration-200 hover:border-foreground/30 focus-visible:border-foreground/50 focus-visible:outline-none"
     />
   );
 }

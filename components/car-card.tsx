@@ -77,7 +77,7 @@ export function CarCard({
     return (
       <motion.article
         variants={fadeUp}
-        className="group relative flex min-h-[280px] flex-row overflow-hidden rounded-2xl bg-transparent"
+        className="group relative flex min-h-[280px] flex-row overflow-hidden rounded-none bg-transparent"
       >
         <Link
           href={`/inventory/${car.id}`}
@@ -90,7 +90,7 @@ export function CarCard({
           onClick={handleShareToInstagram}
           disabled={sharing}
           aria-label="Compartir en Instagram"
-          className="absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-border-strong bg-surface text-foreground transition-colors duration-200 ease-out hover:border-foreground/40 hover:bg-foreground hover:text-accent-foreground disabled:cursor-wait"
+          className="absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-none border border-border-strong bg-surface text-foreground transition-colors duration-200 ease-out hover:border-foreground/40 hover:bg-foreground hover:text-accent-foreground disabled:cursor-wait"
         >
           {sharing ? <Loader2 size={16} className="animate-spin" /> : <InstagramGlyph size={16} />}
         </button>
@@ -118,7 +118,7 @@ export function CarCard({
             </h3>
             <div className="mt-0.5 hidden items-center gap-1.5 text-[0.85rem] text-muted sm:flex">
               <span
-                className="h-3 w-3 flex-shrink-0 rounded-full border border-border-strong"
+                className="h-3 w-3 flex-shrink-0 rounded-none border border-border-strong"
                 style={{ backgroundColor: car.colorHex }}
               />
               <span>{car.color}</span>
@@ -162,7 +162,7 @@ export function CarCard({
   return (
     <motion.article
       variants={fadeUp}
-      className="group relative aspect-[9/16] overflow-hidden rounded-2xl bg-surface-2"
+      className="group relative aspect-[9/16] overflow-hidden rounded-none bg-surface-2"
     >
       <Image
         src={car.image}
@@ -192,7 +192,7 @@ export function CarCard({
         onClick={handleShareToInstagram}
         disabled={sharing}
         aria-label="Compartir en Instagram"
-        className="glass absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full text-white transition-colors duration-200 ease-out hover:bg-white hover:text-black disabled:cursor-wait"
+        className="glass absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-none text-white transition-colors duration-200 ease-out hover:bg-white hover:text-black disabled:cursor-wait"
       >
         {sharing ? <Loader2 size={16} className="animate-spin" /> : <InstagramGlyph size={16} />}
       </button>
@@ -204,7 +204,7 @@ export function CarCard({
           </h3>
           <div className="mt-0.5 flex items-center gap-1.5 text-[0.8rem] text-white/70">
             <span
-              className="h-3 w-3 flex-shrink-0 rounded-full border border-white/40"
+              className="h-3 w-3 flex-shrink-0 rounded-none border border-white/40"
               style={{ backgroundColor: car.colorHex }}
             />
             <span>{car.color}</span>
@@ -224,7 +224,7 @@ export function CarCard({
             {options.map((option) => (
               <span
                 key={option}
-                className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[0.68rem] text-white/80"
+                className="rounded-none border border-white/20 bg-white/10 px-2 py-0.5 text-[0.68rem] text-white/80"
               >
                 {option}
               </span>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
+import { useSiteSettings, type SiteSettings } from "@/lib/firebase/site-settings";
 
 const SLIDES = [
   {
@@ -27,58 +28,76 @@ const SLIDES = [
 
 const SLIDE_INTERVAL = 6000;
 
-export function Hero() {
+export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
   const [slide, setSlide] = useState(0);
+  const { settings } = useSiteSettings(initialSettings);
+  const isVideoMode = settings.heroMode === "video" && Boolean(settings.heroVideoUrl);
 
   useEffect(() => {
+    if (isVideoMode) return;
     const id = setInterval(() => {
       setSlide((current) => (current + 1) % SLIDES.length);
     }, SLIDE_INTERVAL);
     return () => clearInterval(id);
-  }, []);
+  }, [isVideoMode]);
 
   return (
     <section
       id="top"
       className="relative flex h-[50vh] min-h-[420px] w-full items-end overflow-hidden bg-background sm:h-[90vh] sm:min-h-[640px]"
     >
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={slide}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-          className="absolute inset-0"
+      {isVideoMode ? (
+        <video
+          key={settings.heroVideoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover"
         >
-          <Image
-            src={SLIDES[slide].src}
-            alt={SLIDES[slide].alt}
-            fill
-            priority={slide === 0}
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-        </motion.div>
-      </AnimatePresence>
+          <source src={settings.heroVideoUrl ?? undefined} />
+        </video>
+      ) : (
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={slide}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={SLIDES[slide].src}
+              alt={SLIDES[slide].alt}
+              fill
+              priority={slide === 0}
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </motion.div>
+        </AnimatePresence>
+      )}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-background/10 opacity-60" />
       <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-transparent to-background/40 opacity-60" />
 
-      <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-2 sm:bottom-8">
-        {SLIDES.map((item, index) => (
-          <button
-            key={item.src}
-            type="button"
-            aria-label={`Mostrar diapositiva ${index + 1}`}
-            onClick={() => setSlide(index)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              index === slide
-                ? "w-6 bg-foreground"
-                : "w-1.5 bg-foreground/40 hover:bg-foreground/70"
-            }`}
-          />
-        ))}
-      </div>
+      {!isVideoMode && (
+        <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-2 sm:bottom-8">
+          {SLIDES.map((item, index) => (
+            <button
+              key={item.src}
+              type="button"
+              aria-label={`Mostrar diapositiva ${index + 1}`}
+              onClick={() => setSlide(index)}
+              className={`h-1.5 rounded-none transition-all duration-300 ${
+                index === slide
+                  ? "w-6 bg-foreground"
+                  : "w-1.5 bg-foreground/40 hover:bg-foreground/70"
+              }`}
+            />
+          ))}
+        </div>
+      )}
 
       <button
         type="button"
@@ -93,7 +112,7 @@ export function Hero() {
         <motion.span
           animate={{ opacity: [1, 0.25, 1] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-black"
+          className="flex h-10 w-10 items-center justify-center rounded-none bg-white text-black"
         >
           <ChevronDown size={18} />
         </motion.span>

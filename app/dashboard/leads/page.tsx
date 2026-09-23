@@ -79,7 +79,7 @@ export default function LeadsPage() {
               setStatusFilter(status);
               setConfirmDeleteId(null);
             }}
-            className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-none border px-4 py-2 text-sm font-medium transition-colors ${
               statusFilter === status
                 ? "border-indigo-600 bg-indigo-600 text-white"
                 : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
@@ -90,7 +90,7 @@ export default function LeadsPage() {
         ))}
       </motion.div>
 
-      <motion.div variants={fadeUp} className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <motion.div variants={fadeUp} className="overflow-x-auto rounded-none border border-slate-200 bg-white shadow-sm">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -131,7 +131,7 @@ export default function LeadsPage() {
                     <select
                       value={lead.status}
                       onChange={(event) => updateStatus(lead.id, event.target.value as LeadStatus)}
-                      className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600 focus-visible:outline-none"
+                      className="rounded-none border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600 focus-visible:outline-none"
                       aria-label={`Cambiar estado de ${lead.name}`}
                     >
                       {STATUS_OPTIONS.map((status) => (
@@ -146,7 +146,7 @@ export default function LeadsPage() {
                     type="button"
                     aria-label="Eliminar prospecto"
                     onClick={() => handleDelete(lead.id)}
-                    className={`inline-flex h-8 items-center justify-center rounded-lg px-2 text-xs font-medium transition-colors ${
+                    className={`inline-flex h-8 items-center justify-center rounded-none px-2 text-xs font-medium transition-colors ${
                       confirmDeleteId === lead.id
                         ? "bg-red-600 text-white hover:bg-red-700"
                         : "text-slate-500 hover:bg-red-50 hover:text-red-600"
