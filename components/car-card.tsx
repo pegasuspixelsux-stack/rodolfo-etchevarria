@@ -163,7 +163,7 @@ export function CarCard({
   return (
     <motion.article
       variants={fadeUp}
-      className="group relative aspect-[9/16] overflow-hidden rounded-none bg-surface-2"
+      className="@container group relative aspect-[9/16] overflow-hidden rounded-none bg-surface-2"
     >
       <Image
         src={car.image}
@@ -173,10 +173,14 @@ export function CarCard({
         className="object-cover object-[center_33%] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.08]"
       />
 
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_33%,rgba(0,0,0,0)_58%)]" />
+      {/* Sized to the card's own rendered width (via @container), not the viewport — the
+          same CarCard shows at very different widths across contexts (a 2-col mobile grid,
+          a 1-col full-width mobile card, a 3-col showroom grid, a 4-col desktop grid), so a
+          viewport breakpoint can't tell a narrow card from a wide one; a container query can. */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_24%,rgba(0,0,0,0)_46%)] @[220px]:bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_33%,rgba(0,0,0,0)_58%)]" />
 
       <span
-        className="absolute left-3 top-3 z-10 whitespace-nowrap text-[1.3rem] tracking-tight text-white [font-family:var(--font-script)] sm:text-[2.4rem]"
+        className="absolute left-3 top-3 z-10 whitespace-nowrap text-[1.3rem] tracking-tight text-white [font-family:var(--font-script)] @[220px]:text-[2.4rem]"
         style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}
       >
         Rodolfo Etchevarria
@@ -198,12 +202,12 @@ export function CarCard({
         {sharing ? <Loader2 size={16} className="animate-spin" /> : <InstagramGlyph size={16} />}
       </button>
 
-      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-4 sm:p-5">
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5">
         <div>
-          <h3 className="font-heading text-[1.575rem] font-normal leading-tight text-white">
+          <h3 className="font-heading text-[1.05rem] font-normal leading-tight text-white @[220px]:text-[1.575rem]">
             {car.make} {car.model}
           </h3>
-          <div className="mt-0.5 flex items-center gap-1.5 text-[0.8rem] text-white/70">
+          <div className="mt-0.5 flex items-center gap-1.5 text-[0.68rem] text-white/70 @[220px]:text-[0.8rem]">
             <span
               className="h-3 w-3 flex-shrink-0 rounded-none border border-white/40"
               style={{ backgroundColor: car.colorHex }}
@@ -215,13 +219,13 @@ export function CarCard({
         </div>
 
         {shortDescription && (
-          <p className="line-clamp-2 text-[0.78rem] leading-snug text-white/70">
+          <p className="hidden line-clamp-2 text-[0.78rem] leading-snug text-white/70 @[220px]:block">
             {shortDescription}
           </p>
         )}
 
         {options.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="hidden flex-wrap gap-1.5 @[220px]:flex">
             {options.map((option) => (
               <span
                 key={option}
@@ -233,31 +237,31 @@ export function CarCard({
           </div>
         )}
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] text-white/70">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.65rem] text-white/70 @[220px]:text-[0.75rem]">
           <div className="flex items-center gap-1.5">
-            <Calendar size={14} />
+            <Calendar size={12} />
             <span>{car.year}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Gauge size={14} />
+            <Gauge size={12} />
             <span>{mileageFormat.format(car.mileage)} km</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="hidden items-center gap-1.5 @[220px]:flex">
             <FuelIcon size={14} />
             <span>{FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}</span>
           </div>
         </div>
 
-        <div className="flex items-end justify-between gap-3 border-t border-white/15 pt-2">
-          <p className="whitespace-nowrap text-[0.75rem] text-white/60">
+        <div className="flex items-end justify-between gap-3 border-t border-white/15 pt-1 @[220px]:pt-2">
+          <p className="whitespace-nowrap text-[0.65rem] text-white/60 @[220px]:text-[0.75rem]">
             Precio {currency.format(car.price)}
           </p>
-          <p className="text-[1.1rem] font-semibold leading-none text-blue-400 sm:text-[1.8rem]">
+          <p className="text-[1.1rem] font-semibold leading-none text-blue-400 @[220px]:text-[1.8rem]">
             {currency.format(estimateMonthlyPayment(car.price))}
-            <span className="text-[0.75rem] font-normal text-white/70">/mes</span>
+            <span className="text-[0.65rem] font-normal text-white/70 @[220px]:text-[0.75rem]">/mes</span>
           </p>
         </div>
-        <p className="text-[0.62rem] leading-snug text-white/40">
+        <p className="hidden text-[0.62rem] leading-snug text-white/40 @[220px]:block">
           {CARD_PAYMENT_DISCLAIMER}
         </p>
       </div>
