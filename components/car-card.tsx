@@ -176,7 +176,7 @@ export function CarCard({
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_33%,rgba(0,0,0,0)_58%)]" />
 
       <span
-        className="absolute left-3 top-3 z-10 whitespace-nowrap text-[2.4rem] tracking-tight text-white [font-family:var(--font-script)]"
+        className="absolute left-3 top-3 z-10 whitespace-nowrap text-[1.3rem] tracking-tight text-white [font-family:var(--font-script)] sm:text-[2.4rem]"
         style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}
       >
         Rodolfo Etchevarria
@@ -252,7 +252,7 @@ export function CarCard({
           <p className="whitespace-nowrap text-[0.75rem] text-white/60">
             Precio {currency.format(car.price)}
           </p>
-          <p className="text-[1.8rem] font-semibold leading-none text-blue-400">
+          <p className="text-[1.1rem] font-semibold leading-none text-blue-400 sm:text-[1.8rem]">
             {currency.format(estimateMonthlyPayment(car.price))}
             <span className="text-[0.75rem] font-normal text-white/70">/mes</span>
           </p>
