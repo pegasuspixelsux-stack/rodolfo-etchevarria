@@ -21,8 +21,8 @@ const SLIDES = [
     alt: "Close-up of a BMW interior — steering wheel with the BMW badge and digital instrument cluster",
   },
   {
-    src: "https://images.unsplash.com/photo-1564890379370-2cf3df59dfb9?auto=format&fit=crop&w=2400&q=80",
-    alt: "A BMW parked on a city rooftop at night with headlights on against the skyline",
+    src: "https://images.unsplash.com/photo-1618458927573-af46c86f84bf?auto=format&fit=crop&w=2400&q=80",
+    alt: "Close-up studio shot of a red BMW's front end, badge and headlight, under clean showroom lighting",
   },
 ];
 
