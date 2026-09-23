@@ -9,20 +9,20 @@ import { useSiteSettings, type SiteSettings } from "@/lib/firebase/site-settings
 
 const SLIDES = [
   {
-    src: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=2400&q=80",
-    alt: "A performance coupe parked on a desert road at dusk, dramatic light on the horizon",
+    src: "https://images.unsplash.com/photo-1698251015050-a79d0220f539?auto=format&fit=crop&w=2400&q=80",
+    alt: "A white BMW M2 drifting on a race track, tires smoking against a mountain backdrop",
   },
   {
-    src: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=2400&q=80",
-    alt: "A sports car with headlights on, driving through the city at night",
+    src: "https://images.unsplash.com/photo-1625684188247-c49bb3d509a1?auto=format&fit=crop&w=2400&q=80",
+    alt: "A blue BMW M2 driving head-on down a winding mountain road with headlights on",
   },
   {
-    src: "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=2400&q=80",
-    alt: "A luxury sedan parked in front of a modern glass building",
+    src: "https://images.unsplash.com/photo-1724626616961-ee7b3896b273?auto=format&fit=crop&w=2400&q=80",
+    alt: "Close-up of a BMW interior — steering wheel with the BMW badge and digital instrument cluster",
   },
   {
-    src: "https://images.unsplash.com/photo-1541447271487-09612b3f49f7?auto=format&fit=crop&w=2400&q=80",
-    alt: "A sports car cruising down an open highway at speed",
+    src: "https://images.unsplash.com/photo-1564890379370-2cf3df59dfb9?auto=format&fit=crop&w=2400&q=80",
+    alt: "A BMW parked on a city rooftop at night with headlights on against the skyline",
   },
 ];
 
