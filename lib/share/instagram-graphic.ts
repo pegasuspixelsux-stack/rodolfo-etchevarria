@@ -85,17 +85,17 @@ export function defaultPriceText(item: Car) {
 
 // The "card" preset must show the exact figure the homepage/showroom CarCard displays for
 // this same car, which is computed with different loan terms than the "classic" preset's
-// estimateMonthlyPayment above (6.5% APR / 10% down vs. 6.9% / 30%) — duplicated here rather
+// estimateMonthlyPayment above (6.5% APR / 30% down vs. 6.9% / 30%) — duplicated here rather
 // than shared so a future change to either estimate doesn't silently change the other.
 const CARD_ESTIMATE_APR = 6.5;
 const CARD_ESTIMATE_TERM_MONTHS = 60;
-const CARD_ESTIMATE_DOWN_RATE = 0.1;
+const CARD_ESTIMATE_DOWN_RATE = 0.3;
 
 // Fine-print shown wherever the card's estimated monthly payment appears — the homepage/
 // showroom CarCard and the "card" IG preset both import this so the wording (and the terms
 // it describes) can never drift apart between the two places it's shown.
 export const CARD_PAYMENT_DISCLAIMER =
-  "Pago estimado con 10% de seña, 6.5% APR a 60 meses. Sujeto a aprobación de crédito.";
+  "Pago estimado con 30% de seña, 6.5% APR a 60 meses. Sujeto a aprobación de crédito.";
 
 function estimateCardMonthlyPayment(price: number) {
   const principal = price * (1 - CARD_ESTIMATE_DOWN_RATE);
@@ -215,23 +215,24 @@ function drawCardPresetContent(
     instagramHandle,
   }: { width: number; height: number; item: Car; instagramHandle: string },
 ) {
-  // Gradient: rgba(0,0,0,0.92) solid from the bottom up to 33% of the height, fading to
-  // transparent by 58% — the exact stops CarCard uses (bg-[linear-gradient(to_top,...)]).
-  const gradient = ctx.createLinearGradient(0, height * 0.42, 0, height);
+  // Gradient: rgba(0,0,0,0.92) solid from the bottom up to 43% of the height, fading to
+  // transparent by 68% — the CarCard stops boosted +10%, matching the "Estilo Card"/
+  // "IG Portrait" preview's previewGradientBoostPercent.
+  const gradient = ctx.createLinearGradient(0, height * 0.32, 0, height);
   gradient.addColorStop(0, "rgba(0,0,0,0)");
-  gradient.addColorStop((0.67 - 0.42) / (1 - 0.42), "rgba(0,0,0,0.92)");
+  gradient.addColorStop((0.57 - 0.32) / (1 - 0.32), "rgba(0,0,0,0.92)");
   gradient.addColorStop(1, "rgba(0,0,0,0.92)");
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, height * 0.42, width, height - height * 0.42);
+  ctx.fillRect(0, height * 0.32, width, height - height * 0.32);
 
   const scriptFont = getScriptFontFamily();
   ctx.textBaseline = "alphabetic";
-  ctx.textAlign = "left";
+  ctx.textAlign = "center";
   ctx.fillStyle = "#ffffff";
   ctx.shadowColor = "rgba(0,0,0,0.6)";
   ctx.shadowBlur = 10;
   ctx.font = `84px ${scriptFont}`;
-  ctx.fillText(DEFAULT_BRAND_NAME, PADDING, PADDING + 72);
+  ctx.fillText(DEFAULT_BRAND_NAME, width / 2, PADDING + 72);
   ctx.shadowColor = "transparent";
   ctx.shadowBlur = 0;
 
@@ -240,65 +241,34 @@ function drawCardPresetContent(
   const options = detail.features.flatMap((group) => group.items).slice(0, 3);
   const maxTextWidth = width - PADDING * 2;
 
-  // Built bottom-up, same discipline as drawBottomBlock: every row's Y is derived from the
-  // measured top edge of the row below it.
+  // --- Top group: title, specs, options, description — drawn top-down starting 45% down
+  // the canvas, matching the live preview's split-layout `top: 45%` anchor. ---
+  let topY = height * 0.45;
 
-  // "Link en la bio" CTA (true bottom-most row) — only meaningful on the Instagram post
-  // itself, never shown on the website's own copy of this card.
-  const ctaBaselineY = height - PADDING;
-  ctx.font = "600 24px system-ui, sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.textAlign = "center";
-  ctx.fillText(`Visítanos ${instagramHandle}   •   Link en la bio`, width / 2, ctaBaselineY);
-
-  // Fine-print finance disclaimer, centered, up to 2 lines, sitting just above the CTA.
-  ctx.font = "400 20px system-ui, sans-serif";
-  const disclaimerLines = wrapText(ctx, CARD_PAYMENT_DISCLAIMER, maxTextWidth).slice(0, 2);
-  ctx.fillStyle = "rgba(255,255,255,0.45)";
-  ctx.textAlign = "center";
-  const disclaimerLastBaselineY = ctaBaselineY - 34 - 20;
-  disclaimerLines.forEach((line, i) => {
-    ctx.fillText(line, width / 2, disclaimerLastBaselineY - (disclaimerLines.length - 1 - i) * 26);
-  });
-  let cursorY = disclaimerLastBaselineY - disclaimerLines.length * 26 - 24;
-
-  // Price row: "Precio $X" left, monthly payment + "/mes" right.
-  ctx.font = "600 44px system-ui, sans-serif";
-  ctx.fillStyle = "#60a5fa";
-  ctx.textAlign = "right";
-  const monthlyText = `${currency.format(estimateCardMonthlyPayment(item.price))}/mes`;
-  ctx.fillText(monthlyText, width - PADDING, cursorY);
-  const monthlyWidth = ctx.measureText(monthlyText).width;
-  ctx.font = "400 26px system-ui, sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.fillText("/mes", width - PADDING - monthlyWidth - 8, cursorY);
-
-  ctx.font = "400 26px system-ui, sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.6)";
+  ctx.font = "700 68px system-ui, sans-serif";
+  ctx.fillStyle = "#ffffff";
   ctx.textAlign = "left";
-  ctx.fillText(`Precio ${currency.format(item.price)}`, PADDING, cursorY);
-  cursorY -= 44 + 28;
+  ctx.fillText(`${item.make} ${item.model}`, PADDING, topY);
+  topY += 16;
 
-  // Divider line, same spacing rhythm as the card's border-t.
-  ctx.strokeStyle = "rgba(255,255,255,0.15)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(PADDING, cursorY);
-  ctx.lineTo(width - PADDING, cursorY);
-  ctx.stroke();
-  cursorY -= 24;
-
-  // Specs row: year · mileage · fuel.
-  ctx.font = "500 26px system-ui, sans-serif";
+  ctx.font = "600 26px system-ui, sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.textAlign = "left";
-  const fuelLabel = FUEL_TYPE_LABELS[item.fuelType] ?? item.fuelType;
-  const specsText = `${item.year}   ${mileageFormat.format(item.mileage)} km   ${fuelLabel}`;
-  ctx.fillText(specsText, PADDING, cursorY);
-  cursorY -= 26 + 28;
+  const bodyLabel = BODY_TYPE_LABELS[item.bodyType] ?? item.bodyType;
+  topY += 26;
+  ctx.fillText(`${item.color}  ·  ${bodyLabel}`, PADDING, topY);
+  topY += 20;
 
-  // Option chips, right-to-left square-cornered pills — matches the card's square-corner
-  // design language, drawn bottom row up if they wrap onto two rows.
+  if (shortDescription) {
+    ctx.font = "400 26px system-ui, sans-serif";
+    const descriptionLines = wrapText(ctx, shortDescription, maxTextWidth).slice(0, 2);
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    descriptionLines.forEach((line, i) => {
+      topY += 26 + (i > 0 ? 34 - 26 : 0);
+      ctx.fillText(line, PADDING, topY);
+    });
+    topY += 20;
+  }
+
   if (options.length > 0) {
     ctx.font = "500 22px system-ui, sans-serif";
     const chipPaddingX = 18;
@@ -317,48 +287,75 @@ function drawCardPresetContent(
       rows[rows.length - 1].push({ text: option, width: chipWidth });
       rowWidth += chipWidth + chipGap;
     }
-    for (let r = rows.length - 1; r >= 0; r--) {
+    for (const row of rows) {
       let chipX = PADDING;
-      const rowY = cursorY - chipHeight;
-      for (const chip of rows[r]) {
+      for (const chip of row) {
         ctx.strokeStyle = "rgba(255,255,255,0.25)";
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(chipX, rowY, chip.width, chipHeight);
+        ctx.strokeRect(chipX, topY, chip.width, chipHeight);
         ctx.fillStyle = "rgba(255,255,255,0.7)";
         ctx.textAlign = "left";
-        ctx.fillText(chip.text, chipX + chipPaddingX, rowY + chipHeight / 2 + 8);
+        ctx.fillText(chip.text, chipX + chipPaddingX, topY + chipHeight / 2 + 8);
         chipX += chip.width + chipGap;
       }
-      cursorY -= chipHeight + chipGap;
+      topY += chipHeight + chipGap;
     }
-    cursorY += chipGap;
-    cursorY -= 12;
+    topY += 8;
   }
 
-  // Short description, up to 2 lines.
-  if (shortDescription) {
-    ctx.font = "400 26px system-ui, sans-serif";
-    const descriptionLines = wrapText(ctx, shortDescription, maxTextWidth).slice(0, 2);
-    cursorY -= (descriptionLines.length - 1) * 34;
-    ctx.fillStyle = "rgba(255,255,255,0.7)";
-    ctx.textAlign = "left";
-    descriptionLines.forEach((line, i) => {
-      ctx.fillText(line, PADDING, cursorY + i * 34);
-    });
-    cursorY -= 34 + 20;
-  }
-
-  // Title (make + model) and color/body-type row.
-  ctx.font = "600 26px system-ui, sans-serif";
+  ctx.font = "500 26px system-ui, sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.7)";
   ctx.textAlign = "left";
-  const bodyLabel = BODY_TYPE_LABELS[item.bodyType] ?? item.bodyType;
-  ctx.fillText(`${item.color}  ·  ${bodyLabel}`, PADDING, cursorY);
-  cursorY -= 26 + 16;
+  const fuelLabel = FUEL_TYPE_LABELS[item.fuelType] ?? item.fuelType;
+  const specsText = `${item.year}   ${mileageFormat.format(item.mileage)} km   ${fuelLabel}`;
+  topY += 26;
+  ctx.fillText(specsText, PADDING, topY);
+  topY += 28;
 
-  ctx.font = "700 68px system-ui, sans-serif";
-  ctx.fillStyle = "#ffffff";
-  ctx.fillText(`${item.make} ${item.model}`, PADDING, cursorY);
+  // Divider line, right below the top block — matches the live preview's moved divider.
+  ctx.strokeStyle = "rgba(255,255,255,0.15)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(PADDING, topY);
+  ctx.lineTo(width - PADDING, topY);
+  ctx.stroke();
+
+  // --- Bottom group: CTA, disclaimer, price row — drawn bottom-up, anchored to the true
+  // canvas bottom, independent of how tall the top group ended up. ---
+  const ctaBaselineY = height - PADDING;
+  ctx.font = "600 24px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.textAlign = "center";
+  ctx.fillText(`Visítanos ${instagramHandle}   •   Link en la bio`, width / 2, ctaBaselineY);
+
+  ctx.font = "400 20px system-ui, sans-serif";
+  const disclaimerLines = wrapText(ctx, CARD_PAYMENT_DISCLAIMER, maxTextWidth).slice(0, 2);
+  ctx.fillStyle = "rgba(255,255,255,0.45)";
+  ctx.textAlign = "center";
+  const disclaimerLastBaselineY = ctaBaselineY - 34 - 20;
+  disclaimerLines.forEach((line, i) => {
+    ctx.fillText(line, width / 2, disclaimerLastBaselineY - (disclaimerLines.length - 1 - i) * 26);
+  });
+  const priceBaselineY = disclaimerLastBaselineY - disclaimerLines.length * 26 - 40;
+
+  const monthlyText = currency.format(estimateCardMonthlyPayment(item.price));
+  ctx.font = "400 26px system-ui, sans-serif";
+  const mesWidth = ctx.measureText("/mes").width;
+
+  ctx.font = "600 44px system-ui, sans-serif";
+  ctx.fillStyle = "#60a5fa";
+  ctx.textAlign = "right";
+  ctx.fillText(monthlyText, width - PADDING - mesWidth, priceBaselineY);
+
+  ctx.font = "400 26px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.textAlign = "left";
+  ctx.fillText("/mes", width - PADDING - mesWidth, priceBaselineY);
+
+  ctx.font = "400 26px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.6)";
+  ctx.textAlign = "left";
+  ctx.fillText(`Precio ${currency.format(item.price)}`, PADDING, priceBaselineY);
 }
 
 // Fits an image within a box, preserving aspect ratio (equivalent to object-fit: contain).
@@ -580,8 +577,11 @@ export async function generateInstagramGraphic({
   const scale = Math.max(width / img.width, height / img.height);
   const drawWidth = img.width * scale;
   const drawHeight = img.height * scale;
+  // The "card" preset mirrors CarCard's own object-position (center 43%, after the
+  // preview's +10% shift) instead of dead-center, so the crop matches the live preview.
+  const verticalPositionPercent = preset === "card" ? 43 : 50;
   const offsetX = (width - drawWidth) / 2;
-  const offsetY = (height - drawHeight) / 2;
+  const offsetY = (height - drawHeight) * (verticalPositionPercent / 100);
   ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
   if (preset === "card") {

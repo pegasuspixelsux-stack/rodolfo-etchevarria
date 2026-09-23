@@ -40,12 +40,12 @@ const LOGO_POSITION_OPTIONS: { id: LogoPosition; label: string }[] = [
 const PRESET_OPTIONS: { id: PostPreset; label: string; description: string }[] = [
   {
     id: "card",
-    label: "Estilo Card",
+    label: "IG Reels",
     description: "Idéntico a la ficha del sitio web",
   },
   {
     id: "classic",
-    label: "Clásico",
+    label: "IG Feed",
     description: "Plantilla de marca personalizable",
   },
 ];
@@ -185,9 +185,22 @@ export function InstagramPostModal({
             <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
               <div className="mx-auto w-full max-w-[420px]">
                 {preset === "card" ? (
-                  <div className="pointer-events-none mx-auto max-h-[70vh] w-full max-w-[320px] overflow-hidden">
-                    <CarCard car={item} layout="portrait" />
-                  </div>
+                  <motion.div
+                    initial="visible"
+                    animate="visible"
+                    className="pointer-events-none relative mx-auto aspect-[9/16] w-full max-w-[320px] max-h-[70vh] overflow-hidden"
+                  >
+                    <CarCard
+                      car={item}
+                      layout="portrait"
+                      previewLiftPercent={10}
+                      previewGradientBoostPercent={10}
+                      previewImageShiftPercent={10}
+                      previewHideInstagramIcon
+                      previewCenterWatermark
+                      previewSplitLayout
+                    />
+                  </motion.div>
                 ) : (
                 <div
                   className={`relative w-full max-h-[70vh] overflow-hidden rounded-none bg-slate-100 ${activeFormat.aspectClass}`}

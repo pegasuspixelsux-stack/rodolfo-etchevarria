@@ -22,7 +22,7 @@ const mileageFormat = new Intl.NumberFormat("en-US");
 
 const ESTIMATE_APR = 6.5;
 const ESTIMATE_TERM_MONTHS = 60;
-const ESTIMATE_DOWN_RATE = 0.1;
+const ESTIMATE_DOWN_RATE = 0.3;
 
 const BODY_TYPE_LABELS: Record<string, string> = {
   Sedan: "Sedán",
@@ -48,9 +48,34 @@ export type CardLayout = "split" | "portrait";
 export function CarCard({
   car,
   layout = "portrait",
+  previewLiftPercent = 0,
+  previewGradientBoostPercent = 0,
+  previewImageShiftPercent = 0,
+  previewHideInstagramIcon = false,
+  previewCenterWatermark = false,
+  previewSplitLayout = false,
 }: {
   car: Car;
   layout?: CardLayout;
+  /** Shifts the bottom text block up by this many percent of the card's height.
+   * Only meant for the dashboard's "Estilo Card" IG preview — leave at 0 everywhere else. */
+  previewLiftPercent?: number;
+  /** Extends the bottom gradient's solid + fade stops by this many percentage points.
+   * Only meant for the dashboard's "Estilo Card" IG preview — leave at 0 everywhere else. */
+  previewGradientBoostPercent?: number;
+  /** Shifts the photo's object-position upward by this many percentage points.
+   * Only meant for the dashboard's "Estilo Card" IG preview — leave at 0 everywhere else. */
+  previewImageShiftPercent?: number;
+  /** Hides the Instagram share button. Only meant for the dashboard's "Estilo Card" IG
+   * preview, where the button would recursively trigger another share flow. */
+  previewHideInstagramIcon?: boolean;
+  /** Centers the script watermark instead of left-aligning it.
+   * Only meant for the dashboard's "Estilo Card" IG preview — leave off everywhere else. */
+  previewCenterWatermark?: boolean;
+  /** Gives the bottom text block real height (instead of shrink-to-fit) and pushes the
+   * price row down to the very bottom, leaving a gap above it — for the Instagram post
+   * heading/caption area. Only meant for the dashboard's "Estilo Card" IG preview. */
+  previewSplitLayout?: boolean;
 }) {
   const FuelIcon = car.fuelType === "Electric" ? Zap : Fuel;
   const detail = carDetails[car.id] ?? buildFallbackDetail(car);
@@ -171,16 +196,34 @@ export function CarCard({
         fill
         sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw"
         className="object-cover object-[center_33%] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.08]"
+        style={
+          previewImageShiftPercent
+            ? { objectPosition: `center ${33 + previewImageShiftPercent}%` }
+            : undefined
+        }
       />
 
       {/* Sized to the card's own rendered width (via @container), not the viewport — the
           same CarCard shows at very different widths across contexts (a 2-col mobile grid,
           a 1-col full-width mobile card, a 3-col showroom grid, a 4-col desktop grid), so a
           viewport breakpoint can't tell a narrow card from a wide one; a container query can. */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_24%,rgba(0,0,0,0)_46%)] @[220px]:bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_33%,rgba(0,0,0,0)_58%)]" />
+      <div
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_24%,rgba(0,0,0,0)_46%)] @[220px]:bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_33%,rgba(0,0,0,0)_58%)]"
+        style={
+          previewGradientBoostPercent
+            ? {
+                backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.92) ${
+                  33 + previewGradientBoostPercent
+                }%, rgba(0,0,0,0) ${58 + previewGradientBoostPercent}%)`,
+              }
+            : undefined
+        }
+      />
 
       <span
-        className="absolute left-3 top-3 z-10 whitespace-nowrap text-[1.3rem] tracking-tight text-white [font-family:var(--font-script)] @[220px]:text-[2.4rem]"
+        className={`absolute top-3 z-10 whitespace-nowrap text-[1.3rem] tracking-tight text-white [font-family:var(--font-script)] @[220px]:text-[2.4rem] ${
+          previewCenterWatermark ? "left-1/2 -translate-x-1/2" : "left-3"
+        }`}
         style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}
       >
         Rodolfo Etchevarria
@@ -192,17 +235,28 @@ export function CarCard({
         className="absolute inset-0 z-20"
       />
 
-      <button
-        type="button"
-        onClick={handleShareToInstagram}
-        disabled={sharing}
-        aria-label="Compartir en Instagram"
-        className="glass absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-none text-white transition-colors duration-200 ease-out hover:bg-white hover:text-black disabled:cursor-wait"
-      >
-        {sharing ? <Loader2 size={16} className="animate-spin" /> : <InstagramGlyph size={16} />}
-      </button>
+      {!previewHideInstagramIcon && (
+        <button
+          type="button"
+          onClick={handleShareToInstagram}
+          disabled={sharing}
+          aria-label="Compartir en Instagram"
+          className="glass absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-none text-white transition-colors duration-200 ease-out hover:bg-white hover:text-black disabled:cursor-wait"
+        >
+          {sharing ? <Loader2 size={16} className="animate-spin" /> : <InstagramGlyph size={16} />}
+        </button>
+      )}
 
-      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5">
+      <div
+        className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5"
+        style={
+          previewSplitLayout
+            ? { top: "45%", bottom: `${previewLiftPercent}%` }
+            : previewLiftPercent
+              ? { bottom: `${previewLiftPercent}%` }
+              : undefined
+        }
+      >
         <div>
           <h3 className="font-heading text-[1.05rem] font-normal leading-tight text-white @[220px]:text-[1.575rem]">
             {car.make} {car.model}
@@ -252,7 +306,18 @@ export function CarCard({
           </div>
         </div>
 
-        <div className="flex items-end justify-between gap-3 border-t border-white/15 pt-1 @[220px]:pt-2">
+        {previewSplitLayout && (
+          <>
+            <div className="border-t border-white/15 pt-2" />
+            <div className="flex-1" />
+          </>
+        )}
+
+        <div
+          className={`flex items-end justify-between gap-3 ${
+            previewSplitLayout ? "" : "border-t border-white/15 pt-1 @[220px]:pt-2"
+          }`}
+        >
           <p className="whitespace-nowrap text-[0.65rem] text-white/60 @[220px]:text-[0.75rem]">
             Precio {currency.format(car.price)}
           </p>
