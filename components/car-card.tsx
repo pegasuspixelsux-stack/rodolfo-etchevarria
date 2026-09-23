@@ -9,6 +9,7 @@ import type { Car } from "@/data/cars";
 import { carDetails, buildFallbackDetail } from "@/data/car-details";
 import { InstagramGlyph } from "@/components/icons/instagram-glyph";
 import { shareCarToInstagram } from "@/lib/share/share-to-instagram";
+import { CARD_PAYMENT_DISCLAIMER } from "@/lib/share/instagram-graphic";
 import { fadeUp } from "@/lib/motion";
 
 const currency = new Intl.NumberFormat("en-US", {
@@ -113,7 +114,7 @@ export function CarCard({
 
         <div className="flex flex-1 flex-col gap-2 p-5 sm:gap-4">
           <div>
-            <h3 className="text-[1.05rem] font-semibold leading-tight text-foreground">
+            <h3 className="font-heading text-[1.05rem] font-normal leading-tight text-foreground">
               {car.make} {car.model}
             </h3>
             <div className="mt-0.5 hidden items-center gap-1.5 text-[0.85rem] text-muted sm:flex">
@@ -199,7 +200,7 @@ export function CarCard({
 
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-4 sm:p-5">
         <div>
-          <h3 className="text-[1.575rem] font-semibold leading-tight text-white">
+          <h3 className="font-heading text-[1.575rem] font-normal leading-tight text-white">
             {car.make} {car.model}
           </h3>
           <div className="mt-0.5 flex items-center gap-1.5 text-[0.8rem] text-white/70">
@@ -256,6 +257,9 @@ export function CarCard({
             <span className="text-[0.75rem] font-normal text-white/70">/mes</span>
           </p>
         </div>
+        <p className="text-[0.62rem] leading-snug text-white/40">
+          {CARD_PAYMENT_DISCLAIMER}
+        </p>
       </div>
     </motion.article>
   );

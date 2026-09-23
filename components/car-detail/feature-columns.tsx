@@ -31,7 +31,7 @@ export function FeatureColumns({ features }: { features: CarFeatureGroup[] }) {
             <span className="flex h-10 w-10 items-center justify-center rounded-none bg-surface-2 text-foreground">
               <Icon size={18} />
             </span>
-            <h3 className="mt-4 text-[1.05rem] font-semibold text-foreground">
+            <h3 className="mt-4 font-heading text-[1.05rem] font-normal text-foreground">
               {group.category}
             </h3>
             <ul className="mt-4 flex flex-col gap-2.5">

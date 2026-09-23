@@ -3,6 +3,7 @@ import {
   DEFAULT_GRADIENT_COLOR,
   DEFAULT_INSTAGRAM_HANDLE,
   DEFAULT_LOGO_SRC,
+  DEFAULT_PRESET,
   defaultPriceText,
   defaultTitle,
   generateInstagramGraphic,
@@ -17,10 +18,10 @@ function isMobileDevice(): boolean {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
-// One-click "Share to Instagram" for a listing card: composite the same branded
-// story graphic the dashboard's Instagram Post Generator produces (car photo,
-// bottom gradient, price/spec text, logo, footer stripe), then hand it off so the
-// visitor finishes and posts it themselves in their own Instagram account.
+// One-click "Share to Instagram" for a listing card: composite a story-format graphic
+// that reproduces the homepage/showroom card itself (the "card" preset — see
+// generateInstagramGraphic), then hand it off so the visitor finishes and posts it
+// themselves in their own Instagram account.
 //
 // There's no official web API to reach into a visitor's Instagram app and drop an
 // image straight into a Story/post draft — that capability is only exposed to
@@ -44,6 +45,7 @@ export async function shareCarToInstagram(item: Car): Promise<ShareCarOutcome> {
     gradientIntensity: GRADIENT_INTENSITY_DEFAULT,
     instagramHandle: DEFAULT_INSTAGRAM_HANDLE,
     item,
+    preset: DEFAULT_PRESET,
   });
 
   const filename = `${slugify(`${item.year}-${item.make}-${item.model}`)}-drivetime.png`;

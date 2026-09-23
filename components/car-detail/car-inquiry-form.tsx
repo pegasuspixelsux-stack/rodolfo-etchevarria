@@ -84,7 +84,7 @@ export function CarInquiryForm({ car }: { car: Car }) {
           <span className="flex h-12 w-12 items-center justify-center rounded-none bg-surface-2 text-foreground">
             <CheckCircle2 size={22} />
           </span>
-          <h3 className="text-[1.05rem] font-semibold text-foreground">
+          <h3 className="font-heading text-[1.05rem] font-normal text-foreground">
             Consulta recibida
           </h3>
           <p className="text-[0.9rem] text-muted">
@@ -115,7 +115,7 @@ export function CarInquiryForm({ car }: { car: Car }) {
       className="mx-auto max-w-[1000px] px-6 py-14 sm:px-8"
     >
       <div className="mx-auto max-w-2xl rounded-none border border-border bg-surface p-8">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+        <h2 className="font-heading text-2xl font-normal tracking-tight text-foreground">
           ¿Te interesa este vehículo?
         </h2>
         <p className="mt-2 text-[0.9rem] text-muted">

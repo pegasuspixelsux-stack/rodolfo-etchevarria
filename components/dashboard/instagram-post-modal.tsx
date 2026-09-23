@@ -2,14 +2,16 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Download, Edit3, ImageUp, Minus, Plus, RotateCcw, X } from "lucide-react";
+import { Download, Edit3, ImageUp, LayoutTemplate, Minus, Plus, RotateCcw, X } from "lucide-react";
 import type { InventoryItem } from "@/lib/dashboard-data";
+import { CarCard } from "@/components/car-card";
 import { carDetails, type CarDetailImage } from "@/data/car-details";
 import {
   currency,
   DEFAULT_GRADIENT_COLOR,
   DEFAULT_INSTAGRAM_HANDLE,
   DEFAULT_LOGO_SRC,
+  DEFAULT_PRESET,
   defaultPriceText,
   defaultTitle,
   DISCLAIMER_TEXT,
@@ -25,6 +27,7 @@ import {
   type LogoPosition,
   mileageFormat,
   type PostFormat,
+  type PostPreset,
   slugify,
 } from "@/lib/share/instagram-graphic";
 
@@ -32,6 +35,19 @@ const LOGO_POSITION_OPTIONS: { id: LogoPosition; label: string }[] = [
   { id: "left", label: "Izquierda" },
   { id: "center", label: "Centro" },
   { id: "right", label: "Derecha" },
+];
+
+const PRESET_OPTIONS: { id: PostPreset; label: string; description: string }[] = [
+  {
+    id: "card",
+    label: "Estilo Card",
+    description: "Idéntico a la ficha del sitio web",
+  },
+  {
+    id: "classic",
+    label: "Clásico",
+    description: "Plantilla de marca personalizable",
+  },
 ];
 
 export function InstagramPostModal({
@@ -50,6 +66,7 @@ export function InstagramPostModal({
     return [{ src: item.image, alt: `${item.make} ${item.model}` }];
   }, [item]);
 
+  const [preset, setPreset] = useState<PostPreset>(DEFAULT_PRESET);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [title, setTitle] = useState("");
   const [priceText, setPriceText] = useState("");
@@ -65,6 +82,7 @@ export function InstagramPostModal({
 
   useEffect(() => {
     if (!open || !item) return;
+    setPreset(DEFAULT_PRESET);
     setSelectedImageIndex(0);
     setTitle(defaultTitle(item));
     setPriceText(defaultPriceText(item));
@@ -105,11 +123,12 @@ export function InstagramPostModal({
         gradientIntensity,
         instagramHandle,
         item,
+        preset,
       });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${slugify(`${item.year}-${item.make}-${item.model}`)}-${format}-instagram-post.png`;
+      link.download = `${slugify(`${item.year}-${item.make}-${item.model}`)}-${preset}-instagram-post.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -165,6 +184,11 @@ export function InstagramPostModal({
 
             <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
               <div className="mx-auto w-full max-w-[420px]">
+                {preset === "card" ? (
+                  <div className="pointer-events-none mx-auto max-h-[70vh] w-full max-w-[320px] overflow-hidden">
+                    <CarCard car={item} layout="portrait" />
+                  </div>
+                ) : (
                 <div
                   className={`relative w-full max-h-[70vh] overflow-hidden rounded-none bg-slate-100 ${activeFormat.aspectClass}`}
                 >
@@ -239,63 +263,91 @@ export function InstagramPostModal({
                     <span>Link in Bio</span>
                   </div>
                 </div>
+                )}
               </div>
 
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
                   <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
-                    <Edit3 size={13} />
-                    Título
+                    <LayoutTemplate size={13} />
+                    Estilo
                   </label>
-                  <input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="h-11 w-full rounded-none border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-600">Precio / Cuota</label>
-                  <input
-                    value={priceText}
-                    onChange={(e) => setPriceText(e.target.value)}
-                    className="h-11 w-full rounded-none border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-600">Identidad de Marca</label>
-                  <div className="flex items-center gap-3 rounded-none border border-slate-200 p-3">
-                    <div className="flex h-12 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-none bg-slate-100">
-                      <img src={logoSrc} alt="Logo actual" className="max-h-full max-w-full object-contain" />
-                    </div>
-                    <div className="flex flex-1 flex-col gap-1.5">
+                  <div className="grid grid-cols-2 gap-2">
+                    {PRESET_OPTIONS.map((option) => (
                       <button
+                        key={option.id}
                         type="button"
-                        onClick={() => setLogoSrc(DEFAULT_LOGO_SRC)}
-                        className="flex h-8 items-center justify-center gap-1.5 rounded-none border border-slate-200 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
+                        onClick={() => setPreset(option.id)}
+                        className={`flex flex-col items-start gap-0.5 border px-3 py-2.5 text-left transition-colors ${
+                          preset === option.id
+                            ? "border-indigo-500 bg-indigo-50"
+                            : "border-slate-200 hover:border-slate-300"
+                        }`}
                       >
-                        <RotateCcw size={12} />
-                        Usar Logo Predeterminado
+                        <span className="text-sm font-medium text-slate-900">{option.label}</span>
+                        <span className="text-[0.7rem] text-slate-500">{option.description}</span>
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => logoFileInputRef.current?.click()}
-                        className="flex h-8 items-center justify-center gap-1.5 rounded-none border border-slate-200 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
-                      >
-                        <ImageUp size={12} />
-                        Subir Nuevo Logo
-                      </button>
-                      <input
-                        ref={logoFileInputRef}
-                        type="file"
-                        accept="image/png,image/jpeg,image/svg+xml"
-                        className="hidden"
-                        onChange={handleLogoUpload}
-                      />
-                    </div>
+                    ))}
                   </div>
                 </div>
+                {preset === "classic" && (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
+                        <Edit3 size={13} />
+                        Título
+                      </label>
+                      <input
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="h-11 w-full rounded-none border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Precio / Cuota</label>
+                      <input
+                        value={priceText}
+                        onChange={(e) => setPriceText(e.target.value)}
+                        className="h-11 w-full rounded-none border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Identidad de Marca</label>
+                      <div className="flex items-center gap-3 rounded-none border border-slate-200 p-3">
+                        <div className="flex h-12 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-none bg-slate-100">
+                          <img src={logoSrc} alt="Logo actual" className="max-h-full max-w-full object-contain" />
+                        </div>
+                        <div className="flex flex-1 flex-col gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setLogoSrc(DEFAULT_LOGO_SRC)}
+                            className="flex h-8 items-center justify-center gap-1.5 rounded-none border border-slate-200 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
+                          >
+                            <RotateCcw size={12} />
+                            Usar Logo Predeterminado
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => logoFileInputRef.current?.click()}
+                            className="flex h-8 items-center justify-center gap-1.5 rounded-none border border-slate-200 text-xs font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
+                          >
+                            <ImageUp size={12} />
+                            Subir Nuevo Logo
+                          </button>
+                          <input
+                            ref={logoFileInputRef}
+                            type="file"
+                            accept="image/png,image/jpeg,image/svg+xml"
+                            className="hidden"
+                            onChange={handleLogoUpload}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-slate-600">Instagram</label>
@@ -307,90 +359,94 @@ export function InstagramPostModal({
                   />
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-600">Formato</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {FORMAT_OPTIONS.map((option) => (
-                      <button
-                        key={option.id}
-                        type="button"
-                        onClick={() => setFormat(option.id)}
-                        className={`rounded-none border px-2 py-2 text-[0.75rem] font-medium transition-colors ${
-                          format === option.id
-                            ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
-                            : "border-slate-200 text-slate-600 hover:border-slate-300"
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                {preset === "classic" && (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Formato</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {FORMAT_OPTIONS.map((option) => (
+                          <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => setFormat(option.id)}
+                            className={`rounded-none border px-2 py-2 text-[0.75rem] font-medium transition-colors ${
+                              format === option.id
+                                ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
+                                : "border-slate-200 text-slate-600 hover:border-slate-300"
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-600">Color del Degradado</label>
-                  <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
-                    <input
-                      type="color"
-                      value={gradientColor}
-                      onChange={(e) => setGradientColor(e.target.value)}
-                      aria-label="Color del degradado"
-                      className="h-9 w-14 cursor-pointer rounded-none border border-slate-200 bg-white p-1"
-                    />
-                    <span className="text-sm font-medium text-slate-900">{gradientColor.toUpperCase()}</span>
-                  </div>
-                </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Color del Degradado</label>
+                      <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
+                        <input
+                          type="color"
+                          value={gradientColor}
+                          onChange={(e) => setGradientColor(e.target.value)}
+                          aria-label="Color del degradado"
+                          className="h-9 w-14 cursor-pointer rounded-none border border-slate-200 bg-white p-1"
+                        />
+                        <span className="text-sm font-medium text-slate-900">{gradientColor.toUpperCase()}</span>
+                      </div>
+                    </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-600">Intensidad del Degradado</label>
-                  <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setGradientIntensity((v) => Math.max(GRADIENT_INTENSITY_MIN, v - GRADIENT_INTENSITY_STEP))
-                      }
-                      disabled={gradientIntensity <= GRADIENT_INTENSITY_MIN}
-                      aria-label="Disminuir intensidad"
-                      className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <Minus size={14} />
-                    </button>
-                    <span className="flex-1 text-center text-sm font-medium text-slate-900">
-                      {gradientIntensity}%
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setGradientIntensity((v) => Math.min(GRADIENT_INTENSITY_MAX, v + GRADIENT_INTENSITY_STEP))
-                      }
-                      disabled={gradientIntensity >= GRADIENT_INTENSITY_MAX}
-                      aria-label="Aumentar intensidad"
-                      className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <Plus size={14} />
-                    </button>
-                  </div>
-                </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Intensidad del Degradado</label>
+                      <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setGradientIntensity((v) => Math.max(GRADIENT_INTENSITY_MIN, v - GRADIENT_INTENSITY_STEP))
+                          }
+                          disabled={gradientIntensity <= GRADIENT_INTENSITY_MIN}
+                          aria-label="Disminuir intensidad"
+                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <span className="flex-1 text-center text-sm font-medium text-slate-900">
+                          {gradientIntensity}%
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setGradientIntensity((v) => Math.min(GRADIENT_INTENSITY_MAX, v + GRADIENT_INTENSITY_STEP))
+                          }
+                          disabled={gradientIntensity >= GRADIENT_INTENSITY_MAX}
+                          aria-label="Aumentar intensidad"
+                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-slate-600">Posición del Logo</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {LOGO_POSITION_OPTIONS.map((option) => (
-                      <button
-                        key={option.id}
-                        type="button"
-                        onClick={() => setLogoPosition(option.id)}
-                        className={`rounded-none border px-2 py-2 text-sm font-medium transition-colors ${
-                          logoPosition === option.id
-                            ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
-                            : "border-slate-200 text-slate-600 hover:border-slate-300"
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Posición del Logo</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {LOGO_POSITION_OPTIONS.map((option) => (
+                          <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => setLogoPosition(option.id)}
+                            className={`rounded-none border px-2 py-2 text-sm font-medium transition-colors ${
+                              logoPosition === option.id
+                                ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
+                                : "border-slate-200 text-slate-600 hover:border-slate-300"
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-slate-600">Fotos del vehículo</label>

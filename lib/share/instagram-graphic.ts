@@ -1,8 +1,26 @@
 import type { Car } from "@/data/cars";
 import { isAllowedImageUrl } from "@/lib/image-hosts";
+import { carDetails, buildFallbackDetail } from "@/data/car-details";
 
 export type LogoPosition = "left" | "center" | "right";
 export type PostFormat = "square" | "feed" | "story";
+// "card" reproduces the homepage listing card 1:1 (script watermark, bottom
+// gradient, title, options, price) and always renders at the card's own 9:16
+// aspect — the format picker is ignored for it. "classic" is the original
+// dealer-branded template (logo, disclaimer, footer stripe) at any format.
+export type PostPreset = "card" | "classic";
+
+export const DEFAULT_PRESET: PostPreset = "card";
+
+// Matches the watermark text hardcoded onto the homepage/showroom CarCard —
+// kept as a single constant so the two stay in sync.
+export const DEFAULT_BRAND_NAME = "Rodolfo Etchevarria";
+
+const BODY_TYPE_LABELS: Record<string, string> = {
+  Sedan: "Sedán",
+  SUV: "SUV",
+  Coupe: "Cupé",
+};
 
 export const FORMAT_OPTIONS: {
   id: PostFormat;
@@ -65,6 +83,27 @@ export function defaultPriceText(item: Car) {
   return `${currency.format(estimateMonthlyPayment(item.price))}/mes`;
 }
 
+// The "card" preset must show the exact figure the homepage/showroom CarCard displays for
+// this same car, which is computed with different loan terms than the "classic" preset's
+// estimateMonthlyPayment above (6.5% APR / 10% down vs. 6.9% / 30%) — duplicated here rather
+// than shared so a future change to either estimate doesn't silently change the other.
+const CARD_ESTIMATE_APR = 6.5;
+const CARD_ESTIMATE_TERM_MONTHS = 60;
+const CARD_ESTIMATE_DOWN_RATE = 0.1;
+
+// Fine-print shown wherever the card's estimated monthly payment appears — the homepage/
+// showroom CarCard and the "card" IG preset both import this so the wording (and the terms
+// it describes) can never drift apart between the two places it's shown.
+export const CARD_PAYMENT_DISCLAIMER =
+  "Pago estimado con 10% de seña, 6.5% APR a 60 meses. Sujeto a aprobación de crédito.";
+
+function estimateCardMonthlyPayment(price: number) {
+  const principal = price * (1 - CARD_ESTIMATE_DOWN_RATE);
+  const monthlyRate = CARD_ESTIMATE_APR / 100 / 12;
+  const factor = Math.pow(1 + monthlyRate, CARD_ESTIMATE_TERM_MONTHS);
+  return (principal * (monthlyRate * factor)) / (factor - 1);
+}
+
 export function hexToRgb(hex: string): [number, number, number] {
   const clean = hex.replace("#", "");
   const value = parseInt(clean.length === 3 ? clean.replace(/(.)/g, "$1$1") : clean, 16);
@@ -89,7 +128,7 @@ export const FOOTER_STRIPE_HEIGHT = 64;
 
 // The dealership's Instagram handle for the stripe's "Visítenos" line. Staff can override it
 // per-graphic (see "Instagram" in the edit pane) the same way they can override the logo.
-export const DEFAULT_INSTAGRAM_HANDLE = "@drivetime";
+export const DEFAULT_INSTAGRAM_HANDLE = "@rodolfoetchevarria";
 
 export const DISCLAIMER_TEXT =
   "Pago calculado con 30% de seña, 6.9% de interés en 60 cuotas sujeto a aprobación de crédito.";
@@ -149,6 +188,177 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
   }
   if (currentLine) lines.push(currentLine);
   return lines;
+}
+
+// The homepage/showroom watermark title is set in the site's script font, loaded via
+// next/font as the CSS variable --font-script on <html>. Canvas text can't reference a CSS
+// variable directly, so we read the generated font-family name back out of computed style —
+// the value next/font actually assigned — and use that in ctx.font.
+function getScriptFontFamily(): string {
+  if (typeof document === "undefined") return "cursive";
+  const value = getComputedStyle(document.documentElement).getPropertyValue("--font-script").trim();
+  return value || "cursive";
+}
+
+/**
+ * Reproduces the homepage/showroom CarCard (portrait layout) as a 1080x1920 canvas:
+ * full-bleed photo, bottom-third gradient, script watermark, title + specs + options +
+ * price stacked bottom-left. No logo, no disclaimer, no footer stripe — this preset IS
+ * the card, not a separate dealer-branded template.
+ */
+function drawCardPresetContent(
+  ctx: CanvasRenderingContext2D,
+  {
+    width,
+    height,
+    item,
+    instagramHandle,
+  }: { width: number; height: number; item: Car; instagramHandle: string },
+) {
+  // Gradient: rgba(0,0,0,0.92) solid from the bottom up to 33% of the height, fading to
+  // transparent by 58% — the exact stops CarCard uses (bg-[linear-gradient(to_top,...)]).
+  const gradient = ctx.createLinearGradient(0, height * 0.42, 0, height);
+  gradient.addColorStop(0, "rgba(0,0,0,0)");
+  gradient.addColorStop((0.67 - 0.42) / (1 - 0.42), "rgba(0,0,0,0.92)");
+  gradient.addColorStop(1, "rgba(0,0,0,0.92)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, height * 0.42, width, height - height * 0.42);
+
+  const scriptFont = getScriptFontFamily();
+  ctx.textBaseline = "alphabetic";
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#ffffff";
+  ctx.shadowColor = "rgba(0,0,0,0.6)";
+  ctx.shadowBlur = 10;
+  ctx.font = `84px ${scriptFont}`;
+  ctx.fillText(DEFAULT_BRAND_NAME, PADDING, PADDING + 72);
+  ctx.shadowColor = "transparent";
+  ctx.shadowBlur = 0;
+
+  const detail = carDetails[item.id] ?? buildFallbackDetail(item);
+  const shortDescription = detail.editorial.dek;
+  const options = detail.features.flatMap((group) => group.items).slice(0, 3);
+  const maxTextWidth = width - PADDING * 2;
+
+  // Built bottom-up, same discipline as drawBottomBlock: every row's Y is derived from the
+  // measured top edge of the row below it.
+
+  // "Link en la bio" CTA (true bottom-most row) — only meaningful on the Instagram post
+  // itself, never shown on the website's own copy of this card.
+  const ctaBaselineY = height - PADDING;
+  ctx.font = "600 24px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.textAlign = "center";
+  ctx.fillText(`Visítanos ${instagramHandle}   •   Link en la bio`, width / 2, ctaBaselineY);
+
+  // Fine-print finance disclaimer, centered, up to 2 lines, sitting just above the CTA.
+  ctx.font = "400 20px system-ui, sans-serif";
+  const disclaimerLines = wrapText(ctx, CARD_PAYMENT_DISCLAIMER, maxTextWidth).slice(0, 2);
+  ctx.fillStyle = "rgba(255,255,255,0.45)";
+  ctx.textAlign = "center";
+  const disclaimerLastBaselineY = ctaBaselineY - 34 - 20;
+  disclaimerLines.forEach((line, i) => {
+    ctx.fillText(line, width / 2, disclaimerLastBaselineY - (disclaimerLines.length - 1 - i) * 26);
+  });
+  let cursorY = disclaimerLastBaselineY - disclaimerLines.length * 26 - 24;
+
+  // Price row: "Precio $X" left, monthly payment + "/mes" right.
+  ctx.font = "600 44px system-ui, sans-serif";
+  ctx.fillStyle = "#60a5fa";
+  ctx.textAlign = "right";
+  const monthlyText = `${currency.format(estimateCardMonthlyPayment(item.price))}/mes`;
+  ctx.fillText(monthlyText, width - PADDING, cursorY);
+  const monthlyWidth = ctx.measureText(monthlyText).width;
+  ctx.font = "400 26px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.fillText("/mes", width - PADDING - monthlyWidth - 8, cursorY);
+
+  ctx.font = "400 26px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.6)";
+  ctx.textAlign = "left";
+  ctx.fillText(`Precio ${currency.format(item.price)}`, PADDING, cursorY);
+  cursorY -= 44 + 28;
+
+  // Divider line, same spacing rhythm as the card's border-t.
+  ctx.strokeStyle = "rgba(255,255,255,0.15)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(PADDING, cursorY);
+  ctx.lineTo(width - PADDING, cursorY);
+  ctx.stroke();
+  cursorY -= 24;
+
+  // Specs row: year · mileage · fuel.
+  ctx.font = "500 26px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.textAlign = "left";
+  const fuelLabel = FUEL_TYPE_LABELS[item.fuelType] ?? item.fuelType;
+  const specsText = `${item.year}   ${mileageFormat.format(item.mileage)} km   ${fuelLabel}`;
+  ctx.fillText(specsText, PADDING, cursorY);
+  cursorY -= 26 + 28;
+
+  // Option chips, right-to-left square-cornered pills — matches the card's square-corner
+  // design language, drawn bottom row up if they wrap onto two rows.
+  if (options.length > 0) {
+    ctx.font = "500 22px system-ui, sans-serif";
+    const chipPaddingX = 18;
+    const chipHeight = 44;
+    const chipGap = 12;
+    type ChipRow = { text: string; width: number }[];
+    const rows: ChipRow[] = [[]];
+    let rowWidth = 0;
+    for (const option of options) {
+      const textWidth = ctx.measureText(option).width;
+      const chipWidth = textWidth + chipPaddingX * 2;
+      if (rowWidth + chipWidth > maxTextWidth && rows[rows.length - 1].length > 0) {
+        rows.push([]);
+        rowWidth = 0;
+      }
+      rows[rows.length - 1].push({ text: option, width: chipWidth });
+      rowWidth += chipWidth + chipGap;
+    }
+    for (let r = rows.length - 1; r >= 0; r--) {
+      let chipX = PADDING;
+      const rowY = cursorY - chipHeight;
+      for (const chip of rows[r]) {
+        ctx.strokeStyle = "rgba(255,255,255,0.25)";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(chipX, rowY, chip.width, chipHeight);
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.textAlign = "left";
+        ctx.fillText(chip.text, chipX + chipPaddingX, rowY + chipHeight / 2 + 8);
+        chipX += chip.width + chipGap;
+      }
+      cursorY -= chipHeight + chipGap;
+    }
+    cursorY += chipGap;
+    cursorY -= 12;
+  }
+
+  // Short description, up to 2 lines.
+  if (shortDescription) {
+    ctx.font = "400 26px system-ui, sans-serif";
+    const descriptionLines = wrapText(ctx, shortDescription, maxTextWidth).slice(0, 2);
+    cursorY -= (descriptionLines.length - 1) * 34;
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.textAlign = "left";
+    descriptionLines.forEach((line, i) => {
+      ctx.fillText(line, PADDING, cursorY + i * 34);
+    });
+    cursorY -= 34 + 20;
+  }
+
+  // Title (make + model) and color/body-type row.
+  ctx.font = "600 26px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.textAlign = "left";
+  const bodyLabel = BODY_TYPE_LABELS[item.bodyType] ?? item.bodyType;
+  ctx.fillText(`${item.color}  ·  ${bodyLabel}`, PADDING, cursorY);
+  cursorY -= 26 + 16;
+
+  ctx.font = "700 68px system-ui, sans-serif";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(`${item.make} ${item.model}`, PADDING, cursorY);
 }
 
 // Fits an image within a box, preserving aspect ratio (equivalent to object-fit: contain).
@@ -331,6 +541,7 @@ export async function generateInstagramGraphic({
   gradientIntensity,
   instagramHandle,
   item,
+  preset = DEFAULT_PRESET,
 }: {
   imageSrc: string;
   logoSrc: string;
@@ -342,8 +553,14 @@ export async function generateInstagramGraphic({
   gradientIntensity: number;
   instagramHandle: string;
   item: Car;
+  preset?: PostPreset;
 }): Promise<Blob> {
-  const { width, height } = FORMAT_OPTIONS.find((f) => f.id === format) ?? FORMAT_OPTIONS[0];
+  // "card" always renders at the CarCard's own 9:16 aspect, matching the homepage exactly —
+  // the chosen format is only meaningful for the "classic" preset.
+  const { width, height } =
+    preset === "card"
+      ? FORMAT_OPTIONS.find((f) => f.id === "story")!
+      : FORMAT_OPTIONS.find((f) => f.id === format) ?? FORMAT_OPTIONS[0];
 
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -351,7 +568,14 @@ export async function generateInstagramGraphic({
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("No se pudo crear el lienzo");
 
-  const [img, logoImg] = await Promise.all([loadImage(imageSrc), loadImage(logoSrc)]);
+  if (typeof document !== "undefined" && "fonts" in document) {
+    await document.fonts.ready;
+  }
+
+  const [img, logoImg] = await Promise.all([
+    loadImage(imageSrc),
+    preset === "card" ? Promise.resolve(null) : loadImage(logoSrc),
+  ]);
 
   const scale = Math.max(width / img.width, height / img.height);
   const drawWidth = img.width * scale;
@@ -359,6 +583,16 @@ export async function generateInstagramGraphic({
   const offsetX = (width - drawWidth) / 2;
   const offsetY = (height - drawHeight) / 2;
   ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+
+  if (preset === "card") {
+    drawCardPresetContent(ctx, { width, height, item, instagramHandle });
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error("No se pudo generar la imagen"));
+      }, "image/png");
+    });
+  }
 
   const [r, g, b] = hexToRgb(gradientColor);
   const isDark = isColorDark([r, g, b]);
@@ -385,7 +619,9 @@ export async function generateInstagramGraphic({
   // choice the dealer makes -- everything else in the bottom block is fixed.
   const logoX =
     logoPosition === "left" ? PADDING : logoPosition === "right" ? width - PADDING : width / 2;
-  drawLogo(ctx, logoImg, logoX, PADDING, logoPosition);
+  // Only the "classic" preset reaches this point (the "card" branch returns above), so the
+  // logo was always requested and loaded.
+  drawLogo(ctx, logoImg!, logoX, PADDING, logoPosition);
 
   drawBottomBlock(ctx, {
     width,

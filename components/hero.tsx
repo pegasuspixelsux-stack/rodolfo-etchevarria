@@ -133,7 +133,7 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
 
         <motion.h1
           variants={fadeUp}
-          className="text-balance max-w-3xl text-3xl font-semibold leading-[1.02] tracking-tight text-foreground sm:text-6xl sm:leading-[0.98] lg:text-[5.25rem]"
+          className="text-balance max-w-3xl font-heading text-3xl font-normal leading-[1.02] tracking-tight text-foreground sm:text-6xl sm:leading-[0.98] lg:text-[5.25rem]"
         >
           Encuentra tu Próxima Máquina de Precisión
         </motion.h1>

@@ -34,7 +34,7 @@ export function CarGrid({ initialCars }: { initialCars?: InventoryItem[] }) {
           viewport={{ once: true, margin: "-100px" }}
           className="mb-12 hidden md:block"
         >
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="font-heading text-2xl font-normal tracking-tight text-foreground sm:text-4xl">
             Inventario Destacado
           </h2>
           <p className="mt-3 max-w-md text-[0.95rem] text-muted">

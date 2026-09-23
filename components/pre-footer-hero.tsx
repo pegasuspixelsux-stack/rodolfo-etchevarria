@@ -29,7 +29,7 @@ export function PreFooterHero() {
       >
         <motion.h2
           variants={fadeUp}
-          className="text-balance text-3xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl"
+          className="text-balance font-heading text-3xl font-normal leading-tight tracking-tight text-foreground sm:text-5xl"
         >
           ¿Listo para Salir a la Ruta?
         </motion.h2>

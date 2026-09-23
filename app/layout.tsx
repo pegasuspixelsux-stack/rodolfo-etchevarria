@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Hurricane } from "next/font/google";
+import { Geist, Geist_Mono, Hurricane, Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
@@ -19,6 +19,12 @@ const script = Hurricane({
   subsets: ["latin"],
 });
 
+const heading = Inter({
+  variable: "--font-heading",
+  weight: "400",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "DriveTime — Encuentra tu próxima máquina de precisión",
   description:
@@ -29,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${script.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${script.variable} ${heading.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

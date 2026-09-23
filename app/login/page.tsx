@@ -86,9 +86,9 @@ export default function LoginPage() {
         >
           <motion.div variants={fadeUp} className="mb-8 text-center lg:text-left">
             <p className="text-[1.2rem] font-semibold tracking-tight text-foreground">
-              DriveTime
+              Rodolfo Etchevarria
             </p>
-            <h2 className="mt-4 text-2xl font-semibold text-foreground">
+            <h2 className="mt-4 font-heading text-2xl font-normal text-foreground">
               Inicia sesión en tu cuenta
             </h2>
             <p className="mt-2 text-[0.9rem] text-muted">

@@ -6,7 +6,7 @@ import { getInventoryOnce } from "@/lib/firebase/inventory-read";
 import type { InventoryItem } from "@/lib/dashboard-data";
 
 export const metadata: Metadata = {
-  title: "Showroom — Rodolfo Etchevarria",
+  title: "Sala de Exhibición — Rodolfo Etchevarria",
   description:
     "Explorá el inventario completo de Rodolfo Etchevarria con búsqueda avanzada por marca, precio, carrocería y combustible.",
 };

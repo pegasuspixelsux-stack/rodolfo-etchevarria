@@ -8,8 +8,7 @@ import { easeOut } from "@/lib/motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_LINKS = [
-  { label: "Inventario", href: "/#inventory" },
-  { label: "Sala de Exhibición", href: "/#showroom" },
+  { label: "Sala de Exhibición", href: "/showroom" },
   { label: "Financiamiento", href: "/#financing" },
   { label: "Nosotros", href: "/#about" },
   { label: "Contacto", href: "/#contact" },

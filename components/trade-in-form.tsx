@@ -46,7 +46,7 @@ export function TradeInForm() {
         <span className="glass flex h-12 w-12 items-center justify-center rounded-none text-foreground">
           <CheckCircle2 size={22} />
         </span>
-        <h3 className="text-[1.05rem] font-semibold text-foreground">
+        <h3 className="font-heading text-[1.05rem] font-normal text-foreground">
           Solicitud de tasación recibida
         </h3>
         <p className="max-w-sm text-[0.9rem] text-muted">

@@ -17,7 +17,7 @@ export function FinanceTabs() {
           className="mb-10 flex flex-col items-center gap-3 text-center"
         >
           <p className="text-[0.9rem] font-medium text-muted">Planifica tu Compra</p>
-          <h2 className="text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="text-balance font-heading text-2xl font-normal tracking-tight text-foreground sm:text-4xl">
             Estima tus Cuotas o Tasa tu Vehículo Actual
           </h2>
         </motion.div>
@@ -36,7 +36,7 @@ export function FinanceTabs() {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(8,16,60,0.65),transparent_60%)]" />
 
             <div className="relative">
-              <h3 className="mb-6 text-[1.05rem] font-semibold text-foreground">
+              <h3 className="mb-6 font-heading text-[1.05rem] font-normal text-foreground">
                 Calculadora Financiera
               </h3>
               <FinanceCalculator />
@@ -50,7 +50,7 @@ export function FinanceTabs() {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(8,16,60,0.65),transparent_60%)]" />
 
             <div className="relative">
-              <h3 className="mb-6 text-[1.05rem] font-semibold text-foreground">
+              <h3 className="mb-6 font-heading text-[1.05rem] font-normal text-foreground">
                 Tasa tu Vehículo Actual
               </h3>
               <TradeInForm />

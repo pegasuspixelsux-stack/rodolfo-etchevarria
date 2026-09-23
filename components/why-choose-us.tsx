@@ -47,7 +47,7 @@ export function WhyChooseUs() {
           </motion.p>
           <motion.h2
             variants={fadeUp}
-            className="text-balance text-2xl font-semibold leading-tight tracking-tight text-foreground sm:text-4xl"
+            className="text-balance font-heading text-2xl font-normal leading-tight tracking-tight text-foreground sm:text-4xl"
           >
             Impulsados por la Calidad, Definidos por la Confianza
           </motion.h2>
@@ -86,7 +86,7 @@ export function WhyChooseUs() {
                 <Icon size={20} />
               </span>
               <div className="relative flex flex-col gap-1.5">
-                <h3 className="text-[0.98rem] font-semibold text-foreground">
+                <h3 className="font-heading text-[0.98rem] font-normal text-foreground">
                   {title}
                 </h3>
                 <p className="text-[0.85rem] leading-relaxed text-muted">
