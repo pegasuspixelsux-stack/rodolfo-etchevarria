@@ -327,7 +327,7 @@ export function CarCard({
             </span>
           </div>
 
-          <div className="flex items-end justify-between gap-3 border-t border-white/15 pt-1 @[220px]:pt-2">
+          <div className="flex items-end justify-between gap-3 border-t border-white/15">
             <p className="whitespace-nowrap text-[0.65rem] text-white/60 @[220px]:text-[0.75rem]">
               Precio {currency.format(car.price)}
             </p>
