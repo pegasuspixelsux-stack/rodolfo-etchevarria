@@ -5,7 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Download, Edit3, ImageUp, LayoutTemplate, Minus, Plus, RotateCcw, X } from "lucide-react";
 import type { InventoryItem } from "@/lib/dashboard-data";
 import { CarCard } from "@/components/car-card";
+import { InstagramGlyph } from "@/components/icons/instagram-glyph";
 import { carDetails, type CarDetailImage } from "@/data/car-details";
+import { shareImageOrOpenInstagram } from "@/lib/share/share-to-instagram";
 import {
   currency,
   DEFAULT_GRADIENT_COLOR,
@@ -77,6 +79,7 @@ export function InstagramPostModal({
   const [logoSrc, setLogoSrc] = useState(DEFAULT_LOGO_SRC);
   const [instagramHandle, setInstagramHandle] = useState(DEFAULT_INSTAGRAM_HANDLE);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const logoFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -137,6 +140,37 @@ export function InstagramPostModal({
       setError("No se pudo generar la imagen. Inténtalo de nuevo.");
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleShareToInstagram = async () => {
+    setIsSharing(true);
+    setError(null);
+    try {
+      const blob = await generateInstagramGraphic({
+        imageSrc: gallery[selectedImageIndex]?.src ?? item.image,
+        logoSrc,
+        title,
+        priceText,
+        logoPosition,
+        format,
+        gradientColor,
+        gradientIntensity,
+        instagramHandle,
+        item,
+        preset,
+      });
+      const filename = `${slugify(`${item.year}-${item.make}-${item.model}`)}-${preset}-instagram-post.png`;
+      await shareImageOrOpenInstagram(
+        blob,
+        filename,
+        `${item.make} ${item.model}`,
+        `${item.make} ${item.model} — ${priceText}`,
+      );
+    } catch {
+      setError("No se pudo abrir Instagram. Inténtalo de nuevo.");
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -493,6 +527,20 @@ export function InstagramPostModal({
                   <Download size={16} />
                   {isGenerating ? "Generando..." : "Descargar Imagen Final"}
                 </button>
+
+                <button
+                  type="button"
+                  onClick={handleShareToInstagram}
+                  disabled={isSharing}
+                  className="flex h-11 items-center justify-center gap-2 rounded-none border border-slate-200 bg-white text-sm font-medium text-slate-900 transition-colors hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <InstagramGlyph size={16} />
+                  {isSharing ? "Abriendo..." : "Abrir en Instagram"}
+                </button>
+                <p className="text-center text-[0.75rem] text-slate-500">
+                  Desde el celular abre la app de Instagram — debes tener la sesión iniciada, de lo
+                  contrario te pedirá iniciar sesión.
+                </p>
               </div>
             </div>
           </motion.div>
