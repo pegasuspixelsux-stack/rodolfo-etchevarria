@@ -1,5 +1,6 @@
 import { getStorage, ref, uploadBytes, getDownloadURL, type FirebaseStorage } from "firebase/storage";
 import { firebaseApp } from "@/lib/firebase";
+import { resizeImageFile } from "@/lib/image-resize";
 
 let storageInstance: FirebaseStorage | null = null;
 
@@ -11,10 +12,11 @@ function getFirebaseStorage(): FirebaseStorage {
 }
 
 export async function uploadInventoryImage(file: File, carId: string): Promise<string> {
+  const resized = await resizeImageFile(file);
   const storage = getFirebaseStorage();
-  const path = `inventory/${carId}/${Date.now()}-${file.name}`;
+  const path = `inventory/${carId}/${Date.now()}-${resized.name}`;
   const fileRef = ref(storage, path);
-  await uploadBytes(fileRef, file);
+  await uploadBytes(fileRef, resized);
   return getDownloadURL(fileRef);
 }
 
@@ -27,9 +29,10 @@ export async function uploadHeroVideo(file: File): Promise<string> {
 }
 
 export async function uploadHeroSlideshowImage(file: File): Promise<string> {
+  const resized = await resizeImageFile(file);
   const storage = getFirebaseStorage();
-  const path = `site/hero-slideshow/${Date.now()}-${file.name}`;
+  const path = `site/hero-slideshow/${Date.now()}-${resized.name}`;
   const fileRef = ref(storage, path);
-  await uploadBytes(fileRef, file);
+  await uploadBytes(fileRef, resized);
   return getDownloadURL(fileRef);
 }
