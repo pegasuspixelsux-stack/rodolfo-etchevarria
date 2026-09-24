@@ -33,8 +33,6 @@ export function FinanceTabs() {
             variants={fadeUp}
             className="glass relative overflow-hidden rounded-none p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-10"
           >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(8,16,60,0.65),transparent_60%)]" />
-
             <div className="relative">
               <h3 className="mb-6 font-heading text-[1.05rem] font-normal text-foreground">
                 Calculadora Financiera
@@ -47,8 +45,6 @@ export function FinanceTabs() {
             variants={fadeUp}
             className="glass relative overflow-hidden rounded-none p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-10"
           >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(8,16,60,0.65),transparent_60%)]" />
-
             <div className="relative">
               <h3 className="mb-6 font-heading text-[1.05rem] font-normal text-foreground">
                 Tasa tu Vehículo Actual

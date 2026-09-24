@@ -80,8 +80,6 @@ export function WhyChooseUs() {
               variants={fadeUp}
               className="group relative flex flex-col gap-4 overflow-hidden rounded-none border border-border bg-surface/60 p-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-border-strong hover:bg-surface"
             >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(8,16,60,0.65),transparent_60%)]" />
-
               <span className="glass relative flex h-11 w-11 items-center justify-center rounded-none text-foreground">
                 <Icon size={20} />
               </span>

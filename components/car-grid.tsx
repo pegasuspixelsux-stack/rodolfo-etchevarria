@@ -34,12 +34,12 @@ export function CarGrid({ initialCars }: { initialCars?: InventoryItem[] }) {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="mb-12 hidden md:block"
+          className="mb-12 hidden items-end justify-between gap-6 md:flex"
         >
           <h2 className="font-heading text-2xl font-normal tracking-tight text-foreground sm:text-4xl">
-            Inventario Destacado
+            Selección Premium
           </h2>
-          <p className="mt-3 max-w-md text-[0.95rem] text-muted">
+          <p className="max-w-md text-right text-[0.95rem] text-muted">
             Vehículos seleccionados a mano, cada uno inspeccionado y
             certificado antes de llegar a ti.
           </p>

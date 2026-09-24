@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { easeOut } from "@/lib/motion";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_LINKS = [
   { label: "Sala de Exhibición", href: "/showroom" },
@@ -70,7 +69,6 @@ export function Navbar() {
         </ul>
 
         <div className="hidden items-center gap-4 lg:flex">
-          <ThemeToggle />
           <a
             href="/#contact"
             className="inline-flex h-10 items-center rounded-none bg-foreground px-5 text-[0.85rem] font-medium text-accent-foreground transition-transform duration-200 ease-out hover:scale-[1.03] active:scale-[0.97]"
@@ -80,7 +78,6 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3 lg:hidden">
-          <ThemeToggle />
           <button
             type="button"
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}

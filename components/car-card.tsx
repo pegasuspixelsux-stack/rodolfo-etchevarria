@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Gauge, Calendar, Zap, Fuel } from "lucide-react";
+import { Gauge, Calendar, Zap, Fuel, Phone } from "lucide-react";
 import type { Car } from "@/data/cars";
 import {
   CARD_PAYMENT_DISCLAIMER,
@@ -43,6 +43,9 @@ const FUEL_TYPE_LABELS: Record<string, string> = {
   Hybrid: "Híbrido",
   Electric: "Eléctrico",
 };
+
+const DEALER_NAME = "Rodolfo Etchevarria";
+const DEALER_PHONE = "(415) 555-0148";
 
 function estimateMonthlyPayment(price: number) {
   const principal = price * (1 - ESTIMATE_DOWN_RATE);
@@ -222,7 +225,7 @@ export function CarCard({
           a 1-col full-width mobile card, a 3-col showroom grid, a 4-col desktop grid), so a
           viewport breakpoint can't tell a narrow card from a wide one; a container query can. */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_4%,rgba(0,0,0,0)_26%)] @[220px]:bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_13%,rgba(0,0,0,0)_38%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgb(var(--scrim-rgb)/92%)_0%,rgb(var(--scrim-rgb)/92%)_4%,rgb(var(--scrim-rgb)/0%)_26%)] @[220px]:bg-[linear-gradient(to_top,rgb(var(--scrim-rgb)/92%)_0%,rgb(var(--scrim-rgb)/92%)_13%,rgb(var(--scrim-rgb)/0%)_38%)]"
         style={
           previewSplitLayout
             ? {
@@ -264,13 +267,29 @@ export function CarCard({
           </div>
         </div>
       ) : (
-        <div className="pointer-events-none absolute inset-x-0 top-2 z-10 flex flex-col items-center px-[calc(0.75rem+20px)] @[220px]:top-3">
+        <div className="pointer-events-none absolute inset-x-0 top-[calc(0.5rem+20px)] z-10 flex flex-col items-center px-[calc(0.75rem+20px)] @[220px]:top-[calc(0.75rem+20px)]">
           <p
-            className="text-center text-[1.05rem] font-normal leading-none text-white @[220px]:text-[1.575rem]"
-            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}
+            className="text-center text-[1.05rem] font-normal leading-none text-foreground @[220px]:text-[1.575rem]"
+            style={{ textShadow: "0 1px 6px rgb(var(--scrim-rgb) / 60%)" }}
           >
             {car.year} {car.make} {car.model}
           </p>
+          <div
+            className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[0.65rem] text-foreground/70 @[220px]:text-[0.75rem]"
+            style={{ textShadow: "0 1px 6px rgb(var(--scrim-rgb) / 60%)" }}
+          >
+            <span>{car.year}</span>
+            <span className="text-foreground/40">·</span>
+            <span className="flex items-center gap-1">
+              <Gauge size={12} />
+              {mileageFormat.format(car.mileage)} km
+            </span>
+            <span className="text-foreground/40">·</span>
+            <span className="flex items-center gap-1">
+              <FuelIcon size={12} />
+              {FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}
+            </span>
+          </div>
         </div>
       )}
 
@@ -310,35 +329,31 @@ export function CarCard({
         </div>
       ) : (
         <div
-          className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-[calc(0.75rem+20px)] @[220px]:gap-2 @[220px]:p-[calc(1rem+20px)] @[380px]:p-[calc(1.25rem+20px)]"
-          style={previewLiftPercent ? { bottom: `${previewLiftPercent}%` } : undefined}
+          className="absolute inset-x-0 bottom-[20px] flex flex-col gap-0.5 p-[calc(0.75rem+20px)] pb-[10px] @[220px]:gap-1 @[220px]:p-[calc(1rem+20px)] @[220px]:pb-[10px] @[380px]:p-[calc(1.25rem+20px)] @[380px]:pb-[10px]"
+          style={previewLiftPercent ? { bottom: `calc(${previewLiftPercent}% + 20px)` } : undefined}
         >
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.65rem] text-white/70 @[220px]:text-[0.75rem]">
-            <span>{car.year}</span>
-            <span className="text-white/40">·</span>
-            <span className="flex items-center gap-1">
-              <Gauge size={12} />
-              {mileageFormat.format(car.mileage)} km
-            </span>
-            <span className="text-white/40">·</span>
-            <span className="flex items-center gap-1">
-              <FuelIcon size={12} />
-              {FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}
-            </span>
-          </div>
-
-          <div className="flex items-end justify-between gap-3 border-t border-white/15">
-            <p className="whitespace-nowrap text-[0.65rem] text-white/60 @[220px]:text-[0.75rem]">
+          <div className="hidden items-end justify-between gap-3 border-t border-foreground/15 @[220px]:flex">
+            <p className="whitespace-nowrap text-[0.65rem] text-foreground/60 @[220px]:text-[0.75rem]">
               Precio {currency.format(car.price)}
             </p>
-            <p className="text-[1.1rem] font-semibold leading-none text-blue-400 @[220px]:text-[1.8rem]">
+            <p className="text-[1.1rem] font-semibold leading-none text-foreground @[220px]:text-[1.8rem]">
               {currency.format(estimateMonthlyPayment(car.price))}
-              <span className="text-[0.65rem] font-normal text-white/70 @[220px]:text-[0.75rem]">/mes</span>
+              <span className="text-[0.65rem] font-normal text-foreground/70 @[220px]:text-[0.75rem]">/mes</span>
             </p>
           </div>
-          <p className="hidden text-[0.62rem] leading-snug text-white/40 @[220px]:block">
+          <p className="text-[0.62rem] leading-snug text-foreground/40">
             {CARD_PAYMENT_DISCLAIMER}
           </p>
+        </div>
+      )}
+
+      {!previewSplitLayout && (
+        <div className="absolute inset-x-0 bottom-0 z-10 flex h-[20px] items-center justify-between gap-2 bg-black px-[calc(0.75rem+20px)] text-white">
+          <span className="truncate text-[0.8rem] leading-none [font-family:var(--font-script)]">{DEALER_NAME}</span>
+          <span className="flex shrink-0 items-center gap-1 text-[0.55rem] font-medium">
+            <Phone size={10} />
+            {DEALER_PHONE}
+          </span>
         </div>
       )}
     </motion.article>

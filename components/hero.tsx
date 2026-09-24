@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 import { useSiteSettings, type SiteSettings } from "@/lib/firebase/site-settings";
 
@@ -78,73 +77,56 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
           </motion.div>
         </AnimatePresence>
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-background/10 opacity-60" />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-transparent to-background/40 opacity-60" />
 
-      {!isVideoMode && (
-        <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-2 sm:bottom-8">
-          {SLIDES.map((item, index) => (
-            <button
-              key={item.src}
-              type="button"
-              aria-label={`Mostrar diapositiva ${index + 1}`}
-              onClick={() => setSlide(index)}
-              className={`h-1.5 rounded-none transition-all duration-300 ${
-                index === slide
-                  ? "w-6 bg-foreground"
-                  : "w-1.5 bg-foreground/40 hover:bg-foreground/70"
-              }`}
-            />
-          ))}
-        </div>
-      )}
-
-      <button
-        type="button"
-        aria-label="Desplazarse al inventario"
-        onClick={() =>
-          document
-            .getElementById("inventory")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" })
-        }
-        className="absolute bottom-6 right-6 z-10 sm:bottom-8 sm:right-8"
-      >
-        <motion.span
-          animate={{ opacity: [1, 0.25, 1] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="flex h-10 w-10 items-center justify-center rounded-none bg-white text-black"
-        >
-          <ChevronDown size={18} />
-        </motion.span>
-      </button>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background to-transparent" />
 
       <motion.div
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
-        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-4 px-3 pb-16 pt-14 sm:gap-6 sm:px-6 sm:pb-36 sm:pt-24 lg:px-8"
+        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-end justify-between gap-6 px-3 pb-6 sm:flex-row sm:px-6 sm:pb-10 lg:px-8"
       >
+        <div className="flex flex-col gap-4 sm:gap-6">
+          <motion.p
+            variants={fadeUp}
+            className="text-[0.9rem] font-medium text-white"
+          >
+            Inventario certificado · Entrega a nivel nacional
+          </motion.p>
+
+          <motion.h1
+            variants={fadeUp}
+            className="text-balance max-w-3xl font-heading text-3xl font-normal leading-[1.02] tracking-tight text-foreground sm:text-6xl sm:leading-[0.98] lg:text-[5.25rem]"
+          >
+            Encuentra tu Próxima Máquina
+          </motion.h1>
+        </div>
+
         <motion.p
           variants={fadeUp}
-          className="text-[0.9rem] font-medium text-muted"
-        >
-          Inventario certificado · Entrega a nivel nacional
-        </motion.p>
-
-        <motion.h1
-          variants={fadeUp}
-          className="text-balance max-w-3xl font-heading text-3xl font-normal leading-[1.02] tracking-tight text-foreground sm:text-6xl sm:leading-[0.98] lg:text-[5.25rem]"
-        >
-          Encuentra tu Próxima Máquina de Precisión
-        </motion.h1>
-
-        <motion.p
-          variants={fadeUp}
-          className="hidden max-w-xl text-lg leading-relaxed text-muted sm:block"
+          className="hidden max-w-xs text-lg leading-relaxed text-black sm:block"
         >
           Una colección curada de sedanes, SUVs y vehículos de alto
           rendimiento — inspeccionados, certificados y entregados en tu puerta.
         </motion.p>
+
+        {!isVideoMode && (
+          <motion.div variants={fadeUp} className="flex gap-2">
+            {SLIDES.map((item, index) => (
+              <button
+                key={item.src}
+                type="button"
+                aria-label={`Mostrar diapositiva ${index + 1}`}
+                onClick={() => setSlide(index)}
+                className={`h-1.5 rounded-none transition-all duration-300 ${
+                  index === slide
+                    ? "w-6 bg-foreground"
+                    : "w-1.5 bg-foreground/40 hover:bg-foreground/70"
+                }`}
+              />
+            ))}
+          </motion.div>
+        )}
       </motion.div>
     </section>
   );

@@ -12,6 +12,7 @@
   --border-strong: rgba(255, 255, 255, 0.14);
   --accent: #f4f4f3;
   --accent-foreground: #0a0a0b;
+  --scrim-rgb: 0 0 0;
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
@@ -30,6 +31,7 @@
   --border-strong: rgba(10, 10, 11, 0.14);
   --accent: #0a0a0b;
   --accent-foreground: #fafafa;
+  --scrim-rgb: 255 255 255;
 }
 
 @theme inline {
