@@ -9,37 +9,45 @@ export async function resizeImageFile(file: File): Promise<File> {
     return file;
   }
 
-  const bitmap = await createImageBitmap(file);
-  let { width, height } = bitmap;
+  // Never let a decode/encode failure (unsupported format like HEIC, a
+  // corrupted file, a browser without canvas support) block the upload —
+  // fall back to the original file so the user's upload still goes through.
+  try {
+    const bitmap = await createImageBitmap(file);
+    let { width, height } = bitmap;
 
-  if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-    const scale = MAX_DIMENSION / Math.max(width, height);
-    width = Math.round(width * scale);
-    height = Math.round(height * scale);
-  }
+    if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+      const scale = MAX_DIMENSION / Math.max(width, height);
+      width = Math.round(width * scale);
+      height = Math.round(height * scale);
+    }
 
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return file;
-  ctx.drawImage(bitmap, 0, 0, width, height);
-  bitmap.close();
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
 
-  let quality = 0.92;
-  let blob = await canvasToBlob(canvas, quality);
+    let quality = 0.92;
+    let blob = await canvasToBlob(canvas, quality);
 
-  while (blob && blob.size > MAX_BYTES && quality > 0.4) {
-    quality -= 0.1;
-    blob = await canvasToBlob(canvas, quality);
-  }
+    while (blob && blob.size > MAX_BYTES && quality > 0.4) {
+      quality -= 0.1;
+      blob = await canvasToBlob(canvas, quality);
+    }
 
-  if (!blob || blob.size >= file.size) {
+    if (!blob || blob.size >= file.size) {
+      return file;
+    }
+
+    const newName = file.name.replace(/\.\w+$/, "") + ".jpg";
+    return new File([blob], newName, { type: "image/jpeg" });
+  } catch (err) {
+    console.error("resizeImageFile failed, uploading original file:", err);
     return file;
   }
-
-  const newName = file.name.replace(/\.\w+$/, "") + ".jpg";
-  return new File([blob], newName, { type: "image/jpeg" });
 }
 
 function canvasToBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob | null> {

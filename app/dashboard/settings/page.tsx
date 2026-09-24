@@ -26,7 +26,8 @@ export default function SettingsPage() {
       await updateSiteSettings({ heroVideoUrl: url, heroMode: "video" });
     } catch (err) {
       console.error("uploadHeroVideo failed:", err);
-      setError("No se pudo subir el video. Intenta de nuevo.");
+      const message = err instanceof Error ? err.message : String(err);
+      setError(`No se pudo subir el video: ${message}`);
     } finally {
       setUploading(false);
     }
@@ -39,15 +40,25 @@ export default function SettingsPage() {
   const handleSlideshowUpload = async (files: FileList) => {
     setUploadingImages(true);
     setImagesError(null);
-    try {
-      const urls = await Promise.all(Array.from(files).map((file) => uploadHeroSlideshowImage(file)));
+    const results = await Promise.allSettled(
+      Array.from(files).map((file) => uploadHeroSlideshowImage(file)),
+    );
+    const urls = results
+      .filter((result): result is PromiseFulfilledResult<string> => result.status === "fulfilled")
+      .map((result) => result.value);
+    const failures = results.filter((result) => result.status === "rejected") as PromiseRejectedResult[];
+
+    if (urls.length > 0) {
       await updateSiteSettings({ heroSlideshowImages: [...settings.heroSlideshowImages, ...urls] });
-    } catch (err) {
-      console.error("uploadHeroSlideshowImage failed:", err);
-      setImagesError("No se pudieron subir las imágenes. Intenta de nuevo.");
-    } finally {
-      setUploadingImages(false);
     }
+    if (failures.length > 0) {
+      console.error("uploadHeroSlideshowImage failed:", failures.map((f) => f.reason));
+      const message = failures[0].reason instanceof Error ? failures[0].reason.message : String(failures[0].reason);
+      setImagesError(
+        `No se ${failures.length === 1 ? "pudo subir 1 imagen" : `pudieron subir ${failures.length} imágenes`}: ${message}`,
+      );
+    }
+    setUploadingImages(false);
   };
 
   const handleRemoveSlideshowImage = async (url: string) => {
