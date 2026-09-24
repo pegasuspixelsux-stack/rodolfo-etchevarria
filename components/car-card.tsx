@@ -59,6 +59,7 @@ export type CardLayout = "split" | "portrait";
 export function CarCard({
   car,
   layout = "portrait",
+  mobileList = false,
   previewLiftPercent = 0,
   previewImageShiftPercent = 0,
   previewSplitLayout = false,
@@ -74,6 +75,10 @@ export function CarCard({
 }: {
   car: Car;
   layout?: CardLayout;
+  /** Row layout (square image on the left, text on the right) below the `md` breakpoint;
+   * reverts to the normal vertical card at `md` and above regardless of this flag. Meant
+   * for the inventory grid's mobile one-column view. */
+  mobileList?: boolean;
   /** Shifts the bottom text block up by this many percent of the card's height.
    * Only meant for the dashboard's "Estilo Card" IG preview — leave at 0 everywhere else. */
   previewLiftPercent?: number;
@@ -186,7 +191,7 @@ export function CarCard({
               Precio {currency.format(car.price)}
             </p>
             <div className="text-right sm:text-left">
-              <p className="text-[1.3rem] font-semibold leading-none text-blue-500">
+              <p className="text-[1.3rem] font-semibold leading-none text-foreground">
                 {currency.format(estimateMonthlyPayment(car.price))}
                 <span className="hidden sm:inline">/mes</span>
               </p>
@@ -289,9 +294,15 @@ export function CarCard({
   return (
     <motion.article
       variants={fadeUp}
-      className="@container group relative flex flex-col overflow-hidden rounded-none bg-surface-2"
+      className={`@container group relative flex overflow-hidden rounded-none bg-surface-2 ${
+        mobileList ? "flex-row md:flex-col" : "flex-col"
+      }`}
     >
-      <div className="relative aspect-square w-full overflow-hidden">
+      <div
+        className={`relative aspect-square overflow-hidden ${
+          mobileList ? "w-1/2 flex-shrink-0 md:w-full" : "w-full"
+        }`}
+      >
         <Image
           src={car.image}
           alt={`${car.year} ${car.make} ${car.model} ${car.trim}`}
@@ -302,6 +313,15 @@ export function CarCard({
         <span className="pointer-events-none absolute right-[3cqw] top-[3cqw] z-10 flex h-[clamp(24px,10cqw,36px)] w-[clamp(24px,10cqw,36px)] items-center justify-center bg-black/70 text-white">
           <ArrowUpRight size={16} className="h-[45%] w-[45%]" />
         </span>
+        {mobileList && (
+          <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-1 bg-black/80 px-2 py-1 text-white md:hidden">
+            <span className="min-w-0 truncate text-[0.6rem] leading-none [font-family:var(--font-script)]">{DEALER_NAME}</span>
+            <span className="flex shrink-0 items-center gap-0.5 text-[0.5rem] font-medium leading-none">
+              <Phone className="h-2.5 w-2.5 flex-shrink-0" />
+              {DEALER_PHONE}
+            </span>
+          </div>
+        )}
       </div>
 
       <Link
@@ -310,7 +330,11 @@ export function CarCard({
         className="absolute inset-0 z-20"
       />
 
-      <div className="flex h-[clamp(16px,7cqw,24px)] items-center justify-between gap-2 bg-black px-[3cqw] text-white">
+      <div
+        className={`h-[clamp(16px,7cqw,24px)] items-center justify-between gap-2 bg-black px-[3cqw] text-white ${
+          mobileList ? "hidden md:flex" : "flex"
+        }`}
+      >
         <span className="truncate text-[clamp(0.65rem,4cqw,0.95rem)] leading-none [font-family:var(--font-script)]">{DEALER_NAME}</span>
         <span className="flex shrink-0 items-center gap-1 text-[clamp(0.45rem,3cqw,0.65rem)] font-medium">
           <Phone className="h-[1em] w-[1em]" />
@@ -318,12 +342,24 @@ export function CarCard({
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-[2cqw] bg-surface-2 p-[clamp(0.5rem,4cqw,1.25rem)] text-foreground">
-        <p className="text-center text-[clamp(0.85rem,7cqw,1.75rem)] font-semibold leading-tight">
+      <div
+        className={`@container flex flex-1 flex-col gap-[2cqw] bg-surface-2 p-[clamp(0.5rem,4cqw,1.25rem)] text-foreground ${
+          mobileList ? "justify-center md:justify-start" : "justify-start"
+        }`}
+      >
+        <p
+          className={`text-[clamp(0.85rem,7cqw,1.75rem)] font-semibold leading-tight ${
+            mobileList ? "text-left md:text-center" : "text-center"
+          }`}
+        >
           {car.year} {car.make} {car.model}
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/70">
+        <div
+          className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/70 ${
+            mobileList ? "justify-start md:justify-center" : "justify-center"
+          }`}
+        >
           <span className="flex items-center gap-1">
             <span
               className="h-[1em] w-[1em] flex-shrink-0 rounded-none border border-foreground/20"
@@ -347,7 +383,7 @@ export function CarCard({
           <p className="whitespace-nowrap text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/60">
             Precio {currency.format(car.price)}
           </p>
-          <p className="text-[clamp(1.1rem,8.5cqw,2.1rem)] font-semibold leading-none text-black">
+          <p className="text-[clamp(1.1rem,8.5cqw,2.1rem)] font-semibold leading-none text-foreground">
             {currency.format(estimateMonthlyPayment(car.price))}
             <span className="text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/70">/mes</span>
           </p>

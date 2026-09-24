@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
+import { Rows, Grid2x2 } from "lucide-react";
 import { CarCard } from "@/components/car-card";
 import { useInventory } from "@/lib/firebase/inventory";
 import { fadeUp, staggerContainer } from "@/lib/motion";
@@ -13,6 +14,20 @@ import {
 } from "@/components/showroom/showroom-filters";
 
 const PAGE_SIZE = 12;
+const MOBILE_PAGE_SIZE = 6;
+const MOBILE_BREAKPOINT = "(max-width: 767px)";
+
+function subscribeToMobileBreakpoint(callback: () => void) {
+  const mql = window.matchMedia(MOBILE_BREAKPOINT);
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+}
+function getIsMobileSnapshot() {
+  return window.matchMedia(MOBILE_BREAKPOINT).matches;
+}
+function getIsMobileServerSnapshot() {
+  return false;
+}
 
 const DEFAULT_STATE: ShowroomFilterState = {
   search: "",
@@ -46,7 +61,15 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
   );
 
   const [filters, setFilters] = useState<ShowroomFilterState>(DEFAULT_STATE);
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [loadedPages, setLoadedPages] = useState(1);
+  const [mobileColumns, setMobileColumns] = useState<1 | 2>(1);
+  const isMobile = useSyncExternalStore(
+    subscribeToMobileBreakpoint,
+    getIsMobileSnapshot,
+    getIsMobileServerSnapshot,
+  );
+  const pageSize = isMobile ? MOBILE_PAGE_SIZE : PAGE_SIZE;
+  const visibleCount = loadedPages * pageSize;
 
   useEffect(() => {
     if (priceBounds.max > 0 && filters.maxPrice === Infinity) {
@@ -56,12 +79,12 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
 
   const handleFilterChange = (patch: Partial<ShowroomFilterState>) => {
     setFilters((current) => ({ ...current, ...patch }));
-    setVisibleCount(PAGE_SIZE);
+    setLoadedPages(1);
   };
 
   const handleReset = () => {
     setFilters({ ...DEFAULT_STATE, maxPrice: priceBounds.max });
-    setVisibleCount(PAGE_SIZE);
+    setLoadedPages(1);
   };
 
   const filtered = useMemo(() => {
@@ -138,6 +161,35 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
             </p>
           )}
 
+          <div className="mb-4 flex items-center justify-end gap-1 border border-border-strong p-1 md:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileColumns(1)}
+              aria-label="Ver en una columna"
+              aria-pressed={mobileColumns === 1}
+              className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
+                mobileColumns === 1
+                  ? "bg-foreground text-accent-foreground"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              <Rows size={15} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileColumns(2)}
+              aria-label="Ver en dos columnas"
+              aria-pressed={mobileColumns === 2}
+              className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
+                mobileColumns === 2
+                  ? "bg-foreground text-accent-foreground"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              <Grid2x2 size={15} />
+            </button>
+          </div>
+
           {!loading && filtered.length === 0 && !error && (
             <div className="flex min-h-[300px] flex-col items-center justify-center gap-2 rounded-none border border-dashed border-border-strong text-center">
               <p className="text-[1rem] font-medium text-foreground">
@@ -154,11 +206,13 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
-            className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3"
+            className={`grid gap-3 sm:gap-6 lg:grid-cols-3 ${
+              mobileColumns === 1 ? "grid-cols-1" : "grid-cols-2"
+            }`}
           >
             {!loading &&
               visibleCars.map((car) => (
-                <CarCard key={car.id} car={car} layout="portrait" />
+                <CarCard key={car.id} car={car} layout="portrait" mobileList={mobileColumns === 1} />
               ))}
           </motion.div>
 
@@ -166,7 +220,7 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
             <div className="mt-10 flex justify-center">
               <button
                 type="button"
-                onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+                onClick={() => setLoadedPages((count) => count + 1)}
                 className="inline-flex h-11 items-center rounded-none border border-border-strong px-6 text-[0.85rem] font-medium text-foreground transition-colors duration-200 hover:border-foreground/40"
               >
                 Cargar más vehículos

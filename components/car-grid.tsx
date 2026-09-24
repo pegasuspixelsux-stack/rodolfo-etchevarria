@@ -33,12 +33,12 @@ export function CarGrid({ initialCars }: { initialCars?: InventoryItem[] }) {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="mb-12 hidden items-end justify-between gap-6 md:flex"
+          className="mb-8 flex flex-col items-start gap-2 md:mb-12 md:flex-row md:items-end md:justify-between md:gap-6"
         >
           <h2 className="font-heading text-2xl font-normal tracking-tight text-foreground sm:text-4xl">
             Selección Premium
           </h2>
-          <p className="max-w-md text-right text-[0.95rem] text-muted">
+          <p className="max-w-md text-left text-[0.95rem] text-muted md:text-right">
             Vehículos seleccionados a mano, cada uno inspeccionado y
             certificado antes de llegar a ti.
           </p>
@@ -106,7 +106,7 @@ export function CarGrid({ initialCars }: { initialCars?: InventoryItem[] }) {
           }`}
         >
           {!loading && visibleCars.map((car) => (
-            <CarCard key={car.id} car={car} layout="portrait" />
+            <CarCard key={car.id} car={car} layout="portrait" mobileList={mobileColumns === 1} />
           ))}
         </motion.div>
 

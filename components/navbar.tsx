@@ -49,7 +49,7 @@ export function Navbar() {
       <nav className="mx-auto flex h-18 max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link
           href="/"
-          className="text-[2.85rem] leading-none tracking-tight text-foreground [font-family:var(--font-script)]"
+          className="text-[2rem] leading-none tracking-tight text-foreground [font-family:var(--font-script)]"
         >
           Rodolfo Etchevarria
         </Link>
