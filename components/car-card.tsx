@@ -233,6 +233,7 @@ export function CarCard({
         style={{
           textShadow: "0 1px 6px rgba(0,0,0,0.6)",
           ...(previewSafeTopPercent ? { top: `${previewSafeTopPercent}%` } : undefined),
+          ...(previewSplitLayout ? { fontSize: "2.16rem" } : undefined), // -10% off @[220px]:text-[2.4rem]
         }}
       >
         Rodolfo Etchevarria
@@ -258,15 +259,23 @@ export function CarCard({
 
       <div
         className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5"
-        style={previewLiftPercent ? { bottom: `${previewLiftPercent}%` } : undefined}
+        style={{
+          ...(previewLiftPercent ? { bottom: `${previewLiftPercent}%` } : undefined),
+          ...(previewSplitLayout
+            ? { paddingLeft: "calc(16px + 4%)", paddingRight: "calc(16px + 4%)", gap: "4px" }
+            : undefined),
+        }}
       >
         <div style={previewSplitLayout ? { marginTop: "11px" } : undefined}>
-          <h3 className="font-heading text-[1.05rem] font-normal leading-tight text-white @[220px]:text-[1.575rem]">
+          <h3
+            className="font-heading text-[1.05rem] font-normal leading-tight text-white @[220px]:text-[1.575rem]"
+            style={previewSplitLayout ? { lineHeight: 1.05 } : undefined}
+          >
             {car.make} {car.model}
           </h3>
           <div
             className="mt-0.5 flex items-center gap-1.5 text-[0.68rem] text-white/70 @[220px]:text-[0.8rem]"
-            style={previewSplitLayout ? { marginTop: "12px" } : undefined}
+            style={previewSplitLayout ? { marginTop: "12px", lineHeight: 1.15 } : undefined}
           >
             <span
               className="h-3 w-3 flex-shrink-0 rounded-none border border-white/40"
@@ -279,7 +288,10 @@ export function CarCard({
         </div>
 
         {shortDescription && (
-          <p className="hidden line-clamp-2 text-[0.78rem] leading-snug text-white/70 @[220px]:block">
+          <p
+            className="hidden line-clamp-2 text-[0.78rem] leading-snug text-white/70 @[220px]:block"
+            style={previewSplitLayout ? { lineHeight: 1.1 } : undefined}
+          >
             {shortDescription}
           </p>
         )}
@@ -297,7 +309,10 @@ export function CarCard({
           </div>
         )}
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.65rem] text-white/70 @[220px]:text-[0.75rem]">
+        <div
+          className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.65rem] text-white/70 @[220px]:text-[0.75rem]"
+          style={previewSplitLayout ? { lineHeight: 1.15 } : undefined}
+        >
           <div className="flex items-center gap-1.5">
             <Calendar size={12} />
             <span>{car.year}</span>
@@ -327,7 +342,10 @@ export function CarCard({
             <span className="text-[0.65rem] font-normal text-white/70 @[220px]:text-[0.75rem]">/mes</span>
           </p>
         </div>
-        <p className="hidden text-[0.62rem] leading-snug text-white/40 @[220px]:block">
+        <p
+          className="hidden text-[0.62rem] leading-snug text-white/40 @[220px]:block"
+          style={previewSplitLayout ? { lineHeight: 1.1 } : undefined}
+        >
           {CARD_PAYMENT_DISCLAIMER}
         </p>
       </div>
