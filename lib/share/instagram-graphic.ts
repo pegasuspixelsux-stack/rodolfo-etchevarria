@@ -235,12 +235,23 @@ function bottomAlignedBaseline(
   return rowBottom - descent;
 }
 
+// Instagram re-crops a 9:16 image posted to the FEED (as opposed to an actual Story/Reel)
+// down to roughly 4:5, centered, silently cutting off the top and bottom. Everything that
+// matters — the watermark, the whole text block — has to live inside that centered 4:5
+// "safe area", not just inside the full 9:16 canvas, or Instagram's own feed crop clips it.
+const SAFE_CROP_HEIGHT_TO_WIDTH = 5 / 4;
+
 function drawCardPresetContent(
   ctx: CanvasRenderingContext2D,
   { width, height, item }: { width: number; height: number; item: Car },
 ) {
   const scale = width / CARD_PREVIEW_WIDTH;
   const rem = (value: number) => value * 16 * scale;
+  const PAD = rem(1); // p-4 = 16px = 1rem
+
+  const safeHeight = width * SAFE_CROP_HEIGHT_TO_WIDTH;
+  const safeTop = (height - safeHeight) / 2;
+  const safeBottom = safeTop + safeHeight;
 
   // Gradient: rgba(0,0,0,0.92) solid from the bottom up to 43% of the height, fading to
   // transparent by 68% — the CarCard stops boosted +10%, matching the "Estilo Card"/
@@ -252,7 +263,8 @@ function drawCardPresetContent(
   ctx.fillStyle = gradient;
   ctx.fillRect(0, height * 0.32, width, height - height * 0.32);
 
-  // Watermark: absolute top-3 (12px), text-[2.4rem] at this container width.
+  // Watermark: pinned just inside the safe area's top edge (not the canvas's own top-3),
+  // so Instagram's feed crop never clips it.
   const scriptFont = getScriptFontFamily();
   const watermarkSize = rem(2.4);
   ctx.textBaseline = "alphabetic";
@@ -261,7 +273,7 @@ function drawCardPresetContent(
   ctx.shadowColor = "rgba(0,0,0,0.6)";
   ctx.shadowBlur = 10 * scale;
   ctx.font = `${watermarkSize}px ${scriptFont}`;
-  ctx.fillText(DEFAULT_BRAND_NAME, width / 2, 12 * scale + ascentOf(ctx, DEFAULT_BRAND_NAME, watermarkSize));
+  ctx.fillText(DEFAULT_BRAND_NAME, width / 2, safeTop + PAD + ascentOf(ctx, DEFAULT_BRAND_NAME, watermarkSize));
   ctx.shadowColor = "transparent";
   ctx.shadowBlur = 0;
 
@@ -269,15 +281,14 @@ function drawCardPresetContent(
   const shortDescription = detail.editorial.dek;
   const options = detail.features.flatMap((group) => group.items).slice(0, 3);
 
-  // The bottom text block: absolute inset-x-0 bottom-0, top:53% / bottom:0% (split layout,
-  // no reserved lift — the trailing group sits flush against the true canvas bottom, and the
-  // top starts close enough to it that the flex-1 spacer leaves a small gap, not a dead zone),
-  // p-4 (16px) all around, flex-col gap-2 (8px) between every child.
-  const PAD = rem(1); // p-4 = 16px = 1rem
+  // The bottom text block: absolute inset-x-0 bottom-0, top:53% (split layout, leading group
+  // starts well inside the safe area already) — the trailing group's bottom sits flush
+  // against the SAFE AREA's bottom edge, not the true canvas bottom, so it survives
+  // Instagram's own feed crop. p-4 (16px) all around, flex-col gap-2 (8px) between children.
   const GAP = rem(0.5); // gap-2 = 8px = 0.5rem
   const maxTextWidth = width - PAD * 2;
   const contentTop = height * 0.53 + PAD;
-  const contentBottom = height - PAD;
+  const contentBottom = safeBottom - PAD;
 
   // --- Leading group: title, description, options, specs, divider — stacked top-down from
   // contentTop, each child separated by GAP, exactly like the flex column's natural flow. ---

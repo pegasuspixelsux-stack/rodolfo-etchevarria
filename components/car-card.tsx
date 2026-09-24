@@ -54,6 +54,7 @@ export function CarCard({
   previewHideInstagramIcon = false,
   previewCenterWatermark = false,
   previewSplitLayout = false,
+  previewSafeTopPercent = 0,
 }: {
   car: Car;
   layout?: CardLayout;
@@ -76,6 +77,11 @@ export function CarCard({
    * price row down to the very bottom, leaving a gap above it — for the Instagram post
    * heading/caption area. Only meant for the dashboard's "Estilo Card" IG preview. */
   previewSplitLayout?: boolean;
+  /** Pins the watermark's top edge this many percent down from the card's own top, instead
+   * of the fixed top-3 — Instagram re-crops a 9:16 feed image to ~4:5 centered, so anything
+   * inside its own top-3 gets clipped. Only meant for the dashboard's "Estilo Card" IG
+   * preview — leave at 0 everywhere else. */
+  previewSafeTopPercent?: number;
 }) {
   const FuelIcon = car.fuelType === "Electric" ? Zap : Fuel;
   const detail = carDetails[car.id] ?? buildFallbackDetail(car);
@@ -224,7 +230,10 @@ export function CarCard({
         className={`absolute top-3 z-10 whitespace-nowrap text-[1.3rem] tracking-tight text-white [font-family:var(--font-script)] @[220px]:text-[2.4rem] ${
           previewCenterWatermark ? "left-1/2 -translate-x-1/2" : "left-3"
         }`}
-        style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}
+        style={{
+          textShadow: "0 1px 6px rgba(0,0,0,0.6)",
+          ...(previewSafeTopPercent ? { top: `${previewSafeTopPercent}%` } : undefined),
+        }}
       >
         Rodolfo Etchevarria
       </span>
