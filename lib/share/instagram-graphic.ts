@@ -206,15 +206,42 @@ function getScriptFontFamily(): string {
  * price stacked bottom-left. No logo, no disclaimer, no footer stripe — this preset IS
  * the card, not a separate dealer-branded template.
  */
+// The live CarCard is measured at a 320px-wide rendered box (the dashboard preview's own
+// container width) — every size below is a CSS px value taken straight from car-card.tsx's
+// classes at that width's active container-query tier (@[220px], not @[380px]), multiplied
+// by this scale to land at the correct spot on the 1080-wide export canvas. Using one scale
+// derived from real DOM measurements (not hand-picked canvas px) is what keeps this in sync.
+const CARD_PREVIEW_WIDTH = 320;
+const CARD_BODY_FONT = "Geist, system-ui, sans-serif";
+const CARD_HEADING_FONT = "Inter, system-ui, sans-serif";
+
+// Baseline = (top of the line-height box) + measured ascent — this is exact regardless of
+// font metrics, matching how drawBottomBlock already anchors the "classic" preset's text.
+function ascentOf(ctx: CanvasRenderingContext2D, text: string, fontSizePx: number): number {
+  return ctx.measureText(text).actualBoundingBoxAscent || fontSizePx * 0.75;
+}
+
+// For a flex row aligned with `items-end`, every child's box BOTTOM lines up at `rowBottom`
+// regardless of its own line-height — so its baseline sits rowBottom minus its own descent.
+function bottomAlignedBaseline(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  fontSizePx: number,
+  lineHeightMultiplier: number,
+  rowBottom: number,
+): number {
+  const lineHeight = fontSizePx * lineHeightMultiplier;
+  const descent = lineHeight - ascentOf(ctx, text, fontSizePx);
+  return rowBottom - descent;
+}
+
 function drawCardPresetContent(
   ctx: CanvasRenderingContext2D,
-  {
-    width,
-    height,
-    item,
-    instagramHandle,
-  }: { width: number; height: number; item: Car; instagramHandle: string },
+  { width, height, item }: { width: number; height: number; item: Car },
 ) {
+  const scale = width / CARD_PREVIEW_WIDTH;
+  const rem = (value: number) => value * 16 * scale;
+
   // Gradient: rgba(0,0,0,0.92) solid from the bottom up to 43% of the height, fading to
   // transparent by 68% — the CarCard stops boosted +10%, matching the "Estilo Card"/
   // "IG Portrait" preview's previewGradientBoostPercent.
@@ -225,61 +252,85 @@ function drawCardPresetContent(
   ctx.fillStyle = gradient;
   ctx.fillRect(0, height * 0.32, width, height - height * 0.32);
 
+  // Watermark: absolute top-3 (12px), text-[2.4rem] at this container width.
   const scriptFont = getScriptFontFamily();
+  const watermarkSize = rem(2.4);
   ctx.textBaseline = "alphabetic";
   ctx.textAlign = "center";
   ctx.fillStyle = "#ffffff";
   ctx.shadowColor = "rgba(0,0,0,0.6)";
-  ctx.shadowBlur = 10;
-  ctx.font = `84px ${scriptFont}`;
-  ctx.fillText(DEFAULT_BRAND_NAME, width / 2, PADDING + 72);
+  ctx.shadowBlur = 10 * scale;
+  ctx.font = `${watermarkSize}px ${scriptFont}`;
+  ctx.fillText(DEFAULT_BRAND_NAME, width / 2, 12 * scale + ascentOf(ctx, DEFAULT_BRAND_NAME, watermarkSize));
   ctx.shadowColor = "transparent";
   ctx.shadowBlur = 0;
 
   const detail = carDetails[item.id] ?? buildFallbackDetail(item);
   const shortDescription = detail.editorial.dek;
   const options = detail.features.flatMap((group) => group.items).slice(0, 3);
-  const maxTextWidth = width - PADDING * 2;
 
-  // --- Top group: title, specs, options, description — drawn top-down starting 45% down
-  // the canvas, matching the live preview's split-layout `top: 45%` anchor. ---
-  let topY = height * 0.45;
+  // The bottom text block: absolute inset-x-0 bottom-0, top:53% / bottom:0% (split layout,
+  // no reserved lift — the trailing group sits flush against the true canvas bottom, and the
+  // top starts close enough to it that the flex-1 spacer leaves a small gap, not a dead zone),
+  // p-4 (16px) all around, flex-col gap-2 (8px) between every child.
+  const PAD = rem(1); // p-4 = 16px = 1rem
+  const GAP = rem(0.5); // gap-2 = 8px = 0.5rem
+  const maxTextWidth = width - PAD * 2;
+  const contentTop = height * 0.53 + PAD;
+  const contentBottom = height - PAD;
 
-  ctx.font = "700 68px system-ui, sans-serif";
+  // --- Leading group: title, description, options, specs, divider — stacked top-down from
+  // contentTop, each child separated by GAP, exactly like the flex column's natural flow. ---
+  let topY = contentTop;
+
+  const titleSize = rem(1.575); // font-heading @[220px]:text-[1.575rem], font-normal
+  const titleLineHeight = titleSize * 1.25; // leading-tight
+  ctx.font = `400 ${titleSize}px ${CARD_HEADING_FONT}`;
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "left";
-  ctx.fillText(`${item.make} ${item.model}`, PADDING, topY);
-  topY += 16;
+  const titleLines = wrapText(ctx, `${item.make} ${item.model}`, maxTextWidth).slice(0, 2);
+  titleLines.forEach((line) => {
+    ctx.fillText(line, PAD, topY + ascentOf(ctx, line, titleSize));
+    topY += titleLineHeight;
+  });
 
-  ctx.font = "600 26px system-ui, sans-serif";
+  topY += 2 * scale; // mt-0.5
+  const colorSize = rem(0.8); // @[220px]:text-[0.8rem]
+  const colorLineHeight = colorSize * 1.5; // leading-normal
+  ctx.font = `400 ${colorSize}px ${CARD_BODY_FONT}`;
   ctx.fillStyle = "rgba(255,255,255,0.7)";
   const bodyLabel = BODY_TYPE_LABELS[item.bodyType] ?? item.bodyType;
-  topY += 26;
-  ctx.fillText(`${item.color}  ·  ${bodyLabel}`, PADDING, topY);
-  topY += 20;
+  const colorText = `${item.color}  ·  ${bodyLabel}`;
+  ctx.fillText(colorText, PAD, topY + ascentOf(ctx, colorText, colorSize));
+  topY += colorLineHeight + GAP;
 
   if (shortDescription) {
-    ctx.font = "400 26px system-ui, sans-serif";
-    const descriptionLines = wrapText(ctx, shortDescription, maxTextWidth).slice(0, 2);
+    const descSize = rem(0.78); // text-[0.78rem], no @ variant
+    const descLineHeight = descSize * 1.375; // leading-snug
+    ctx.font = `400 ${descSize}px ${CARD_BODY_FONT}`;
     ctx.fillStyle = "rgba(255,255,255,0.7)";
-    descriptionLines.forEach((line, i) => {
-      topY += 26 + (i > 0 ? 34 - 26 : 0);
-      ctx.fillText(line, PADDING, topY);
+    const descriptionLines = wrapText(ctx, shortDescription, maxTextWidth).slice(0, 2);
+    descriptionLines.forEach((line) => {
+      ctx.fillText(line, PAD, topY + ascentOf(ctx, line, descSize));
+      topY += descLineHeight;
     });
-    topY += 20;
+    topY += GAP;
   }
 
   if (options.length > 0) {
-    ctx.font = "500 22px system-ui, sans-serif";
-    const chipPaddingX = 18;
-    const chipHeight = 44;
-    const chipGap = 12;
+    const chipSize = rem(0.68); // text-[0.68rem]
+    const chipPaddingX = rem(0.5); // px-2
+    const chipPaddingY = rem(0.125); // py-0.5
+    const chipBorder = 1 * scale;
+    const chipGap = rem(0.375); // gap-1.5, both axes
+    const chipLineHeight = chipSize * 1.5;
+    const chipHeight = chipLineHeight + chipPaddingY * 2 + chipBorder * 2;
+    ctx.font = `400 ${chipSize}px ${CARD_BODY_FONT}`;
     type ChipRow = { text: string; width: number }[];
     const rows: ChipRow[] = [[]];
     let rowWidth = 0;
     for (const option of options) {
-      const textWidth = ctx.measureText(option).width;
-      const chipWidth = textWidth + chipPaddingX * 2;
+      const chipWidth = ctx.measureText(option).width + chipPaddingX * 2 + chipBorder * 2;
       if (rowWidth + chipWidth > maxTextWidth && rows[rows.length - 1].length > 0) {
         rows.push([]);
         rowWidth = 0;
@@ -288,74 +339,84 @@ function drawCardPresetContent(
       rowWidth += chipWidth + chipGap;
     }
     for (const row of rows) {
-      let chipX = PADDING;
+      let chipX = PAD;
       for (const chip of row) {
-        ctx.strokeStyle = "rgba(255,255,255,0.25)";
-        ctx.lineWidth = 1.5;
+        ctx.fillStyle = "rgba(255,255,255,0.1)";
+        ctx.fillRect(chipX, topY, chip.width, chipHeight);
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.lineWidth = chipBorder;
         ctx.strokeRect(chipX, topY, chip.width, chipHeight);
-        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.fillStyle = "rgba(255,255,255,0.8)";
         ctx.textAlign = "left";
-        ctx.fillText(chip.text, chipX + chipPaddingX, topY + chipHeight / 2 + 8);
+        ctx.fillText(chip.text, chipX + chipPaddingX, topY + chipPaddingY + ascentOf(ctx, chip.text, chipSize));
         chipX += chip.width + chipGap;
       }
       topY += chipHeight + chipGap;
     }
-    topY += 8;
+    topY += GAP - chipGap;
   }
 
-  ctx.font = "500 26px system-ui, sans-serif";
+  const specsSize = rem(0.75); // @[220px]:text-[0.75rem]
+  const specsLineHeight = specsSize * 1.5;
+  ctx.font = `400 ${specsSize}px ${CARD_BODY_FONT}`;
   ctx.fillStyle = "rgba(255,255,255,0.7)";
   ctx.textAlign = "left";
   const fuelLabel = FUEL_TYPE_LABELS[item.fuelType] ?? item.fuelType;
-  const specsText = `${item.year}   ${mileageFormat.format(item.mileage)} km   ${fuelLabel}`;
-  topY += 26;
-  ctx.fillText(specsText, PADDING, topY);
-  topY += 28;
+  const specsText = `${item.year}    ${mileageFormat.format(item.mileage)} km    ${fuelLabel}`;
+  ctx.fillText(specsText, PAD, topY + ascentOf(ctx, specsText, specsSize));
+  topY += specsLineHeight + GAP;
 
-  // Divider line, right below the top block — matches the live preview's moved divider.
+  // Divider: border-t (1px) + pt-2 (8px) — its own row in the flex column.
   ctx.strokeStyle = "rgba(255,255,255,0.15)";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 1 * scale;
   ctx.beginPath();
-  ctx.moveTo(PADDING, topY);
-  ctx.lineTo(width - PADDING, topY);
+  ctx.moveTo(PAD, topY);
+  ctx.lineTo(width - PAD, topY);
   ctx.stroke();
 
-  // --- Bottom group: CTA, disclaimer, price row — drawn bottom-up, anchored to the true
-  // canvas bottom, independent of how tall the top group ended up. ---
-  const ctaBaselineY = height - PADDING;
-  ctx.font = "600 24px system-ui, sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.textAlign = "center";
-  ctx.fillText(`Visítanos ${instagramHandle}   •   Link en la bio`, width / 2, ctaBaselineY);
-
-  ctx.font = "400 20px system-ui, sans-serif";
+  // --- Trailing group: price row, disclaimer — stacked bottom-up, anchored to contentBottom
+  // (the block's own bottom edge, i.e. true canvas bottom minus the 10% preview lift minus
+  // padding), matching the live preview's flex-1 spacer pushing these two rows to the floor. ---
+  const disclaimerSize = rem(0.62);
+  const disclaimerLineHeight = disclaimerSize * 1.375; // leading-snug
+  ctx.font = `400 ${disclaimerSize}px ${CARD_BODY_FONT}`;
   const disclaimerLines = wrapText(ctx, CARD_PAYMENT_DISCLAIMER, maxTextWidth).slice(0, 2);
-  ctx.fillStyle = "rgba(255,255,255,0.45)";
-  ctx.textAlign = "center";
-  const disclaimerLastBaselineY = ctaBaselineY - 34 - 20;
-  disclaimerLines.forEach((line, i) => {
-    ctx.fillText(line, width / 2, disclaimerLastBaselineY - (disclaimerLines.length - 1 - i) * 26);
-  });
-  const priceBaselineY = disclaimerLastBaselineY - disclaimerLines.length * 26 - 40;
-
-  const monthlyText = currency.format(estimateCardMonthlyPayment(item.price));
-  ctx.font = "400 26px system-ui, sans-serif";
-  const mesWidth = ctx.measureText("/mes").width;
-
-  ctx.font = "600 44px system-ui, sans-serif";
-  ctx.fillStyle = "#60a5fa";
-  ctx.textAlign = "right";
-  ctx.fillText(monthlyText, width - PADDING - mesWidth, priceBaselineY);
-
-  ctx.font = "400 26px system-ui, sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  const disclaimerBlockTop = contentBottom - disclaimerLineHeight * disclaimerLines.length;
+  ctx.fillStyle = "rgba(255,255,255,0.4)";
   ctx.textAlign = "left";
-  ctx.fillText("/mes", width - PADDING - mesWidth, priceBaselineY);
+  disclaimerLines.forEach((line, i) => {
+    const lineTop = disclaimerBlockTop + i * disclaimerLineHeight;
+    ctx.fillText(line, PAD, lineTop + ascentOf(ctx, line, disclaimerSize));
+  });
 
-  ctx.font = "400 26px system-ui, sans-serif";
+  const priceRowBottom = disclaimerBlockTop - GAP;
+  const priceLeftSize = rem(0.75); // @[220px]:text-[0.75rem], leading-normal
+  const priceRightSize = rem(1.8); // @[220px]:text-[1.8rem], font-semibold, leading-none
+  const priceSuffixSize = rem(0.75); // @[220px]:text-[0.75rem], font-normal
+
+  const priceLeftText = `Precio ${currency.format(item.price)}`;
+  ctx.font = `400 ${priceLeftSize}px ${CARD_BODY_FONT}`;
+  const priceLeftBaseline = bottomAlignedBaseline(ctx, priceLeftText, priceLeftSize, 1.5, priceRowBottom);
   ctx.fillStyle = "rgba(255,255,255,0.6)";
   ctx.textAlign = "left";
-  ctx.fillText(`Precio ${currency.format(item.price)}`, PADDING, priceBaselineY);
+  ctx.fillText(priceLeftText, PAD, priceLeftBaseline);
+
+  const monthlyText = currency.format(estimateCardMonthlyPayment(item.price));
+  const mesText = "/mes";
+  ctx.font = `400 ${priceSuffixSize}px ${CARD_BODY_FONT}`;
+  const mesWidth = ctx.measureText(mesText).width;
+  ctx.font = `600 ${priceRightSize}px ${CARD_BODY_FONT}`;
+  const monthlyWidth = ctx.measureText(monthlyText).width;
+  const priceRightBaseline = bottomAlignedBaseline(ctx, monthlyText, priceRightSize, 1, priceRowBottom);
+  const monthlyX = width - PAD - mesWidth - monthlyWidth;
+
+  ctx.fillStyle = "#60a5fa";
+  ctx.textAlign = "left";
+  ctx.fillText(monthlyText, monthlyX, priceRightBaseline);
+
+  ctx.font = `400 ${priceSuffixSize}px ${CARD_BODY_FONT}`;
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.fillText(mesText, width - PAD - mesWidth, priceRightBaseline);
 }
 
 // Fits an image within a box, preserving aspect ratio (equivalent to object-fit: contain).
@@ -585,7 +646,7 @@ export async function generateInstagramGraphic({
   ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
   if (preset === "card") {
-    drawCardPresetContent(ctx, { width, height, item, instagramHandle });
+    drawCardPresetContent(ctx, { width, height, item });
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (blob) resolve(blob);

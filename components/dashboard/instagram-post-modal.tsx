@@ -188,12 +188,13 @@ export function InstagramPostModal({
                   <motion.div
                     initial="visible"
                     animate="visible"
-                    className="pointer-events-none relative mx-auto aspect-[9/16] w-full max-w-[320px] max-h-[70vh] overflow-hidden"
+                    className="pointer-events-none relative mx-auto aspect-[9/16] w-auto max-w-full overflow-hidden"
+                    style={{ height: "min(70vh, 569px)" }}
                   >
                     <CarCard
                       car={item}
                       layout="portrait"
-                      previewLiftPercent={10}
+                      previewLiftPercent={0}
                       previewGradientBoostPercent={10}
                       previewImageShiftPercent={10}
                       previewHideInstagramIcon
