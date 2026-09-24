@@ -32,7 +32,11 @@ export const FORMAT_OPTIONS: {
 // Text and stripe contrast then follow automatically from that color's luminance.
 export const DEFAULT_GRADIENT_COLOR = "#000000";
 
-export const GRADIENT_INTENSITY_MIN = 40;
+// Base color for the "card" (IG Reels) preset's text — every row derives its own opacity
+// from this same color instead of each being independently white.
+export const DEFAULT_TEXT_COLOR = "#ffffff";
+
+export const GRADIENT_INTENSITY_MIN = 0; // 0% = fully transparent, i.e. no gradient at all
 export const GRADIENT_INTENSITY_MAX = 100;
 export const GRADIENT_INTENSITY_STEP = 10;
 export const GRADIENT_INTENSITY_DEFAULT = 100;
@@ -44,6 +48,15 @@ export const DEFAULT_BOTTOM_GRADIENT_PERCENT = 25;
 export const GRADIENT_HEIGHT_MIN = 5;
 export const GRADIENT_HEIGHT_MAX = 50;
 export const GRADIENT_HEIGHT_STEP = 5;
+
+// How far each of the "card" preset's two blocks is nudged from its own safe-area edge —
+// the top block up from the safe area's top, the bottom block down from the safe area's
+// bottom — as a percentage of canvas height. Positive moves further from center (more crop
+// risk); negative pulls it back in.
+export const DEFAULT_BLOCK_OFFSET_PERCENT = 5;
+export const BLOCK_OFFSET_MIN = -20;
+export const BLOCK_OFFSET_MAX = 20;
+export const BLOCK_OFFSET_STEP = 1;
 
 export const FUEL_TYPE_LABELS: Record<string, string> = {
   Gasoline: "Nafta",
@@ -254,15 +267,23 @@ function drawCardPresetContent(
     gradientIntensity = GRADIENT_INTENSITY_DEFAULT,
     topGradientPercent = DEFAULT_TOP_GRADIENT_PERCENT,
     bottomGradientPercent = DEFAULT_BOTTOM_GRADIENT_PERCENT,
+    textColor = DEFAULT_TEXT_COLOR,
+    topBlockOffsetPercent = DEFAULT_BLOCK_OFFSET_PERCENT,
+    bottomBlockOffsetPercent = DEFAULT_BLOCK_OFFSET_PERCENT,
+    titleAlign = "center",
   }: {
     width: number;
     height: number;
     item: Car;
     logoImg: HTMLImageElement;
+    topBlockOffsetPercent?: number;
+    bottomBlockOffsetPercent?: number;
+    titleAlign?: LogoPosition;
     yearMakeSizeRem?: number;
     modelSizeRem?: number;
     gradientColor?: string;
     gradientIntensity?: number;
+    textColor?: string;
     topGradientPercent?: number;
     bottomGradientPercent?: number;
   },
@@ -271,6 +292,9 @@ function drawCardPresetContent(
   const rem = (value: number) => value * 16 * scale;
   const PAD = rem(1); // p-4 = 16px = 1rem
   const PAD_X = PAD + width * 0.04; // p-4 (16px) + 4% extra side padding, generator-only
+
+  const [tr, tg, tb] = hexToRgb(textColor);
+  const textRgba = (alpha: number) => `rgba(${tr}, ${tg}, ${tb}, ${alpha})`;
 
   const safeHeight = width * SAFE_CROP_HEIGHT_TO_WIDTH;
   const safeTop = (height - safeHeight) / 2;
@@ -293,9 +317,9 @@ function drawCardPresetContent(
   ctx.fillRect(0, 0, width, height);
 
   // --- Top block: dealer logo + title, centered, pinned near the safe area's top edge
-  // (nudged 5% of the canvas height above it) — replaces the old script watermark. Title is
-  // two rows: "Year Make" then "Model" at 2x that row's font size. ---
-  const topBlockTop = safeTop - height * 0.05 + PAD;
+  // (nudged topBlockOffsetPercent of the canvas height above it) — replaces the old script
+  // watermark. Title is two rows: "Year Make" then "Model" at 2x that row's font size. ---
+  const topBlockTop = safeTop - height * (topBlockOffsetPercent / 100) + PAD;
   const logoBox = fitContain(logoImg.naturalWidth, logoImg.naturalHeight, LOGO_MAX_WIDTH, LOGO_MAX_HEIGHT);
   ctx.drawImage(logoImg, width / 2 - logoBox.width / 2, topBlockTop, logoBox.width, logoBox.height);
 
@@ -303,11 +327,10 @@ function drawCardPresetContent(
   const modelText = item.model;
   const yearMakeSize = rem(yearMakeSizeRem);
   const modelSize = rem(modelSizeRem);
+  const titleX = titleAlign === "left" ? PAD_X : titleAlign === "right" ? width - PAD_X : width / 2;
   ctx.textBaseline = "alphabetic";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "#ffffff";
-  ctx.shadowColor = "rgba(0,0,0,0.6)";
-  ctx.shadowBlur = 10 * scale;
+  ctx.textAlign = titleAlign === "left" ? "left" : titleAlign === "right" ? "right" : "center";
+  ctx.fillStyle = textRgba(1);
 
   // Uses FONT metrics (fontBoundingBox*), not glyph-ink metrics (actualBoundingBox*), for the
   // ascent/descent used to stack these two rows — "2024 BMW" has no descenders, so its ink
@@ -318,23 +341,20 @@ function drawCardPresetContent(
   const yearMakeAscent = yearMakeMetrics.fontBoundingBoxAscent || yearMakeMetrics.actualBoundingBoxAscent || yearMakeSize * 0.75;
   const yearMakeDescent = yearMakeMetrics.fontBoundingBoxDescent || yearMakeMetrics.actualBoundingBoxDescent || yearMakeSize * 0.25;
   const yearMakeY = topBlockTop + logoBox.height + rem(0.75) + yearMakeAscent;
-  ctx.fillText(yearMakeText, width / 2, yearMakeY);
+  ctx.fillText(yearMakeText, titleX, yearMakeY);
 
   ctx.font = `400 ${modelSize}px ${CARD_HEADING_FONT}`;
   const modelMetrics = ctx.measureText(modelText);
   const modelAscent = modelMetrics.fontBoundingBoxAscent || modelMetrics.actualBoundingBoxAscent || modelSize * 0.75;
   const modelY = yearMakeY + yearMakeDescent - 6 * scale + modelAscent;
-  ctx.fillText(modelText, width / 2, modelY);
-
-  ctx.shadowColor = "transparent";
-  ctx.shadowBlur = 0;
+  ctx.fillText(modelText, titleX, modelY);
 
   // --- Bottom block: price row, disclaimer — a second, independent block anchored to
   // contentBottom, which sits 5% of the canvas height below the safe area's own bottom edge
   // (matching the live preview's previewLiftPercent), so it survives Instagram's feed crop. ---
   const GAP = rem(0.25); // tightened from gap-2 (8px) to 4px, generator-only
   const maxTextWidth = width - PAD_X * 2;
-  const contentBottom = safeBottom + height * 0.05 - PAD;
+  const contentBottom = safeBottom + height * (bottomBlockOffsetPercent / 100) - PAD;
 
   const disclaimerSize = rem(0.62);
   const disclaimerLineHeight = disclaimerSize * 1.1; // leading-snug, tightened further
@@ -343,51 +363,71 @@ function drawCardPresetContent(
 
   ctx.font = `400 ${disclaimerSize}px ${CARD_BODY_FONT}`;
   const disclaimerBlockTop = contentBottom - disclaimerLineHeight * disclaimerLines.length;
-  ctx.fillStyle = "rgba(255,255,255,0.4)";
+  ctx.fillStyle = textRgba(0.4);
   ctx.textAlign = "left";
   disclaimerLines.forEach((line, i) => {
     const lineTop = disclaimerBlockTop + i * disclaimerLineHeight;
     ctx.fillText(line, PAD_X, lineTop + ascentOf(ctx, line, disclaimerSize));
   });
 
-  // Precio row: its own line, sitting GAP above the disclaimer.
-  const priceLeftSize = rem(0.75); // @[220px]:text-[0.75rem], leading-normal
-  const priceLeftLineHeight = priceLeftSize * 1.5;
+  // Precio + payment share one row: Precio is a "Precio" label above a "USD X" value,
+  // left-aligned; payment is "$X/mes", right-aligned — both bottom-aligned to the same
+  // row-bottom line, sitting GAP above the disclaimer.
   const priceRowBottom = disclaimerBlockTop - GAP;
-  const priceLeftText = `Precio ${currency.format(item.price)}`;
-  ctx.font = `400 ${priceLeftSize}px ${CARD_BODY_FONT}`;
-  const priceLeftBaseline = bottomAlignedBaseline(ctx, priceLeftText, priceLeftSize, 1.5, priceRowBottom);
-  ctx.fillStyle = "rgba(255,255,255,0.6)";
-  ctx.textAlign = "right";
-  ctx.fillText(priceLeftText, width - PAD_X, priceLeftBaseline);
-  const priceLeftTop = priceRowBottom - priceLeftLineHeight;
 
-  // Payment row: "$X/mes", sitting GAP above the Precio row.
-  const priceRightSize = rem(2.7); // 1.5x the original rem(1.8), font-normal, leading-none
+  const priceLabelSize = rem(0.75); // text-[0.75rem]
+  const priceLabelLineHeight = priceLabelSize * 1.5; // leading-normal
+  const priceValueSize = rem(0.85); // text-[0.85rem]
+  const priceValueLineHeight = priceValueSize * 1.5; // leading-normal
+  const priceValueText = `US${currency.format(item.price)}`;
+
+  ctx.font = `400 ${priceValueSize}px ${CARD_BODY_FONT}`;
+  const priceValueBaseline = bottomAlignedBaseline(ctx, priceValueText, priceValueSize, 1.5, priceRowBottom);
+  ctx.fillStyle = textRgba(1);
+  ctx.textAlign = "left";
+  ctx.fillText(priceValueText, PAD_X, priceValueBaseline);
+  const priceValueTop = priceRowBottom - priceValueLineHeight;
+
+  const priceLabelBottom = priceValueTop - rem(0.125); // gap-0.5 (2px)
+  ctx.font = `400 ${priceLabelSize}px ${CARD_BODY_FONT}`;
+  const priceLabelBaseline = bottomAlignedBaseline(ctx, "Precio", priceLabelSize, 1.5, priceLabelBottom);
+  ctx.fillStyle = textRgba(0.6);
+  ctx.fillText("Precio", PAD_X, priceLabelBaseline);
+  const priceLabelTop = priceLabelBottom - priceLabelLineHeight;
+
+  // Payment: "US$X/mes", right-aligned, bottom-aligned to the same priceRowBottom — the
+  // "US$" prefix and "/mes" suffix both render smaller than the amount itself.
+  const priceRightSize = rem(2); // font-normal, leading-none
   const priceSuffixSize = rem(0.75); // @[220px]:text-[0.75rem], font-normal
-  const paymentRowBottom = priceLeftTop - GAP;
 
-  const monthlyText = currency.format(estimateCardMonthlyPayment(item.price));
+  const usdPrefixText = "US$";
+  const monthlyText = currency.format(estimateCardMonthlyPayment(item.price)).replace("$", "");
   const mesText = "/mes";
   ctx.font = `400 ${priceSuffixSize}px ${CARD_BODY_FONT}`;
+  const usdPrefixWidth = ctx.measureText(usdPrefixText).width;
   const mesWidth = ctx.measureText(mesText).width;
   ctx.font = `400 ${priceRightSize}px ${CARD_BODY_FONT}`;
   const monthlyWidth = ctx.measureText(monthlyText).width;
-  const priceRightBaseline = bottomAlignedBaseline(ctx, monthlyText, priceRightSize, 1, paymentRowBottom);
-  const pairWidth = monthlyWidth + mesWidth;
-  const monthlyX = width - PAD_X - pairWidth;
-
-  ctx.fillStyle = "#ffffff";
-  ctx.textAlign = "left";
-  ctx.fillText(monthlyText, monthlyX, priceRightBaseline);
+  const priceRightBaseline = bottomAlignedBaseline(ctx, monthlyText, priceRightSize, 1, priceRowBottom);
+  const pairWidth = usdPrefixWidth + monthlyWidth + mesWidth;
+  const usdPrefixX = width - PAD_X - pairWidth;
 
   ctx.font = `400 ${priceSuffixSize}px ${CARD_BODY_FONT}`;
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.fillText(mesText, monthlyX + monthlyWidth, priceRightBaseline);
-  const paymentTop = paymentRowBottom - priceRightSize;
+  ctx.fillStyle = textRgba(0.7);
+  ctx.textAlign = "left";
+  ctx.fillText(usdPrefixText, usdPrefixX, priceRightBaseline);
 
-  // Divider: border-t (1px), sitting GAP above the payment row.
-  const dividerY = paymentTop - GAP;
+  ctx.font = `400 ${priceRightSize}px ${CARD_BODY_FONT}`;
+  ctx.fillStyle = textRgba(1);
+  ctx.fillText(monthlyText, usdPrefixX + usdPrefixWidth, priceRightBaseline);
+
+  ctx.font = `400 ${priceSuffixSize}px ${CARD_BODY_FONT}`;
+  ctx.fillStyle = textRgba(0.7);
+  ctx.fillText(mesText, usdPrefixX + usdPrefixWidth + monthlyWidth, priceRightBaseline);
+  const paymentTop = priceRowBottom - priceRightSize;
+
+  // Divider: border-t (1px), sitting GAP above the taller of the two columns.
+  const dividerY = Math.min(priceLabelTop, paymentTop) - GAP;
   ctx.strokeStyle = "rgba(255,255,255,0.15)";
   ctx.lineWidth = 1 * scale;
   ctx.beginPath();
@@ -581,6 +621,10 @@ export async function generateInstagramGraphic({
   modelSizeRem = DEFAULT_MODEL_SIZE_REM,
   topGradientPercent = DEFAULT_TOP_GRADIENT_PERCENT,
   bottomGradientPercent = DEFAULT_BOTTOM_GRADIENT_PERCENT,
+  textColor = DEFAULT_TEXT_COLOR,
+  topBlockOffsetPercent = DEFAULT_BLOCK_OFFSET_PERCENT,
+  bottomBlockOffsetPercent = DEFAULT_BLOCK_OFFSET_PERCENT,
+  titleAlign = "center",
 }: {
   imageSrc: string;
   logoSrc: string;
@@ -601,6 +645,16 @@ export async function generateInstagramGraphic({
   topGradientPercent?: number;
   /** Height (percent of canvas height) of the "card" preset's bottom gradient band. */
   bottomGradientPercent?: number;
+  /** Base color for the "card" preset's text (opacity-derived per row). */
+  textColor?: string;
+  /** How far (percent of canvas height) the "card" preset's top block is nudged above the
+   * safe area's top edge. */
+  topBlockOffsetPercent?: number;
+  /** How far (percent of canvas height) the "card" preset's bottom block is nudged below the
+   * safe area's bottom edge. */
+  bottomBlockOffsetPercent?: number;
+  /** Horizontal alignment of the "card" preset's top block title rows. */
+  titleAlign?: LogoPosition;
 }): Promise<Blob> {
   // "card" always renders at the CarCard's own 9:16 aspect, matching the homepage exactly —
   // the chosen format is only meaningful for the "classic" preset.
@@ -643,6 +697,10 @@ export async function generateInstagramGraphic({
       gradientIntensity,
       topGradientPercent,
       bottomGradientPercent,
+      textColor,
+      topBlockOffsetPercent,
+      bottomBlockOffsetPercent,
+      titleAlign,
     });
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {

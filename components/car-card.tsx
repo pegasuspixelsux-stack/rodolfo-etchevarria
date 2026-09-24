@@ -15,10 +15,12 @@ import {
   DEFAULT_GRADIENT_COLOR,
   DEFAULT_LOGO_SRC,
   DEFAULT_MODEL_SIZE_REM,
+  DEFAULT_TEXT_COLOR,
   DEFAULT_TOP_GRADIENT_PERCENT,
   DEFAULT_YEAR_MAKE_SIZE_REM,
   GRADIENT_INTENSITY_DEFAULT,
   hexToRgb,
+  type LogoPosition,
 } from "@/lib/share/instagram-graphic";
 import { fadeUp } from "@/lib/motion";
 
@@ -64,6 +66,8 @@ export function CarCard({
   previewHideInstagramIcon = false,
   previewSplitLayout = false,
   previewSafeTopPercent = 0,
+  previewTitleAlign = "center",
+  previewTextColor = DEFAULT_TEXT_COLOR,
   previewYearMakeSizeRem = DEFAULT_YEAR_MAKE_SIZE_REM,
   previewModelSizeRem = DEFAULT_MODEL_SIZE_REM,
   previewGradientColor = DEFAULT_GRADIENT_COLOR,
@@ -111,11 +115,24 @@ export function CarCard({
   /** Height (percent of card height) of the bottom gradient band. Only meant for the
    * dashboard's IG Reels preview — leave at the default everywhere else. */
   previewBottomGradientPercent?: number;
+  /** Horizontal alignment of the top block's "Year Make" / "Model" rows. Only meant for the
+   * dashboard's IG Reels preview — leave at the default everywhere else. */
+  previewTitleAlign?: LogoPosition;
+  /** Base color for all of the IG Reels preset's text (opacity-derived per row). Only meant
+   * for the dashboard's IG Reels preview — leave at the default everywhere else. */
+  previewTextColor?: string;
 }) {
   const FuelIcon = car.fuelType === "Electric" ? Zap : Fuel;
   const detail = carDetails[car.id] ?? buildFallbackDetail(car);
   const shortDescription = detail.editorial.dek;
   const options = detail.features.flatMap((group) => group.items).slice(0, 3);
+
+  const [tcR, tcG, tcB] = hexToRgb(previewTextColor);
+  const textRgba = (alpha: number) => `rgba(${tcR}, ${tcG}, ${tcB}, ${alpha})`;
+  const titleAlignClass =
+    previewTitleAlign === "left" ? "items-start" : previewTitleAlign === "right" ? "items-end" : "items-center";
+  const titleTextAlignClass =
+    previewTitleAlign === "left" ? "text-left" : previewTitleAlign === "right" ? "text-right" : "text-center";
 
   const [sharing, setSharing] = useState(false);
 
@@ -269,16 +286,16 @@ export function CarCard({
           style={{ top: `${previewSafeTopPercent}%`, paddingLeft: "25px", paddingRight: "25px" }}
         >
           <img src={DEFAULT_LOGO_SRC} alt="Logo" className="h-8 w-auto max-w-[55%] object-contain" />
-          <div className="flex flex-col items-center gap-0" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>
+          <div className={`flex flex-col gap-0 ${titleAlignClass}`}>
             <p
-              className="text-center font-light leading-none text-white"
-              style={{ fontSize: `${previewYearMakeSizeRem}rem` }}
+              className={`font-light leading-none ${titleTextAlignClass}`}
+              style={{ fontSize: `${previewYearMakeSizeRem}rem`, color: textRgba(1) }}
             >
               {car.year} {car.make}
             </p>
             <p
-              className="text-center font-normal leading-none text-white"
-              style={{ fontSize: `${previewModelSizeRem}rem`, marginTop: "-6px" }}
+              className={`font-normal leading-none ${titleTextAlignClass}`}
+              style={{ fontSize: `${previewModelSizeRem}rem`, marginTop: "-6px", color: textRgba(1) }}
             >
               {car.model}
             </p>
@@ -322,14 +339,20 @@ export function CarCard({
           }}
         >
           <div className="border-t border-white/15 pt-2" />
-          <p className="text-right text-[2.7rem] font-normal leading-none text-white">
-            {currency.format(estimateMonthlyPayment(car.price))}
-            <span className="text-[0.75rem] font-normal text-white/70">/mes</span>
-          </p>
-          <p className="text-right text-[0.75rem] text-white/60">
-            Precio {currency.format(car.price)}
-          </p>
-          <p className="text-[0.62rem] text-white/40" style={{ lineHeight: 1.1 }}>
+          <div className="flex items-end justify-between gap-3">
+            <div className="flex flex-col gap-0.5">
+              <p className="text-[0.75rem]" style={{ color: textRgba(0.6) }}>Precio</p>
+              <p className="text-[0.85rem] font-normal" style={{ color: textRgba(1) }}>
+                US{currency.format(car.price)}
+              </p>
+            </div>
+            <p className="text-right text-[2rem] font-normal leading-none" style={{ color: textRgba(1) }}>
+              <span className="text-[0.75rem] font-normal" style={{ color: textRgba(0.7) }}>US$</span>
+              {currency.format(estimateMonthlyPayment(car.price)).replace("$", "")}
+              <span className="text-[0.75rem] font-normal" style={{ color: textRgba(0.7) }}>/mes</span>
+            </p>
+          </div>
+          <p className="text-[0.62rem]" style={{ lineHeight: 1.1, color: textRgba(0.4) }}>
             {CARD_PAYMENT_DISCLAIMER}
           </p>
         </div>

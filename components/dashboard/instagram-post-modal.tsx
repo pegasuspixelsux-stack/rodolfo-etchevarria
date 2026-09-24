@@ -9,13 +9,18 @@ import { InstagramGlyph } from "@/components/icons/instagram-glyph";
 import { carDetails, type CarDetailImage } from "@/data/car-details";
 import { shareImageOrOpenInstagram } from "@/lib/share/share-to-instagram";
 import {
+  BLOCK_OFFSET_MAX,
+  BLOCK_OFFSET_MIN,
+  BLOCK_OFFSET_STEP,
   currency,
+  DEFAULT_BLOCK_OFFSET_PERCENT,
   DEFAULT_BOTTOM_GRADIENT_PERCENT,
   DEFAULT_GRADIENT_COLOR,
   DEFAULT_INSTAGRAM_HANDLE,
   DEFAULT_LOGO_SRC,
   DEFAULT_MODEL_SIZE_REM,
   DEFAULT_PRESET,
+  DEFAULT_TEXT_COLOR,
   DEFAULT_TOP_GRADIENT_PERCENT,
   DEFAULT_YEAR_MAKE_SIZE_REM,
   defaultPriceText,
@@ -42,6 +47,39 @@ import {
   TITLE_SIZE_REM_MIN,
   TITLE_SIZE_REM_STEP,
 } from "@/lib/share/instagram-graphic";
+
+// Saved combinations of every IG Reels tunable (font sizes, gradient, text color, block
+// offsets, title alignment) so staff can reuse a look instead of re-adjusting every control
+// each time. Kept in localStorage — this dashboard has no backend endpoint for it, and it's
+// a per-browser convenience, not shared data.
+const CARD_PRESET_STORAGE_KEY = "ig-reel-card-presets";
+
+type CardPresetSettings = {
+  yearMakeSizeRem: number;
+  modelSizeRem: number;
+  gradientColor: string;
+  gradientIntensity: number;
+  topGradientPercent: number;
+  bottomGradientPercent: number;
+  textColor: string;
+  topBlockOffsetPercent: number;
+  bottomBlockOffsetPercent: number;
+  titleAlign: LogoPosition;
+};
+
+function loadCardPresets(): Record<string, CardPresetSettings> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(CARD_PRESET_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, CardPresetSettings>) : {};
+  } catch {
+    return {};
+  }
+}
+
+// A 9:16 canvas's centered 4:5 Instagram feed-crop safe area leaves this much margin (as a
+// percent of card height) above and below it — see instagram-graphic.ts's SAFE_CROP_HEIGHT_TO_WIDTH.
+const SAFE_AREA_MARGIN_PERCENT = 14.84;
 
 const LOGO_POSITION_OPTIONS: { id: LogoPosition; label: string }[] = [
   { id: "left", label: "Izquierda" },
@@ -92,10 +130,63 @@ export function InstagramPostModal({
   const [modelSizeRem, setModelSizeRem] = useState(DEFAULT_MODEL_SIZE_REM);
   const [topGradientPercent, setTopGradientPercent] = useState(DEFAULT_TOP_GRADIENT_PERCENT);
   const [bottomGradientPercent, setBottomGradientPercent] = useState(DEFAULT_BOTTOM_GRADIENT_PERCENT);
+  const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOR);
+  const [topBlockOffsetPercent, setTopBlockOffsetPercent] = useState(DEFAULT_BLOCK_OFFSET_PERCENT);
+  const [bottomBlockOffsetPercent, setBottomBlockOffsetPercent] = useState(DEFAULT_BLOCK_OFFSET_PERCENT);
+  const [titleAlign, setTitleAlign] = useState<LogoPosition>("center");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const logoFileInputRef = useRef<HTMLInputElement>(null);
+  const [cardPresets, setCardPresets] = useState<Record<string, CardPresetSettings>>({});
+  const [presetName, setPresetName] = useState("");
+
+  useEffect(() => {
+    setCardPresets(loadCardPresets());
+  }, []);
+
+  const handleSavePreset = () => {
+    const name = presetName.trim();
+    if (!name) return;
+    const settings: CardPresetSettings = {
+      yearMakeSizeRem,
+      modelSizeRem,
+      gradientColor,
+      gradientIntensity,
+      topGradientPercent,
+      bottomGradientPercent,
+      textColor,
+      topBlockOffsetPercent,
+      bottomBlockOffsetPercent,
+      titleAlign,
+    };
+    const next = { ...cardPresets, [name]: settings };
+    setCardPresets(next);
+    window.localStorage.setItem(CARD_PRESET_STORAGE_KEY, JSON.stringify(next));
+    setPresetName("");
+  };
+
+  const handleLoadPreset = (name: string) => {
+    const settings = cardPresets[name];
+    if (!settings) return;
+    setYearMakeSizeRem(settings.yearMakeSizeRem);
+    setModelSizeRem(settings.modelSizeRem);
+    setGradientColor(settings.gradientColor);
+    setGradientIntensity(settings.gradientIntensity);
+    setTopGradientPercent(settings.topGradientPercent);
+    setBottomGradientPercent(settings.bottomGradientPercent);
+    setTextColor(settings.textColor);
+    setTopBlockOffsetPercent(settings.topBlockOffsetPercent);
+    setBottomBlockOffsetPercent(settings.bottomBlockOffsetPercent);
+    setTitleAlign(settings.titleAlign);
+  };
+
+  const handleDeletePreset = (name: string) => {
+    const next = { ...cardPresets };
+    delete next[name];
+    setCardPresets(next);
+    window.localStorage.setItem(CARD_PRESET_STORAGE_KEY, JSON.stringify(next));
+  };
 
   useEffect(() => {
     if (!open || !item) return;
@@ -113,6 +204,10 @@ export function InstagramPostModal({
     setModelSizeRem(DEFAULT_MODEL_SIZE_REM);
     setTopGradientPercent(DEFAULT_TOP_GRADIENT_PERCENT);
     setBottomGradientPercent(DEFAULT_BOTTOM_GRADIENT_PERCENT);
+    setTextColor(DEFAULT_TEXT_COLOR);
+    setTopBlockOffsetPercent(DEFAULT_BLOCK_OFFSET_PERCENT);
+    setBottomBlockOffsetPercent(DEFAULT_BLOCK_OFFSET_PERCENT);
+    setTitleAlign("center");
     setError(null);
   }, [open, item]);
 
@@ -149,6 +244,10 @@ export function InstagramPostModal({
         modelSizeRem,
         topGradientPercent,
         bottomGradientPercent,
+        textColor,
+        topBlockOffsetPercent,
+        bottomBlockOffsetPercent,
+        titleAlign,
       });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -185,6 +284,10 @@ export function InstagramPostModal({
         modelSizeRem,
         topGradientPercent,
         bottomGradientPercent,
+        textColor,
+        topBlockOffsetPercent,
+        bottomBlockOffsetPercent,
+        titleAlign,
       });
       const filename = `${slugify(`${item.year}-${item.make}-${item.model}`)}-${preset}-instagram-post.png`;
       await shareImageOrOpenInstagram(
@@ -254,17 +357,19 @@ export function InstagramPostModal({
                     <CarCard
                       car={item}
                       layout="portrait"
-                      previewLiftPercent={9.84}
+                      previewLiftPercent={SAFE_AREA_MARGIN_PERCENT - bottomBlockOffsetPercent}
                       previewImageShiftPercent={10}
                       previewHideInstagramIcon
                       previewSplitLayout
-                      previewSafeTopPercent={9.84}
+                      previewSafeTopPercent={SAFE_AREA_MARGIN_PERCENT - topBlockOffsetPercent}
                       previewYearMakeSizeRem={yearMakeSizeRem}
                       previewModelSizeRem={modelSizeRem}
                       previewGradientColor={gradientColor}
                       previewGradientIntensity={gradientIntensity}
                       previewTopGradientPercent={topGradientPercent}
                       previewBottomGradientPercent={bottomGradientPercent}
+                      previewTextColor={textColor}
+                      previewTitleAlign={titleAlign}
                     />
                   </motion.div>
                 ) : (
@@ -590,6 +695,127 @@ export function InstagramPostModal({
                           {bottomGradientPercent}%
                         </span>
                       </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Color de Texto</label>
+                      <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
+                        <input
+                          type="color"
+                          value={textColor}
+                          onChange={(e) => setTextColor(e.target.value)}
+                          aria-label="Color de texto"
+                          className="h-9 w-14 cursor-pointer rounded-none border border-slate-200 bg-white p-1"
+                        />
+                        <span className="text-sm font-medium text-slate-900">{textColor.toUpperCase()}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Alineación del Título</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {LOGO_POSITION_OPTIONS.map((option) => (
+                          <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => setTitleAlign(option.id)}
+                            className={`rounded-none border px-2 py-2 text-sm font-medium transition-colors ${
+                              titleAlign === option.id
+                                ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
+                                : "border-slate-200 text-slate-600 hover:border-slate-300"
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Posición Bloque Superior</label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="range"
+                          min={BLOCK_OFFSET_MIN}
+                          max={BLOCK_OFFSET_MAX}
+                          step={BLOCK_OFFSET_STEP}
+                          value={topBlockOffsetPercent}
+                          onChange={(e) => setTopBlockOffsetPercent(Number(e.target.value))}
+                          aria-label="Posición del bloque superior"
+                          className="h-2 flex-1 cursor-pointer accent-indigo-600"
+                        />
+                        <span className="w-12 text-right text-sm font-medium text-slate-900">
+                          {topBlockOffsetPercent}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Posición Bloque Inferior</label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="range"
+                          min={BLOCK_OFFSET_MIN}
+                          max={BLOCK_OFFSET_MAX}
+                          step={BLOCK_OFFSET_STEP}
+                          value={bottomBlockOffsetPercent}
+                          onChange={(e) => setBottomBlockOffsetPercent(Number(e.target.value))}
+                          aria-label="Posición del bloque inferior"
+                          className="h-2 flex-1 cursor-pointer accent-indigo-600"
+                        />
+                        <span className="w-12 text-right text-sm font-medium text-slate-900">
+                          {bottomBlockOffsetPercent}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 border-t border-slate-200 pt-4">
+                      <label className="text-sm font-medium text-slate-600">Guardar Configuración</label>
+                      <div className="flex gap-2">
+                        <input
+                          value={presetName}
+                          onChange={(e) => setPresetName(e.target.value)}
+                          placeholder="Nombre del preset"
+                          className="h-9 flex-1 rounded-none border border-slate-200 bg-white px-3 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleSavePreset}
+                          disabled={!presetName.trim()}
+                          className="flex h-9 items-center justify-center rounded-none bg-indigo-600 px-3 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          Guardar
+                        </button>
+                      </div>
+                      {Object.keys(cardPresets).length > 0 && (
+                        <div className="flex flex-col gap-1.5">
+                          {Object.keys(cardPresets).map((name) => (
+                            <div
+                              key={name}
+                              className="flex items-center justify-between gap-2 border border-slate-200 px-3 py-1.5"
+                            >
+                              <span className="truncate text-sm text-slate-700">{name}</span>
+                              <div className="flex flex-shrink-0 items-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleLoadPreset(name)}
+                                  className="rounded-none px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50"
+                                >
+                                  Cargar
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeletePreset(name)}
+                                  aria-label={`Eliminar preset ${name}`}
+                                  className="flex h-6 w-6 items-center justify-center rounded-none text-slate-400 hover:bg-red-50 hover:text-red-600"
+                                >
+                                  <X size={12} />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
