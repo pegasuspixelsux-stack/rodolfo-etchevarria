@@ -260,7 +260,7 @@ export function CarCard({
         className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5"
         style={
           previewSplitLayout
-            ? { top: "53%", bottom: `${previewLiftPercent}%` }
+            ? { top: "38%", bottom: `${previewLiftPercent}%` }
             : previewLiftPercent
               ? { bottom: `${previewLiftPercent}%` }
               : undefined

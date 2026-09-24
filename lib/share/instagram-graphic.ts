@@ -281,13 +281,15 @@ function drawCardPresetContent(
   const shortDescription = detail.editorial.dek;
   const options = detail.features.flatMap((group) => group.items).slice(0, 3);
 
-  // The bottom text block: absolute inset-x-0 bottom-0, top:53% (split layout, leading group
-  // starts well inside the safe area already) — the trailing group's bottom sits flush
-  // against the SAFE AREA's bottom edge, not the true canvas bottom, so it survives
-  // Instagram's own feed crop. p-4 (16px) all around, flex-col gap-2 (8px) between children.
+  // The bottom text block: absolute inset-x-0 bottom-0, top:38% (split layout) — the trailing
+  // group's bottom sits flush against the SAFE AREA's bottom edge, not the true canvas
+  // bottom, so it survives Instagram's own feed crop. top:38% (not 53%, used before the safe
+  // area shrank the available window) leaves enough room for the leading group + gap +
+  // trailing group to actually fit without overflowing past safeBottom. p-4 (16px) all
+  // around, flex-col gap-2 (8px) between children.
   const GAP = rem(0.5); // gap-2 = 8px = 0.5rem
   const maxTextWidth = width - PAD * 2;
-  const contentTop = height * 0.53 + PAD;
+  const contentTop = height * 0.38 + PAD;
   const contentBottom = safeBottom - PAD;
 
   // --- Leading group: title, description, options, specs, divider — stacked top-down from
