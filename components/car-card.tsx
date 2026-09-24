@@ -267,19 +267,19 @@ export function CarCard({
           </div>
         </div>
       ) : (
-        <div className="pointer-events-none absolute inset-x-0 top-[10px] z-10 flex flex-col items-center px-[10px] @[220px]:top-[calc(0.75rem+20px)] @[220px]:px-[calc(0.75rem+20px)]">
+        <div className="pointer-events-none absolute inset-x-0 top-[10px] z-10 flex flex-col items-center px-[10px] md:top-[calc(0.75rem+20px)] md:px-[calc(0.75rem+20px)]">
           <p
-            className="text-center text-[1.05rem] font-normal leading-none text-foreground @[220px]:text-[1.575rem]"
+            className="text-center text-[1.05rem] font-normal leading-none text-foreground md:text-[1.575rem]"
             style={{ textShadow: "0 1px 6px rgb(var(--scrim-rgb) / 60%)" }}
           >
             {car.year} {car.make} {car.model}
           </p>
           <div
-            className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[0.65rem] text-foreground/70 @[220px]:text-[0.75rem]"
+            className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[0.65rem] text-foreground/70 md:text-[0.75rem]"
             style={{ textShadow: "0 1px 6px rgb(var(--scrim-rgb) / 60%)" }}
           >
-            <span className="hidden @[220px]:inline">{car.year}</span>
-            <span className="hidden text-foreground/40 @[220px]:inline">·</span>
+            <span className="hidden md:inline">{car.year}</span>
+            <span className="hidden text-foreground/40 md:inline">·</span>
             <span className="flex items-center gap-1">
               <Gauge size={12} />
               {mileageFormat.format(car.mileage)} km
@@ -329,28 +329,28 @@ export function CarCard({
         </div>
       ) : (
         <div
-          className="absolute inset-x-0 bottom-[20px] flex flex-col gap-0.5 p-[10px] @[220px]:p-[calc(1rem+20px)] @[220px]:gap-1 @[220px]:pb-[10px] @[380px]:p-[calc(1.25rem+20px)] @[380px]:pb-[10px]"
+          className="absolute inset-x-0 bottom-[20px] flex flex-col gap-0.5 p-[10px] md:gap-1 md:p-[calc(1rem+20px)] md:pb-[10px] lg:p-[calc(1.25rem+20px)] lg:pb-[10px]"
           style={previewLiftPercent ? { bottom: `calc(${previewLiftPercent}% + 20px)` } : undefined}
         >
           <div className="flex items-end justify-between gap-3 border-t border-foreground/15">
-            <p className="whitespace-nowrap text-[0.65rem] text-foreground/60 @[220px]:text-[0.75rem]">
+            <p className="whitespace-nowrap text-[0.65rem] text-foreground/60 md:text-[0.75rem]">
               Precio {currency.format(car.price)}
             </p>
-            <p className="text-[1.1rem] font-semibold leading-none text-white @[220px]:text-[1.8rem]">
+            <p className="text-[1.1rem] font-semibold leading-none text-black md:text-[1.8rem]">
               {currency.format(estimateMonthlyPayment(car.price))}
-              <span className="text-[0.65rem] font-normal text-foreground/70 @[220px]:text-[0.75rem]">/mes</span>
+              <span className="text-[0.65rem] font-normal text-foreground/70 md:text-[0.75rem]">/mes</span>
             </p>
           </div>
-          <p className="hidden text-[0.62rem] leading-snug text-foreground/40 @[220px]:block">
+          <p className="hidden text-[0.62rem] leading-snug text-foreground/40 md:block">
             {CARD_PAYMENT_DISCLAIMER}
           </p>
         </div>
       )}
 
       {!previewSplitLayout && (
-        <div className="absolute inset-x-0 bottom-0 z-10 flex h-[20px] items-center justify-between gap-2 bg-black px-[calc(0.75rem+20px)] text-white">
+        <div className="absolute inset-x-0 bottom-0 z-10 flex h-[20px] items-center justify-between gap-2 bg-black px-[10px] text-white md:px-[calc(0.75rem+20px)]">
           <span className="truncate text-[0.8rem] leading-none [font-family:var(--font-script)]">{DEALER_NAME}</span>
-          <span className="hidden shrink-0 items-center gap-1 text-[0.55rem] font-medium @[220px]:flex">
+          <span className="hidden shrink-0 items-center gap-1 text-[0.55rem] font-medium md:flex">
             <Phone size={10} />
             {DEALER_PHONE}
           </span>
