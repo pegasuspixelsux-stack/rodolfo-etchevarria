@@ -359,7 +359,6 @@ export function InstagramPostModal({
                       layout="portrait"
                       previewLiftPercent={SAFE_AREA_MARGIN_PERCENT - bottomBlockOffsetPercent}
                       previewImageShiftPercent={10}
-                      previewHideInstagramIcon
                       previewSplitLayout
                       previewSafeTopPercent={SAFE_AREA_MARGIN_PERCENT - topBlockOffsetPercent}
                       previewYearMakeSizeRem={yearMakeSizeRem}

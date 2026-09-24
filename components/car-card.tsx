@@ -1,14 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Gauge, Calendar, Zap, Fuel, Loader2 } from "lucide-react";
+import { Gauge, Calendar, Zap, Fuel } from "lucide-react";
 import type { Car } from "@/data/cars";
-import { carDetails, buildFallbackDetail } from "@/data/car-details";
-import { InstagramGlyph } from "@/components/icons/instagram-glyph";
-import { shareCarToInstagram } from "@/lib/share/share-to-instagram";
 import {
   CARD_PAYMENT_DISCLAIMER,
   DEFAULT_BOTTOM_GRADIENT_PERCENT,
@@ -63,7 +59,6 @@ export function CarCard({
   previewLiftPercent = 0,
   previewGradientBoostPercent = 0,
   previewImageShiftPercent = 0,
-  previewHideInstagramIcon = false,
   previewSplitLayout = false,
   previewSafeTopPercent = 0,
   previewTitleAlign = "center",
@@ -86,9 +81,6 @@ export function CarCard({
   /** Shifts the photo's object-position upward by this many percentage points.
    * Only meant for the dashboard's "Estilo Card" IG preview — leave at 0 everywhere else. */
   previewImageShiftPercent?: number;
-  /** Hides the Instagram share button. Only meant for the dashboard's "Estilo Card" IG
-   * preview, where the button would recursively trigger another share flow. */
-  previewHideInstagramIcon?: boolean;
   /** Splits the text into two independent blocks — a top block (dealer logo + "Year Make
    * Model") and a bottom block (price, payment, disclaimer) — instead of the single
    * left-aligned block used everywhere else. Only meant for the dashboard's IG Reels preview. */
@@ -123,9 +115,6 @@ export function CarCard({
   previewTextColor?: string;
 }) {
   const FuelIcon = car.fuelType === "Electric" ? Zap : Fuel;
-  const detail = carDetails[car.id] ?? buildFallbackDetail(car);
-  const shortDescription = detail.editorial.dek;
-  const options = detail.features.flatMap((group) => group.items).slice(0, 3);
 
   const [tcR, tcG, tcB] = hexToRgb(previewTextColor);
   const textRgba = (alpha: number) => `rgba(${tcR}, ${tcG}, ${tcB}, ${alpha})`;
@@ -133,23 +122,6 @@ export function CarCard({
     previewTitleAlign === "left" ? "items-start" : previewTitleAlign === "right" ? "items-end" : "items-center";
   const titleTextAlignClass =
     previewTitleAlign === "left" ? "text-left" : previewTitleAlign === "right" ? "text-right" : "text-center";
-
-  const [sharing, setSharing] = useState(false);
-
-  const handleShareToInstagram = async (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (sharing) return;
-    setSharing(true);
-    try {
-      await shareCarToInstagram(car);
-    } catch {
-      // Composing/sharing the image failed silently from the visitor's point of
-      // view (no toast system on the public site) — the button just resets.
-    } finally {
-      setSharing(false);
-    }
-  };
 
   if (layout === "split") {
     return (
@@ -162,16 +134,6 @@ export function CarCard({
           aria-label={`Ver detalles de ${car.make} ${car.model}`}
           className="absolute inset-0 z-20"
         />
-
-        <button
-          type="button"
-          onClick={handleShareToInstagram}
-          disabled={sharing}
-          aria-label="Compartir en Instagram"
-          className="absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-none border border-border-strong bg-surface text-foreground transition-colors duration-200 ease-out hover:border-foreground/40 hover:bg-foreground hover:text-accent-foreground disabled:cursor-wait"
-        >
-          {sharing ? <Loader2 size={16} className="animate-spin" /> : <InstagramGlyph size={16} />}
-        </button>
 
         <div className="relative aspect-square w-2/5 flex-shrink-0 self-start overflow-hidden bg-surface-2 sm:w-1/2">
           <Image
@@ -302,12 +264,24 @@ export function CarCard({
           </div>
         </div>
       ) : (
-        <span
-          className="absolute top-3 left-3 z-10 whitespace-nowrap text-[1.3rem] tracking-tight text-white [font-family:var(--font-script)] @[220px]:text-[2.4rem]"
-          style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}
-        >
-          Rodolfo Etchevarria
-        </span>
+        <div className="pointer-events-none absolute inset-x-0 top-2 z-10 flex flex-col items-center gap-1 px-3 @[220px]:top-3 @[220px]:gap-1.5">
+          <img
+            src={DEFAULT_LOGO_SRC}
+            alt="Logo"
+            className="h-5 w-auto max-w-[45%] object-contain @[220px]:h-7"
+          />
+          <div className="flex flex-col items-center gap-0 text-center" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>
+            <p className="text-[0.6rem] font-light leading-none text-white @[220px]:text-[0.85rem]">
+              {car.year} {car.make}
+            </p>
+            <p
+              className="text-[1.1rem] font-normal leading-none text-white @[220px]:text-[1.8rem]"
+              style={{ marginTop: "-2px" }}
+            >
+              {car.model}
+            </p>
+          </div>
+        </div>
       )}
 
       <Link
@@ -315,18 +289,6 @@ export function CarCard({
         aria-label={`Ver detalles de ${car.make} ${car.model}`}
         className="absolute inset-0 z-20"
       />
-
-      {!previewHideInstagramIcon && (
-        <button
-          type="button"
-          onClick={handleShareToInstagram}
-          disabled={sharing}
-          aria-label="Compartir en Instagram"
-          className="glass absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-none text-white transition-colors duration-200 ease-out hover:bg-white hover:text-black disabled:cursor-wait"
-        >
-          {sharing ? <Loader2 size={16} className="animate-spin" /> : <InstagramGlyph size={16} />}
-        </button>
-      )}
 
       {previewSplitLayout ? (
         <div
@@ -361,53 +323,24 @@ export function CarCard({
           className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5"
           style={previewLiftPercent ? { bottom: `${previewLiftPercent}%` } : undefined}
         >
-          <div>
-            <h3 className="font-heading text-[1.05rem] font-normal leading-tight text-white @[220px]:text-[1.575rem]">
-              {car.make} {car.model}
-            </h3>
-            <div className="mt-0.5 flex items-center gap-1.5 text-[0.68rem] text-white/70 @[220px]:text-[0.8rem]">
-              <span
-                className="h-3 w-3 flex-shrink-0 rounded-none border border-white/40"
-                style={{ backgroundColor: car.colorHex }}
-              />
-              <span>{car.color}</span>
-              <span className="text-white/40">·</span>
-              <span>{BODY_TYPE_LABELS[car.bodyType] ?? car.bodyType}</span>
-            </div>
-          </div>
-
-          {shortDescription && (
-            <p className="hidden line-clamp-2 text-[0.78rem] leading-snug text-white/70 @[220px]:block">
-              {shortDescription}
-            </p>
-          )}
-
-          {options.length > 0 && (
-            <div className="hidden flex-wrap gap-1.5 @[220px]:flex">
-              {options.map((option) => (
-                <span
-                  key={option}
-                  className="rounded-none border border-white/20 bg-white/10 px-2 py-0.5 text-[0.68rem] text-white/80"
-                >
-                  {option}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.65rem] text-white/70 @[220px]:text-[0.75rem]">
-            <div className="flex items-center gap-1.5">
-              <Calendar size={12} />
-              <span>{car.year}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.65rem] text-white/70 @[220px]:text-[0.75rem]">
+            <span
+              className="h-3 w-3 flex-shrink-0 rounded-none border border-white/40"
+              style={{ backgroundColor: car.colorHex }}
+            />
+            <span>{car.color}</span>
+            <span className="text-white/40">·</span>
+            <span>{BODY_TYPE_LABELS[car.bodyType] ?? car.bodyType}</span>
+            <span className="text-white/40">·</span>
+            <span className="flex items-center gap-1">
               <Gauge size={12} />
-              <span>{mileageFormat.format(car.mileage)} km</span>
-            </div>
-            <div className="hidden items-center gap-1.5 @[220px]:flex">
-              <FuelIcon size={14} />
-              <span>{FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}</span>
-            </div>
+              {mileageFormat.format(car.mileage)} km
+            </span>
+            <span className="text-white/40">·</span>
+            <span className="flex items-center gap-1">
+              <FuelIcon size={12} />
+              {FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}
+            </span>
           </div>
 
           <div className="flex items-end justify-between gap-3 border-t border-white/15 pt-1 @[220px]:pt-2">
