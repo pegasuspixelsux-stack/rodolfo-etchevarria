@@ -21,8 +21,7 @@ export function CarGrid({ initialCars }: { initialCars?: InventoryItem[] }) {
   const { items: cars, loading, error } = useInventory(initialCars);
   const [bodyType, setBodyType] =
     useState<(typeof BODY_TYPE_PILLS)[number]>("All");
-  const [mobileColumns, setMobileColumns] = useState<1 | 2>(2);
-
+  const [mobileColumns, setMobileColumns] = useState<1 | 2>(1);
   const visibleCars =
     bodyType === "All" ? cars : cars.filter((car) => car.bodyType === bodyType);
 

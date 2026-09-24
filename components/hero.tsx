@@ -78,38 +78,15 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
         </AnimatePresence>
       )}
 
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[10%] bg-gradient-to-b from-background/60 to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background to-transparent" />
 
       <motion.div
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
-        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-end justify-between gap-6 px-3 pb-6 sm:flex-row sm:px-6 sm:pb-10 lg:px-8"
+        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center justify-center text-center"
       >
-        <div className="flex flex-col gap-4 sm:gap-6">
-          <motion.p
-            variants={fadeUp}
-            className="text-[0.9rem] font-medium text-white"
-          >
-            Inventario certificado · Entrega a nivel nacional
-          </motion.p>
-
-          <motion.h1
-            variants={fadeUp}
-            className="text-balance max-w-3xl font-heading text-3xl font-normal leading-[1.02] tracking-tight text-foreground sm:text-6xl sm:leading-[0.98] lg:text-[5.25rem]"
-          >
-            Encuentra tu Próxima Máquina
-          </motion.h1>
-        </div>
-
-        <motion.p
-          variants={fadeUp}
-          className="hidden max-w-xs text-lg leading-relaxed text-black sm:block"
-        >
-          Una colección curada de sedanes, SUVs y vehículos de alto
-          rendimiento — inspeccionados, certificados y entregados en tu puerta.
-        </motion.p>
-
         {!isVideoMode && (
           <motion.div variants={fadeUp} className="flex gap-2">
             {SLIDES.map((item, index) => (

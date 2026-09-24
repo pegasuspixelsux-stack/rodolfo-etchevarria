@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Gauge, Calendar, Zap, Fuel, Phone } from "lucide-react";
+import { Gauge, Calendar, Zap, Fuel, Phone, ArrowUpRight } from "lucide-react";
 import type { Car } from "@/data/cars";
 import {
   CARD_PAYMENT_DISCLAIMER,
@@ -60,7 +60,6 @@ export function CarCard({
   car,
   layout = "portrait",
   previewLiftPercent = 0,
-  previewGradientBoostPercent = 0,
   previewImageShiftPercent = 0,
   previewSplitLayout = false,
   previewSafeTopPercent = 0,
@@ -78,9 +77,6 @@ export function CarCard({
   /** Shifts the bottom text block up by this many percent of the card's height.
    * Only meant for the dashboard's "Estilo Card" IG preview — leave at 0 everywhere else. */
   previewLiftPercent?: number;
-  /** Extends the bottom gradient's solid + fade stops by this many percentage points.
-   * Only meant for the dashboard's "Estilo Card" IG preview — leave at 0 everywhere else. */
-  previewGradientBoostPercent?: number;
   /** Shifts the photo's object-position upward by this many percentage points.
    * Only meant for the dashboard's "Estilo Card" IG preview — leave at 0 everywhere else. */
   previewImageShiftPercent?: number;
@@ -202,50 +198,36 @@ export function CarCard({
     );
   }
 
-  return (
-    <motion.article
-      variants={fadeUp}
-      className="@container group relative aspect-[4/5] overflow-hidden rounded-none bg-surface-2"
-    >
-      <Image
-        src={car.image}
-        alt={`${car.year} ${car.make} ${car.model} ${car.trim}`}
-        fill
-        sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw"
-        className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.08]"
-        style={
-          previewImageShiftPercent
-            ? { objectPosition: `center ${33 + previewImageShiftPercent}%` }
-            : undefined
-        }
-      />
-
-      {/* Sized to the card's own rendered width (via @container), not the viewport — the
-          same CarCard shows at very different widths across contexts (a 2-col mobile grid,
-          a 1-col full-width mobile card, a 3-col showroom grid, a 4-col desktop grid), so a
-          viewport breakpoint can't tell a narrow card from a wide one; a container query can. */}
-      <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgb(var(--scrim-rgb)/92%)_0%,rgb(var(--scrim-rgb)/92%)_4%,rgb(var(--scrim-rgb)/0%)_26%)] @[220px]:bg-[linear-gradient(to_top,rgb(var(--scrim-rgb)/92%)_0%,rgb(var(--scrim-rgb)/92%)_13%,rgb(var(--scrim-rgb)/0%)_38%)]"
-        style={
-          previewSplitLayout
-            ? {
-                backgroundImage: (() => {
-                  const [pr, pg, pb] = hexToRgb(previewGradientColor);
-                  const alpha = previewGradientIntensity / 100;
-                  return `linear-gradient(to bottom, rgba(${pr},${pg},${pb},${alpha}) 0%, rgba(${pr},${pg},${pb},0) ${previewTopGradientPercent}%, rgba(${pr},${pg},${pb},0) ${100 - previewBottomGradientPercent}%, rgba(${pr},${pg},${pb},${alpha}) 100%)`;
-                })(),
-              }
-            : previewGradientBoostPercent
-              ? {
-                  backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.92) ${
-                    33 + previewGradientBoostPercent
-                  }%, rgba(0,0,0,0) ${58 + previewGradientBoostPercent}%)`,
-                }
+  if (previewSplitLayout) {
+    return (
+      <motion.article
+        variants={fadeUp}
+        className="@container group relative aspect-[4/5] overflow-hidden rounded-none bg-surface-2"
+      >
+        <Image
+          src={car.image}
+          alt={`${car.year} ${car.make} ${car.model} ${car.trim}`}
+          fill
+          sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw"
+          className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.08]"
+          style={
+            previewImageShiftPercent
+              ? { objectPosition: `center ${33 + previewImageShiftPercent}%` }
               : undefined
-        }
-      />
+          }
+        />
 
-      {previewSplitLayout ? (
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: (() => {
+              const [pr, pg, pb] = hexToRgb(previewGradientColor);
+              const alpha = previewGradientIntensity / 100;
+              return `linear-gradient(to bottom, rgba(${pr},${pg},${pb},${alpha}) 0%, rgba(${pr},${pg},${pb},0) ${previewTopGradientPercent}%, rgba(${pr},${pg},${pb},0) ${100 - previewBottomGradientPercent}%, rgba(${pr},${pg},${pb},${alpha}) 100%)`;
+            })(),
+          }}
+        />
+
         <div
           className="pointer-events-none absolute inset-x-0 z-10 flex flex-col items-center gap-3"
           style={{ top: `${previewSafeTopPercent}%`, paddingLeft: "25px", paddingRight: "25px" }}
@@ -266,40 +248,13 @@ export function CarCard({
             </p>
           </div>
         </div>
-      ) : (
-        <div className="pointer-events-none absolute inset-x-0 top-[10px] z-10 flex flex-col items-center px-[10px] md:top-[calc(0.75rem+20px)] md:px-[calc(0.75rem+20px)]">
-          <p
-            className="text-center text-[1.05rem] font-normal leading-none text-foreground md:text-[1.575rem]"
-            style={{ textShadow: "0 1px 6px rgb(var(--scrim-rgb) / 60%)" }}
-          >
-            {car.year} {car.make} {car.model}
-          </p>
-          <div
-            className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[0.65rem] text-foreground/70 md:text-[0.75rem]"
-            style={{ textShadow: "0 1px 6px rgb(var(--scrim-rgb) / 60%)" }}
-          >
-            <span className="hidden md:inline">{car.year}</span>
-            <span className="hidden text-foreground/40 md:inline">·</span>
-            <span className="flex items-center gap-1">
-              <Gauge size={12} />
-              {mileageFormat.format(car.mileage)} km
-            </span>
-            <span className="text-foreground/40">·</span>
-            <span className="flex items-center gap-1">
-              <FuelIcon size={12} />
-              {FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}
-            </span>
-          </div>
-        </div>
-      )}
 
-      <Link
-        href={`/inventory/${car.id}`}
-        aria-label={`Ver detalles de ${car.make} ${car.model}`}
-        className="absolute inset-0 z-20"
-      />
+        <Link
+          href={`/inventory/${car.id}`}
+          aria-label={`Ver detalles de ${car.make} ${car.model}`}
+          className="absolute inset-0 z-20"
+        />
 
-      {previewSplitLayout ? (
         <div
           className="absolute inset-x-0 bottom-0 flex flex-col gap-1"
           style={{
@@ -327,35 +282,80 @@ export function CarCard({
             {CARD_PAYMENT_DISCLAIMER}
           </p>
         </div>
-      ) : (
-        <div
-          className="absolute inset-x-0 bottom-[20px] flex flex-col gap-0.5 p-[10px] md:gap-1 md:p-[calc(1rem+20px)] md:pb-[10px] lg:p-[calc(1.25rem+20px)] lg:pb-[10px]"
-          style={previewLiftPercent ? { bottom: `calc(${previewLiftPercent}% + 20px)` } : undefined}
-        >
-          <div className="flex items-end justify-between gap-3 border-t border-foreground/15">
-            <p className="whitespace-nowrap text-[0.65rem] text-foreground/60 md:text-[0.75rem]">
-              Precio {currency.format(car.price)}
-            </p>
-            <p className="text-[1.1rem] font-semibold leading-none text-black md:text-[1.8rem]">
-              {currency.format(estimateMonthlyPayment(car.price))}
-              <span className="text-[0.65rem] font-normal text-foreground/70 md:text-[0.75rem]">/mes</span>
-            </p>
-          </div>
-          <p className="hidden text-[0.62rem] leading-snug text-foreground/40 md:block">
-            {CARD_PAYMENT_DISCLAIMER}
-          </p>
-        </div>
-      )}
+      </motion.article>
+    );
+  }
 
-      {!previewSplitLayout && (
-        <div className="absolute inset-x-0 bottom-0 z-10 flex h-[20px] items-center justify-between gap-2 bg-black px-[10px] text-white md:px-[calc(0.75rem+20px)]">
-          <span className="truncate text-[0.8rem] leading-none [font-family:var(--font-script)]">{DEALER_NAME}</span>
-          <span className="hidden shrink-0 items-center gap-1 text-[0.55rem] font-medium md:flex">
-            <Phone size={10} />
-            {DEALER_PHONE}
+  return (
+    <motion.article
+      variants={fadeUp}
+      className="@container group relative flex flex-col overflow-hidden rounded-none bg-surface-2"
+    >
+      <div className="relative aspect-square w-full overflow-hidden">
+        <Image
+          src={car.image}
+          alt={`${car.year} ${car.make} ${car.model} ${car.trim}`}
+          fill
+          sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw"
+          className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.08]"
+        />
+        <span className="pointer-events-none absolute right-[3cqw] top-[3cqw] z-10 flex h-[clamp(24px,10cqw,36px)] w-[clamp(24px,10cqw,36px)] items-center justify-center bg-black/70 text-white">
+          <ArrowUpRight size={16} className="h-[45%] w-[45%]" />
+        </span>
+      </div>
+
+      <Link
+        href={`/inventory/${car.id}`}
+        aria-label={`Ver detalles de ${car.make} ${car.model}`}
+        className="absolute inset-0 z-20"
+      />
+
+      <div className="flex h-[clamp(16px,7cqw,24px)] items-center justify-between gap-2 bg-black px-[3cqw] text-white">
+        <span className="truncate text-[clamp(0.65rem,4cqw,0.95rem)] leading-none [font-family:var(--font-script)]">{DEALER_NAME}</span>
+        <span className="flex shrink-0 items-center gap-1 text-[clamp(0.45rem,3cqw,0.65rem)] font-medium">
+          <Phone className="h-[1em] w-[1em]" />
+          {DEALER_PHONE}
+        </span>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-[2cqw] bg-surface-2 p-[clamp(0.5rem,4cqw,1.25rem)] text-foreground">
+        <p className="text-center text-[clamp(0.85rem,7cqw,1.75rem)] font-semibold leading-tight">
+          {car.year} {car.make} {car.model}
+        </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/70">
+          <span className="flex items-center gap-1">
+            <span
+              className="h-[1em] w-[1em] flex-shrink-0 rounded-none border border-foreground/20"
+              style={{ backgroundColor: car.colorHex }}
+            />
+            {car.color}
+          </span>
+          <span className="text-foreground/40">·</span>
+          <span className="flex items-center gap-1">
+            <Gauge className="h-[1em] w-[1em]" />
+            {mileageFormat.format(car.mileage)} km
+          </span>
+          <span className="text-foreground/40">·</span>
+          <span className="flex items-center gap-1">
+            <FuelIcon className="h-[1em] w-[1em]" />
+            {FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}
           </span>
         </div>
-      )}
+
+        <div className="flex items-end justify-between gap-3 border-t border-foreground/15 pt-2">
+          <p className="whitespace-nowrap text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/60">
+            Precio {currency.format(car.price)}
+          </p>
+          <p className="text-[clamp(1.1rem,8.5cqw,2.1rem)] font-semibold leading-none text-black">
+            {currency.format(estimateMonthlyPayment(car.price))}
+            <span className="text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/70">/mes</span>
+          </p>
+        </div>
+        <p className="text-[clamp(0.5rem,3cqw,0.7rem)] leading-snug text-foreground/40">
+          {CARD_PAYMENT_DISCLAIMER}
+        </p>
+      </div>
     </motion.article>
   );
 }
