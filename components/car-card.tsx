@@ -202,14 +202,14 @@ export function CarCard({
   return (
     <motion.article
       variants={fadeUp}
-      className="@container group relative aspect-[9/16] overflow-hidden rounded-none bg-surface-2"
+      className="@container group relative aspect-[4/5] overflow-hidden rounded-none bg-surface-2"
     >
       <Image
         src={car.image}
         alt={`${car.year} ${car.make} ${car.model} ${car.trim}`}
         fill
         sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw"
-        className="object-cover object-[center_33%] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.08]"
+        className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.08]"
         style={
           previewImageShiftPercent
             ? { objectPosition: `center ${33 + previewImageShiftPercent}%` }
@@ -222,7 +222,7 @@ export function CarCard({
           a 1-col full-width mobile card, a 3-col showroom grid, a 4-col desktop grid), so a
           viewport breakpoint can't tell a narrow card from a wide one; a container query can. */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_24%,rgba(0,0,0,0)_46%)] @[220px]:bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_33%,rgba(0,0,0,0)_58%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_4%,rgba(0,0,0,0)_26%)] @[220px]:bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_13%,rgba(0,0,0,0)_38%)]"
         style={
           previewSplitLayout
             ? {
@@ -264,23 +264,13 @@ export function CarCard({
           </div>
         </div>
       ) : (
-        <div className="pointer-events-none absolute inset-x-0 top-2 z-10 flex flex-col items-center gap-1 px-3 @[220px]:top-3 @[220px]:gap-1.5">
-          <img
-            src={DEFAULT_LOGO_SRC}
-            alt="Logo"
-            className="h-5 w-auto max-w-[45%] object-contain @[220px]:h-7"
-          />
-          <div className="flex flex-col items-center gap-0 text-center" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>
-            <p className="text-[0.6rem] font-light leading-none text-white @[220px]:text-[0.85rem]">
-              {car.year} {car.make}
-            </p>
-            <p
-              className="text-[1.1rem] font-normal leading-none text-white @[220px]:text-[1.8rem]"
-              style={{ marginTop: "-2px" }}
-            >
-              {car.model}
-            </p>
-          </div>
+        <div className="pointer-events-none absolute inset-x-0 top-2 z-10 flex flex-col items-center px-[calc(0.75rem+20px)] @[220px]:top-3">
+          <p
+            className="text-center text-[1.05rem] font-normal leading-none text-white @[220px]:text-[1.575rem]"
+            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}
+          >
+            {car.year} {car.make} {car.model}
+          </p>
         </div>
       )}
 
@@ -320,17 +310,11 @@ export function CarCard({
         </div>
       ) : (
         <div
-          className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5"
+          className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-[calc(0.75rem+20px)] @[220px]:gap-2 @[220px]:p-[calc(1rem+20px)] @[380px]:p-[calc(1.25rem+20px)]"
           style={previewLiftPercent ? { bottom: `${previewLiftPercent}%` } : undefined}
         >
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.65rem] text-white/70 @[220px]:text-[0.75rem]">
-            <span
-              className="h-3 w-3 flex-shrink-0 rounded-none border border-white/40"
-              style={{ backgroundColor: car.colorHex }}
-            />
-            <span>{car.color}</span>
-            <span className="text-white/40">·</span>
-            <span>{BODY_TYPE_LABELS[car.bodyType] ?? car.bodyType}</span>
+            <span>{car.year}</span>
             <span className="text-white/40">·</span>
             <span className="flex items-center gap-1">
               <Gauge size={12} />
