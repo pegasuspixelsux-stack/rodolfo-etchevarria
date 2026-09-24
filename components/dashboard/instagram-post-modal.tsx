@@ -10,16 +10,23 @@ import { carDetails, type CarDetailImage } from "@/data/car-details";
 import { shareImageOrOpenInstagram } from "@/lib/share/share-to-instagram";
 import {
   currency,
+  DEFAULT_BOTTOM_GRADIENT_PERCENT,
   DEFAULT_GRADIENT_COLOR,
   DEFAULT_INSTAGRAM_HANDLE,
   DEFAULT_LOGO_SRC,
+  DEFAULT_MODEL_SIZE_REM,
   DEFAULT_PRESET,
+  DEFAULT_TOP_GRADIENT_PERCENT,
+  DEFAULT_YEAR_MAKE_SIZE_REM,
   defaultPriceText,
   defaultTitle,
   DISCLAIMER_TEXT,
   FORMAT_OPTIONS,
   FUEL_TYPE_LABELS,
   generateInstagramGraphic,
+  GRADIENT_HEIGHT_MAX,
+  GRADIENT_HEIGHT_MIN,
+  GRADIENT_HEIGHT_STEP,
   GRADIENT_INTENSITY_DEFAULT,
   GRADIENT_INTENSITY_MAX,
   GRADIENT_INTENSITY_MIN,
@@ -31,6 +38,9 @@ import {
   type PostFormat,
   type PostPreset,
   slugify,
+  TITLE_SIZE_REM_MAX,
+  TITLE_SIZE_REM_MIN,
+  TITLE_SIZE_REM_STEP,
 } from "@/lib/share/instagram-graphic";
 
 const LOGO_POSITION_OPTIONS: { id: LogoPosition; label: string }[] = [
@@ -78,6 +88,10 @@ export function InstagramPostModal({
   const [gradientIntensity, setGradientIntensity] = useState(GRADIENT_INTENSITY_DEFAULT);
   const [logoSrc, setLogoSrc] = useState(DEFAULT_LOGO_SRC);
   const [instagramHandle, setInstagramHandle] = useState(DEFAULT_INSTAGRAM_HANDLE);
+  const [yearMakeSizeRem, setYearMakeSizeRem] = useState(DEFAULT_YEAR_MAKE_SIZE_REM);
+  const [modelSizeRem, setModelSizeRem] = useState(DEFAULT_MODEL_SIZE_REM);
+  const [topGradientPercent, setTopGradientPercent] = useState(DEFAULT_TOP_GRADIENT_PERCENT);
+  const [bottomGradientPercent, setBottomGradientPercent] = useState(DEFAULT_BOTTOM_GRADIENT_PERCENT);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +109,10 @@ export function InstagramPostModal({
     setGradientIntensity(GRADIENT_INTENSITY_DEFAULT);
     setLogoSrc(DEFAULT_LOGO_SRC);
     setInstagramHandle(DEFAULT_INSTAGRAM_HANDLE);
+    setYearMakeSizeRem(DEFAULT_YEAR_MAKE_SIZE_REM);
+    setModelSizeRem(DEFAULT_MODEL_SIZE_REM);
+    setTopGradientPercent(DEFAULT_TOP_GRADIENT_PERCENT);
+    setBottomGradientPercent(DEFAULT_BOTTOM_GRADIENT_PERCENT);
     setError(null);
   }, [open, item]);
 
@@ -127,6 +145,10 @@ export function InstagramPostModal({
         instagramHandle,
         item,
         preset,
+        yearMakeSizeRem,
+        modelSizeRem,
+        topGradientPercent,
+        bottomGradientPercent,
       });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -159,6 +181,10 @@ export function InstagramPostModal({
         instagramHandle,
         item,
         preset,
+        yearMakeSizeRem,
+        modelSizeRem,
+        topGradientPercent,
+        bottomGradientPercent,
       });
       const filename = `${slugify(`${item.year}-${item.make}-${item.model}`)}-${preset}-instagram-post.png`;
       await shareImageOrOpenInstagram(
@@ -229,12 +255,16 @@ export function InstagramPostModal({
                       car={item}
                       layout="portrait"
                       previewLiftPercent={9.84}
-                      previewGradientBoostPercent={10}
                       previewImageShiftPercent={10}
                       previewHideInstagramIcon
-                      previewCenterWatermark
                       previewSplitLayout
                       previewSafeTopPercent={9.84}
+                      previewYearMakeSizeRem={yearMakeSizeRem}
+                      previewModelSizeRem={modelSizeRem}
+                      previewGradientColor={gradientColor}
+                      previewGradientIntensity={gradientIntensity}
+                      previewTopGradientPercent={topGradientPercent}
+                      previewBottomGradientPercent={bottomGradientPercent}
                     />
                   </motion.div>
                 ) : (
@@ -339,6 +369,75 @@ export function InstagramPostModal({
                     ))}
                   </div>
                 </div>
+                {preset === "card" && (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Tamaño Año/Marca</label>
+                      <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setYearMakeSizeRem((v) =>
+                              Math.max(TITLE_SIZE_REM_MIN, +(v - TITLE_SIZE_REM_STEP).toFixed(1)),
+                            )
+                          }
+                          disabled={yearMakeSizeRem <= TITLE_SIZE_REM_MIN}
+                          aria-label="Disminuir tamaño de año/marca"
+                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <span className="flex-1 text-center text-sm font-medium text-slate-900">
+                          {yearMakeSizeRem.toFixed(1)}rem
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setYearMakeSizeRem((v) =>
+                              Math.min(TITLE_SIZE_REM_MAX, +(v + TITLE_SIZE_REM_STEP).toFixed(1)),
+                            )
+                          }
+                          disabled={yearMakeSizeRem >= TITLE_SIZE_REM_MAX}
+                          aria-label="Aumentar tamaño de año/marca"
+                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Tamaño Modelo</label>
+                      <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setModelSizeRem((v) => Math.max(TITLE_SIZE_REM_MIN, +(v - TITLE_SIZE_REM_STEP).toFixed(1)))
+                          }
+                          disabled={modelSizeRem <= TITLE_SIZE_REM_MIN}
+                          aria-label="Disminuir tamaño de modelo"
+                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <span className="flex-1 text-center text-sm font-medium text-slate-900">
+                          {modelSizeRem.toFixed(1)}rem
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setModelSizeRem((v) => Math.min(TITLE_SIZE_REM_MAX, +(v + TITLE_SIZE_REM_STEP).toFixed(1)))
+                          }
+                          disabled={modelSizeRem >= TITLE_SIZE_REM_MAX}
+                          aria-label="Aumentar tamaño de modelo"
+                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
                 {preset === "classic" && (
                   <>
                     <div className="flex flex-col gap-2">
@@ -408,6 +507,93 @@ export function InstagramPostModal({
                   />
                 </div>
 
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-slate-600">Color del Degradado</label>
+                  <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
+                    <input
+                      type="color"
+                      value={gradientColor}
+                      onChange={(e) => setGradientColor(e.target.value)}
+                      aria-label="Color del degradado"
+                      className="h-9 w-14 cursor-pointer rounded-none border border-slate-200 bg-white p-1"
+                    />
+                    <span className="text-sm font-medium text-slate-900">{gradientColor.toUpperCase()}</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-slate-600">Intensidad del Degradado</label>
+                  <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setGradientIntensity((v) => Math.max(GRADIENT_INTENSITY_MIN, v - GRADIENT_INTENSITY_STEP))
+                      }
+                      disabled={gradientIntensity <= GRADIENT_INTENSITY_MIN}
+                      aria-label="Disminuir intensidad"
+                      className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className="flex-1 text-center text-sm font-medium text-slate-900">
+                      {gradientIntensity}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setGradientIntensity((v) => Math.min(GRADIENT_INTENSITY_MAX, v + GRADIENT_INTENSITY_STEP))
+                      }
+                      disabled={gradientIntensity >= GRADIENT_INTENSITY_MAX}
+                      aria-label="Aumentar intensidad"
+                      className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {preset === "card" && (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Altura Degradado Superior</label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="range"
+                          min={GRADIENT_HEIGHT_MIN}
+                          max={GRADIENT_HEIGHT_MAX}
+                          step={GRADIENT_HEIGHT_STEP}
+                          value={topGradientPercent}
+                          onChange={(e) => setTopGradientPercent(Number(e.target.value))}
+                          aria-label="Altura del degradado superior"
+                          className="h-2 flex-1 cursor-pointer accent-indigo-600"
+                        />
+                        <span className="w-12 text-right text-sm font-medium text-slate-900">
+                          {topGradientPercent}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-600">Altura Degradado Inferior</label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="range"
+                          min={GRADIENT_HEIGHT_MIN}
+                          max={GRADIENT_HEIGHT_MAX}
+                          step={GRADIENT_HEIGHT_STEP}
+                          value={bottomGradientPercent}
+                          onChange={(e) => setBottomGradientPercent(Number(e.target.value))}
+                          aria-label="Altura del degradado inferior"
+                          className="h-2 flex-1 cursor-pointer accent-indigo-600"
+                        />
+                        <span className="w-12 text-right text-sm font-medium text-slate-900">
+                          {bottomGradientPercent}%
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {preset === "classic" && (
                   <>
                     <div className="flex flex-col gap-2">
@@ -427,51 +613,6 @@ export function InstagramPostModal({
                             {option.label}
                           </button>
                         ))}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-slate-600">Color del Degradado</label>
-                      <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
-                        <input
-                          type="color"
-                          value={gradientColor}
-                          onChange={(e) => setGradientColor(e.target.value)}
-                          aria-label="Color del degradado"
-                          className="h-9 w-14 cursor-pointer rounded-none border border-slate-200 bg-white p-1"
-                        />
-                        <span className="text-sm font-medium text-slate-900">{gradientColor.toUpperCase()}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-slate-600">Intensidad del Degradado</label>
-                      <div className="flex items-center gap-3 rounded-none border border-slate-200 px-3 py-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setGradientIntensity((v) => Math.max(GRADIENT_INTENSITY_MIN, v - GRADIENT_INTENSITY_STEP))
-                          }
-                          disabled={gradientIntensity <= GRADIENT_INTENSITY_MIN}
-                          aria-label="Disminuir intensidad"
-                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span className="flex-1 text-center text-sm font-medium text-slate-900">
-                          {gradientIntensity}%
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setGradientIntensity((v) => Math.min(GRADIENT_INTENSITY_MAX, v + GRADIENT_INTENSITY_STEP))
-                          }
-                          disabled={gradientIntensity >= GRADIENT_INTENSITY_MAX}
-                          aria-label="Aumentar intensidad"
-                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          <Plus size={14} />
-                        </button>
                       </div>
                     </div>
 

@@ -1,13 +1,13 @@
 import type { Car } from "@/data/cars";
 import { isAllowedImageUrl } from "@/lib/image-hosts";
-import { carDetails, buildFallbackDetail } from "@/data/car-details";
 
 export type LogoPosition = "left" | "center" | "right";
 export type PostFormat = "square" | "feed" | "story";
-// "card" reproduces the homepage listing card 1:1 (script watermark, bottom
-// gradient, title, options, price) and always renders at the card's own 9:16
-// aspect — the format picker is ignored for it. "classic" is the original
-// dealer-branded template (logo, disclaimer, footer stripe) at any format.
+// "card" is the IG Reels preset: two independent text blocks over the full-bleed photo —
+// a top block (dealer logo + "Year Make Model") and a bottom block (price, payment,
+// disclaimer) — and always renders at the card's own 9:16 aspect, the format picker is
+// ignored for it. "classic" is the original dealer-branded template (logo, disclaimer,
+// footer stripe) at any format.
 export type PostPreset = "card" | "classic";
 
 export const DEFAULT_PRESET: PostPreset = "card";
@@ -15,12 +15,6 @@ export const DEFAULT_PRESET: PostPreset = "card";
 // Matches the watermark text hardcoded onto the homepage/showroom CarCard —
 // kept as a single constant so the two stay in sync.
 export const DEFAULT_BRAND_NAME = "Rodolfo Etchevarria";
-
-const BODY_TYPE_LABELS: Record<string, string> = {
-  Sedan: "Sedán",
-  SUV: "SUV",
-  Coupe: "Cupé",
-};
 
 export const FORMAT_OPTIONS: {
   id: PostFormat;
@@ -42,6 +36,14 @@ export const GRADIENT_INTENSITY_MIN = 40;
 export const GRADIENT_INTENSITY_MAX = 100;
 export const GRADIENT_INTENSITY_STEP = 10;
 export const GRADIENT_INTENSITY_DEFAULT = 100;
+
+// Independent top/bottom gradient band heights for the "card" (IG Reels) preset — each a
+// percentage of the canvas height, fading in from that edge.
+export const DEFAULT_TOP_GRADIENT_PERCENT = 15;
+export const DEFAULT_BOTTOM_GRADIENT_PERCENT = 25;
+export const GRADIENT_HEIGHT_MIN = 5;
+export const GRADIENT_HEIGHT_MAX = 50;
+export const GRADIENT_HEIGHT_STEP = 5;
 
 export const FUEL_TYPE_LABELS: Record<string, string> = {
   Gasoline: "Nafta",
@@ -124,6 +126,14 @@ export const DEFAULT_LOGO_SRC = "/drivetime-logo.svg";
 export const LOGO_MAX_WIDTH = 220;
 export const LOGO_MAX_HEIGHT = 64;
 
+// Defaults for the IG Reels top block's two title rows — the dashboard generator's
+// font-size controls and the canvas export both start from these same values.
+export const DEFAULT_YEAR_MAKE_SIZE_REM = 2;
+export const DEFAULT_MODEL_SIZE_REM = 3;
+export const TITLE_SIZE_REM_MIN = 0.8;
+export const TITLE_SIZE_REM_MAX = 6;
+export const TITLE_SIZE_REM_STEP = 0.2;
+
 export const FOOTER_STRIPE_HEIGHT = 64;
 
 // The dealership's Instagram handle for the stripe's "Visítenos" line. Staff can override it
@@ -190,16 +200,6 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
   return lines;
 }
 
-// The homepage/showroom watermark title is set in the site's script font, loaded via
-// next/font as the CSS variable --font-script on <html>. Canvas text can't reference a CSS
-// variable directly, so we read the generated font-family name back out of computed style —
-// the value next/font actually assigned — and use that in ctx.font.
-function getScriptFontFamily(): string {
-  if (typeof document === "undefined") return "cursive";
-  const value = getComputedStyle(document.documentElement).getPropertyValue("--font-script").trim();
-  return value || "cursive";
-}
-
 /**
  * Reproduces the homepage/showroom CarCard (portrait layout) as a 1080x1920 canvas:
  * full-bleed photo, bottom-third gradient, script watermark, title + specs + options +
@@ -237,194 +237,110 @@ function bottomAlignedBaseline(
 
 // Instagram re-crops a 9:16 image posted to the FEED (as opposed to an actual Story/Reel)
 // down to roughly 4:5, centered, silently cutting off the top and bottom. Everything that
-// matters — the watermark, the whole text block — has to live inside that centered 4:5
+// matters — the top block, the bottom block — has to live inside that centered 4:5
 // "safe area", not just inside the full 9:16 canvas, or Instagram's own feed crop clips it.
 const SAFE_CROP_HEIGHT_TO_WIDTH = 5 / 4;
 
 function drawCardPresetContent(
   ctx: CanvasRenderingContext2D,
-  { width, height, item }: { width: number; height: number; item: Car },
+  {
+    width,
+    height,
+    item,
+    logoImg,
+    yearMakeSizeRem = DEFAULT_YEAR_MAKE_SIZE_REM,
+    modelSizeRem = DEFAULT_MODEL_SIZE_REM,
+    gradientColor = DEFAULT_GRADIENT_COLOR,
+    gradientIntensity = GRADIENT_INTENSITY_DEFAULT,
+    topGradientPercent = DEFAULT_TOP_GRADIENT_PERCENT,
+    bottomGradientPercent = DEFAULT_BOTTOM_GRADIENT_PERCENT,
+  }: {
+    width: number;
+    height: number;
+    item: Car;
+    logoImg: HTMLImageElement;
+    yearMakeSizeRem?: number;
+    modelSizeRem?: number;
+    gradientColor?: string;
+    gradientIntensity?: number;
+    topGradientPercent?: number;
+    bottomGradientPercent?: number;
+  },
 ) {
   const scale = width / CARD_PREVIEW_WIDTH;
   const rem = (value: number) => value * 16 * scale;
   const PAD = rem(1); // p-4 = 16px = 1rem
+  const PAD_X = PAD + width * 0.04; // p-4 (16px) + 4% extra side padding, generator-only
 
   const safeHeight = width * SAFE_CROP_HEIGHT_TO_WIDTH;
   const safeTop = (height - safeHeight) / 2;
   const safeBottom = safeTop + safeHeight;
 
-  // Gradient: rgba(0,0,0,0.92) solid from the bottom up to 43% of the height, fading to
-  // transparent by 68% — the CarCard stops boosted +10%, matching the "Estilo Card"/
-  // "IG Portrait" preview's previewGradientBoostPercent.
-  const gradient = ctx.createLinearGradient(0, height * 0.32, 0, height);
-  gradient.addColorStop(0, "rgba(0,0,0,0)");
-  gradient.addColorStop((0.57 - 0.32) / (1 - 0.32), "rgba(0,0,0,0.92)");
-  gradient.addColorStop(1, "rgba(0,0,0,0.92)");
+  // Gradient: one band pinned to the top, one to the bottom, independent heights and a
+  // shared color/intensity — a single linear gradient across the whole canvas with the
+  // middle stretch fully transparent, so the photo shows through except behind the two text
+  // blocks. Solid at each edge, fading in over 40% of that edge's own band height.
+  const [gr, gg, gb] = hexToRgb(gradientColor);
+  const gradientAlpha = gradientIntensity / 100;
+  const topFraction = topGradientPercent / 100;
+  const bottomFraction = bottomGradientPercent / 100;
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, `rgba(${gr}, ${gg}, ${gb}, ${gradientAlpha})`);
+  gradient.addColorStop(topFraction, `rgba(${gr}, ${gg}, ${gb}, 0)`);
+  gradient.addColorStop(1 - bottomFraction, `rgba(${gr}, ${gg}, ${gb}, 0)`);
+  gradient.addColorStop(1, `rgba(${gr}, ${gg}, ${gb}, ${gradientAlpha})`);
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, height * 0.32, width, height - height * 0.32);
+  ctx.fillRect(0, 0, width, height);
 
-  // Watermark: pinned near the safe area's top edge (not the canvas's own top-3) so
-  // Instagram's feed crop doesn't clip it — nudged 5% of the canvas height above that edge.
-  const scriptFont = getScriptFontFamily();
-  const watermarkSize = rem(2.4 * 0.9); // -10% off @[220px]:text-[2.4rem], generator-only
-  const watermarkTop = safeTop - height * 0.05;
+  // --- Top block: dealer logo + title, centered, pinned near the safe area's top edge
+  // (nudged 5% of the canvas height above it) — replaces the old script watermark. Title is
+  // two rows: "Year Make" then "Model" at 2x that row's font size. ---
+  const topBlockTop = safeTop - height * 0.05 + PAD;
+  const logoBox = fitContain(logoImg.naturalWidth, logoImg.naturalHeight, LOGO_MAX_WIDTH, LOGO_MAX_HEIGHT);
+  ctx.drawImage(logoImg, width / 2 - logoBox.width / 2, topBlockTop, logoBox.width, logoBox.height);
+
+  const yearMakeText = `${item.year} ${item.make}`;
+  const modelText = item.model;
+  const yearMakeSize = rem(yearMakeSizeRem);
+  const modelSize = rem(modelSizeRem);
   ctx.textBaseline = "alphabetic";
   ctx.textAlign = "center";
   ctx.fillStyle = "#ffffff";
   ctx.shadowColor = "rgba(0,0,0,0.6)";
   ctx.shadowBlur = 10 * scale;
-  ctx.font = `${watermarkSize}px ${scriptFont}`;
-  ctx.fillText(DEFAULT_BRAND_NAME, width / 2, watermarkTop + PAD + ascentOf(ctx, DEFAULT_BRAND_NAME, watermarkSize));
+
+  // Uses FONT metrics (fontBoundingBox*), not glyph-ink metrics (actualBoundingBox*), for the
+  // ascent/descent used to stack these two rows — "2024 BMW" has no descenders, so its ink
+  // descent is ~0, which (matched with a CSS leading-none line box) previously left almost no
+  // gap and let "X3" overlap "BMW". Font metrics mirror the full line-height box CSS uses.
+  ctx.font = `300 ${yearMakeSize}px ${CARD_HEADING_FONT}`;
+  const yearMakeMetrics = ctx.measureText(yearMakeText);
+  const yearMakeAscent = yearMakeMetrics.fontBoundingBoxAscent || yearMakeMetrics.actualBoundingBoxAscent || yearMakeSize * 0.75;
+  const yearMakeDescent = yearMakeMetrics.fontBoundingBoxDescent || yearMakeMetrics.actualBoundingBoxDescent || yearMakeSize * 0.25;
+  const yearMakeY = topBlockTop + logoBox.height + rem(0.75) + yearMakeAscent;
+  ctx.fillText(yearMakeText, width / 2, yearMakeY);
+
+  ctx.font = `400 ${modelSize}px ${CARD_HEADING_FONT}`;
+  const modelMetrics = ctx.measureText(modelText);
+  const modelAscent = modelMetrics.fontBoundingBoxAscent || modelMetrics.actualBoundingBoxAscent || modelSize * 0.75;
+  const modelY = yearMakeY + yearMakeDescent - 6 * scale + modelAscent;
+  ctx.fillText(modelText, width / 2, modelY);
+
   ctx.shadowColor = "transparent";
   ctx.shadowBlur = 0;
 
-  const detail = carDetails[item.id] ?? buildFallbackDetail(item);
-  const shortDescription = detail.editorial.dek;
-  const options = detail.features.flatMap((group) => group.items).slice(0, 3);
-
-  // The bottom text block: absolute inset-x-0 bottom-0, content-sized (no fixed top), anchored
-  // by `bottom` — same as the live CarCard now that the flex-1 stretch spacer is gone. Every
-  // gap in the block (including divider-to-price) is the SAME uniform gap-2, so the block's
-  // total height is just measured once and the whole thing anchored from `contentBottom`.
-  // contentBottom sits 5% of the canvas height below the safe area's own bottom edge (the
-  // live preview's previewLiftPercent was reduced by that same 5%), and PAD (16px) all around.
+  // --- Bottom block: price row, disclaimer — a second, independent block anchored to
+  // contentBottom, which sits 5% of the canvas height below the safe area's own bottom edge
+  // (matching the live preview's previewLiftPercent), so it survives Instagram's feed crop. ---
   const GAP = rem(0.25); // tightened from gap-2 (8px) to 4px, generator-only
-  const PAD_X = PAD + width * 0.04; // p-4 (16px) + 4% extra side padding, generator-only
   const maxTextWidth = width - PAD_X * 2;
   const contentBottom = safeBottom + height * 0.05 - PAD;
-
-  const titleSize = rem(1.575); // font-heading @[220px]:text-[1.575rem], font-normal
-  const titleLineHeight = titleSize * 1.05; // leading-tight, tightened further
-  const colorSize = rem(0.8); // @[220px]:text-[0.8rem]
-  const colorLineHeight = colorSize * 1.15; // leading-normal, tightened further
-  const specsSize = rem(0.75); // @[220px]:text-[0.75rem]
-  const specsLineHeight = specsSize * 1.15;
-  const descSize = rem(0.78); // text-[0.78rem], no @ variant
-  const descLineHeight = descSize * 1.1; // leading-snug, tightened further
-  const chipSize = rem(0.68); // text-[0.68rem]
-  const chipPaddingX = rem(0.5); // px-2
-  const chipPaddingY = rem(0.125); // py-0.5
-  const chipBorder = 1 * scale;
-  const chipGap = rem(0.375); // gap-1.5, both axes
-  const chipLineHeight = chipSize * 1.15;
-  const chipHeight = chipLineHeight + chipPaddingY * 2 + chipBorder * 2;
-
-  const bodyLabel = BODY_TYPE_LABELS[item.bodyType] ?? item.bodyType;
-  const colorText = `${item.color}  ·  ${bodyLabel}`;
-  const fuelLabel = FUEL_TYPE_LABELS[item.fuelType] ?? item.fuelType;
-  const specsText = `${item.year}    ${mileageFormat.format(item.mileage)} km    ${fuelLabel}`;
-
-  ctx.font = `400 ${titleSize}px ${CARD_HEADING_FONT}`;
-  const titleLines = wrapText(ctx, `${item.make} ${item.model}`, maxTextWidth).slice(0, 2);
-  ctx.font = `400 ${descSize}px ${CARD_BODY_FONT}`;
-  const descriptionLines = shortDescription ? wrapText(ctx, shortDescription, maxTextWidth).slice(0, 2) : [];
-
-  type ChipRow = { text: string; width: number }[];
-  const chipRows: ChipRow[] = [[]];
-  if (options.length > 0) {
-    ctx.font = `400 ${chipSize}px ${CARD_BODY_FONT}`;
-    let rowWidth = 0;
-    for (const option of options) {
-      const chipWidth = ctx.measureText(option).width + chipPaddingX * 2 + chipBorder * 2;
-      if (rowWidth + chipWidth > maxTextWidth && chipRows[chipRows.length - 1].length > 0) {
-        chipRows.push([]);
-        rowWidth = 0;
-      }
-      chipRows[chipRows.length - 1].push({ text: option, width: chipWidth });
-      rowWidth += chipWidth + chipGap;
-    }
-  }
-
-  // --- Measure the leading group's total height first (title through the divider), then
-  // anchor the whole block so its LAST row (disclaimer) lands exactly on contentBottom —
-  // mirrors a content-sized flex column anchored by `bottom`, not a fixed top guess. ---
-  let leadingHeight = 11 * scale; // marginTop on the title wrapper, generator-only
-  leadingHeight += titleLineHeight * titleLines.length;
-  leadingHeight += 12 * scale; // mt-0.5 (2px) + an extra 10px under the title, generator-only
-  leadingHeight += colorLineHeight + GAP;
-  if (descriptionLines.length > 0) {
-    leadingHeight += descLineHeight * descriptionLines.length + GAP;
-  }
-  if (options.length > 0) {
-    leadingHeight += chipRows.length * chipHeight + (chipRows.length - 1) * chipGap + GAP;
-  }
-  leadingHeight += specsLineHeight + GAP; // specs row
-  // divider itself is a hairline with no height of its own beyond the GAP on either side
 
   const disclaimerSize = rem(0.62);
   const disclaimerLineHeight = disclaimerSize * 1.1; // leading-snug, tightened further
   ctx.font = `400 ${disclaimerSize}px ${CARD_BODY_FONT}`;
   const disclaimerLines = wrapText(ctx, CARD_PAYMENT_DISCLAIMER, maxTextWidth).slice(0, 2);
-  const priceRowHeight = rem(1.8); // price row's own leading-none height dominates
 
-  const trailingHeight = priceRowHeight + GAP + disclaimerLineHeight * disclaimerLines.length;
-  const blockHeight = leadingHeight + GAP + trailingHeight;
-  const contentTop = contentBottom - blockHeight;
-
-  // --- Leading group: title, description, options, specs, divider — drawn top-down from
-  // contentTop using the heights just measured. ---
-  let topY = contentTop + 11 * scale; // marginTop on the title wrapper, generator-only
-
-  ctx.font = `400 ${titleSize}px ${CARD_HEADING_FONT}`;
-  ctx.fillStyle = "#ffffff";
-  ctx.textAlign = "left";
-  titleLines.forEach((line) => {
-    ctx.fillText(line, PAD_X, topY + ascentOf(ctx, line, titleSize));
-    topY += titleLineHeight;
-  });
-
-  topY += 12 * scale; // mt-0.5 (2px) + an extra 10px under the title, generator-only
-  ctx.font = `400 ${colorSize}px ${CARD_BODY_FONT}`;
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.fillText(colorText, PAD_X, topY + ascentOf(ctx, colorText, colorSize));
-  topY += colorLineHeight + GAP;
-
-  if (descriptionLines.length > 0) {
-    ctx.font = `400 ${descSize}px ${CARD_BODY_FONT}`;
-    ctx.fillStyle = "rgba(255,255,255,0.7)";
-    descriptionLines.forEach((line) => {
-      ctx.fillText(line, PAD_X, topY + ascentOf(ctx, line, descSize));
-      topY += descLineHeight;
-    });
-    topY += GAP;
-  }
-
-  if (options.length > 0) {
-    ctx.font = `400 ${chipSize}px ${CARD_BODY_FONT}`;
-    for (const row of chipRows) {
-      let chipX = PAD_X;
-      for (const chip of row) {
-        ctx.fillStyle = "rgba(255,255,255,0.1)";
-        ctx.fillRect(chipX, topY, chip.width, chipHeight);
-        ctx.strokeStyle = "rgba(255,255,255,0.2)";
-        ctx.lineWidth = chipBorder;
-        ctx.strokeRect(chipX, topY, chip.width, chipHeight);
-        ctx.fillStyle = "rgba(255,255,255,0.8)";
-        ctx.textAlign = "left";
-        ctx.fillText(chip.text, chipX + chipPaddingX, topY + chipPaddingY + ascentOf(ctx, chip.text, chipSize));
-        chipX += chip.width + chipGap;
-      }
-      topY += chipHeight + chipGap;
-    }
-    topY += GAP - chipGap;
-  }
-
-  ctx.font = `400 ${specsSize}px ${CARD_BODY_FONT}`;
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.textAlign = "left";
-  ctx.fillText(specsText, PAD_X, topY + ascentOf(ctx, specsText, specsSize));
-  topY += specsLineHeight + GAP;
-
-  // Divider: border-t (1px) — its own row in the flex column.
-  ctx.strokeStyle = "rgba(255,255,255,0.15)";
-  ctx.lineWidth = 1 * scale;
-  ctx.beginPath();
-  ctx.moveTo(PAD_X, topY);
-  ctx.lineTo(width - PAD_X, topY);
-  ctx.stroke();
-
-  // --- Trailing group: price row, disclaimer — same uniform GAP below the divider as every
-  // other row pair (no more elastic stretch), ending exactly at contentBottom. ---
   ctx.font = `400 ${disclaimerSize}px ${CARD_BODY_FONT}`;
   const disclaimerBlockTop = contentBottom - disclaimerLineHeight * disclaimerLines.length;
   ctx.fillStyle = "rgba(255,255,255,0.4)";
@@ -434,34 +350,50 @@ function drawCardPresetContent(
     ctx.fillText(line, PAD_X, lineTop + ascentOf(ctx, line, disclaimerSize));
   });
 
-  const priceRowBottom = disclaimerBlockTop - GAP;
+  // Precio row: its own line, sitting GAP above the disclaimer.
   const priceLeftSize = rem(0.75); // @[220px]:text-[0.75rem], leading-normal
-  const priceRightSize = rem(1.8); // @[220px]:text-[1.8rem], font-semibold, leading-none
-  const priceSuffixSize = rem(0.75); // @[220px]:text-[0.75rem], font-normal
-
+  const priceLeftLineHeight = priceLeftSize * 1.5;
+  const priceRowBottom = disclaimerBlockTop - GAP;
   const priceLeftText = `Precio ${currency.format(item.price)}`;
   ctx.font = `400 ${priceLeftSize}px ${CARD_BODY_FONT}`;
   const priceLeftBaseline = bottomAlignedBaseline(ctx, priceLeftText, priceLeftSize, 1.5, priceRowBottom);
   ctx.fillStyle = "rgba(255,255,255,0.6)";
-  ctx.textAlign = "left";
-  ctx.fillText(priceLeftText, PAD_X, priceLeftBaseline);
+  ctx.textAlign = "right";
+  ctx.fillText(priceLeftText, width - PAD_X, priceLeftBaseline);
+  const priceLeftTop = priceRowBottom - priceLeftLineHeight;
+
+  // Payment row: "$X/mes", sitting GAP above the Precio row.
+  const priceRightSize = rem(2.7); // 1.5x the original rem(1.8), font-normal, leading-none
+  const priceSuffixSize = rem(0.75); // @[220px]:text-[0.75rem], font-normal
+  const paymentRowBottom = priceLeftTop - GAP;
 
   const monthlyText = currency.format(estimateCardMonthlyPayment(item.price));
   const mesText = "/mes";
   ctx.font = `400 ${priceSuffixSize}px ${CARD_BODY_FONT}`;
   const mesWidth = ctx.measureText(mesText).width;
-  ctx.font = `600 ${priceRightSize}px ${CARD_BODY_FONT}`;
+  ctx.font = `400 ${priceRightSize}px ${CARD_BODY_FONT}`;
   const monthlyWidth = ctx.measureText(monthlyText).width;
-  const priceRightBaseline = bottomAlignedBaseline(ctx, monthlyText, priceRightSize, 1, priceRowBottom);
-  const monthlyX = width - PAD_X - mesWidth - monthlyWidth;
+  const priceRightBaseline = bottomAlignedBaseline(ctx, monthlyText, priceRightSize, 1, paymentRowBottom);
+  const pairWidth = monthlyWidth + mesWidth;
+  const monthlyX = width - PAD_X - pairWidth;
 
-  ctx.fillStyle = "#60a5fa";
+  ctx.fillStyle = "#ffffff";
   ctx.textAlign = "left";
   ctx.fillText(monthlyText, monthlyX, priceRightBaseline);
 
   ctx.font = `400 ${priceSuffixSize}px ${CARD_BODY_FONT}`;
   ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.fillText(mesText, width - PAD_X - mesWidth, priceRightBaseline);
+  ctx.fillText(mesText, monthlyX + monthlyWidth, priceRightBaseline);
+  const paymentTop = paymentRowBottom - priceRightSize;
+
+  // Divider: border-t (1px), sitting GAP above the payment row.
+  const dividerY = paymentTop - GAP;
+  ctx.strokeStyle = "rgba(255,255,255,0.15)";
+  ctx.lineWidth = 1 * scale;
+  ctx.beginPath();
+  ctx.moveTo(PAD_X, dividerY);
+  ctx.lineTo(width - PAD_X, dividerY);
+  ctx.stroke();
 }
 
 // Fits an image within a box, preserving aspect ratio (equivalent to object-fit: contain).
@@ -645,6 +577,10 @@ export async function generateInstagramGraphic({
   instagramHandle,
   item,
   preset = DEFAULT_PRESET,
+  yearMakeSizeRem = DEFAULT_YEAR_MAKE_SIZE_REM,
+  modelSizeRem = DEFAULT_MODEL_SIZE_REM,
+  topGradientPercent = DEFAULT_TOP_GRADIENT_PERCENT,
+  bottomGradientPercent = DEFAULT_BOTTOM_GRADIENT_PERCENT,
 }: {
   imageSrc: string;
   logoSrc: string;
@@ -657,6 +593,14 @@ export async function generateInstagramGraphic({
   instagramHandle: string;
   item: Car;
   preset?: PostPreset;
+  /** Font size (rem) for the "card" preset's top block "Year Make" row. */
+  yearMakeSizeRem?: number;
+  /** Font size (rem) for the "card" preset's top block "Model" row. */
+  modelSizeRem?: number;
+  /** Height (percent of canvas height) of the "card" preset's top gradient band. */
+  topGradientPercent?: number;
+  /** Height (percent of canvas height) of the "card" preset's bottom gradient band. */
+  bottomGradientPercent?: number;
 }): Promise<Blob> {
   // "card" always renders at the CarCard's own 9:16 aspect, matching the homepage exactly —
   // the chosen format is only meaningful for the "classic" preset.
@@ -675,10 +619,7 @@ export async function generateInstagramGraphic({
     await document.fonts.ready;
   }
 
-  const [img, logoImg] = await Promise.all([
-    loadImage(imageSrc),
-    preset === "card" ? Promise.resolve(null) : loadImage(logoSrc),
-  ]);
+  const [img, logoImg] = await Promise.all([loadImage(imageSrc), loadImage(logoSrc)]);
 
   const scale = Math.max(width / img.width, height / img.height);
   const drawWidth = img.width * scale;
@@ -691,7 +632,18 @@ export async function generateInstagramGraphic({
   ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
   if (preset === "card") {
-    drawCardPresetContent(ctx, { width, height, item });
+    drawCardPresetContent(ctx, {
+      width,
+      height,
+      item,
+      logoImg,
+      yearMakeSizeRem,
+      modelSizeRem,
+      gradientColor,
+      gradientIntensity,
+      topGradientPercent,
+      bottomGradientPercent,
+    });
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (blob) resolve(blob);

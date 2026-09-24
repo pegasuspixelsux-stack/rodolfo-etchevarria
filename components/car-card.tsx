@@ -9,7 +9,17 @@ import type { Car } from "@/data/cars";
 import { carDetails, buildFallbackDetail } from "@/data/car-details";
 import { InstagramGlyph } from "@/components/icons/instagram-glyph";
 import { shareCarToInstagram } from "@/lib/share/share-to-instagram";
-import { CARD_PAYMENT_DISCLAIMER } from "@/lib/share/instagram-graphic";
+import {
+  CARD_PAYMENT_DISCLAIMER,
+  DEFAULT_BOTTOM_GRADIENT_PERCENT,
+  DEFAULT_GRADIENT_COLOR,
+  DEFAULT_LOGO_SRC,
+  DEFAULT_MODEL_SIZE_REM,
+  DEFAULT_TOP_GRADIENT_PERCENT,
+  DEFAULT_YEAR_MAKE_SIZE_REM,
+  GRADIENT_INTENSITY_DEFAULT,
+  hexToRgb,
+} from "@/lib/share/instagram-graphic";
 import { fadeUp } from "@/lib/motion";
 
 const currency = new Intl.NumberFormat("en-US", {
@@ -52,9 +62,14 @@ export function CarCard({
   previewGradientBoostPercent = 0,
   previewImageShiftPercent = 0,
   previewHideInstagramIcon = false,
-  previewCenterWatermark = false,
   previewSplitLayout = false,
   previewSafeTopPercent = 0,
+  previewYearMakeSizeRem = DEFAULT_YEAR_MAKE_SIZE_REM,
+  previewModelSizeRem = DEFAULT_MODEL_SIZE_REM,
+  previewGradientColor = DEFAULT_GRADIENT_COLOR,
+  previewGradientIntensity = GRADIENT_INTENSITY_DEFAULT,
+  previewTopGradientPercent = DEFAULT_TOP_GRADIENT_PERCENT,
+  previewBottomGradientPercent = DEFAULT_BOTTOM_GRADIENT_PERCENT,
 }: {
   car: Car;
   layout?: CardLayout;
@@ -70,18 +85,32 @@ export function CarCard({
   /** Hides the Instagram share button. Only meant for the dashboard's "Estilo Card" IG
    * preview, where the button would recursively trigger another share flow. */
   previewHideInstagramIcon?: boolean;
-  /** Centers the script watermark instead of left-aligning it.
-   * Only meant for the dashboard's "Estilo Card" IG preview — leave off everywhere else. */
-  previewCenterWatermark?: boolean;
-  /** Gives the bottom text block real height (instead of shrink-to-fit) and pushes the
-   * price row down to the very bottom, leaving a gap above it — for the Instagram post
-   * heading/caption area. Only meant for the dashboard's "Estilo Card" IG preview. */
+  /** Splits the text into two independent blocks — a top block (dealer logo + "Year Make
+   * Model") and a bottom block (price, payment, disclaimer) — instead of the single
+   * left-aligned block used everywhere else. Only meant for the dashboard's IG Reels preview. */
   previewSplitLayout?: boolean;
-  /** Pins the watermark's top edge this many percent down from the card's own top, instead
-   * of the fixed top-3 — Instagram re-crops a 9:16 feed image to ~4:5 centered, so anything
-   * inside its own top-3 gets clipped. Only meant for the dashboard's "Estilo Card" IG
-   * preview — leave at 0 everywhere else. */
+  /** Pins the top block this many percent down from the card's own top — Instagram re-crops
+   * a 9:16 feed image to ~4:5 centered, so anything above this clips. Only meant for the
+   * dashboard's IG Reels preview — leave at 0 everywhere else. */
   previewSafeTopPercent?: number;
+  /** Font size (rem) for the top block's "Year Make" row. Only meant for the dashboard's
+   * IG Reels preview — leave at the default everywhere else. */
+  previewYearMakeSizeRem?: number;
+  /** Font size (rem) for the top block's "Model" row. Only meant for the dashboard's IG
+   * Reels preview — leave at the default everywhere else. */
+  previewModelSizeRem?: number;
+  /** Hex color for the top/bottom gradient bands. Only meant for the dashboard's IG Reels
+   * preview — leave at the default everywhere else. */
+  previewGradientColor?: string;
+  /** Opacity (0-100) of the top/bottom gradient bands at their solid edge. Only meant for
+   * the dashboard's IG Reels preview — leave at the default everywhere else. */
+  previewGradientIntensity?: number;
+  /** Height (percent of card height) of the top gradient band. Only meant for the
+   * dashboard's IG Reels preview — leave at the default everywhere else. */
+  previewTopGradientPercent?: number;
+  /** Height (percent of card height) of the bottom gradient band. Only meant for the
+   * dashboard's IG Reels preview — leave at the default everywhere else. */
+  previewBottomGradientPercent?: number;
 }) {
   const FuelIcon = car.fuelType === "Electric" ? Zap : Fuel;
   const detail = carDetails[car.id] ?? buildFallbackDetail(car);
@@ -216,28 +245,53 @@ export function CarCard({
       <div
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_24%,rgba(0,0,0,0)_46%)] @[220px]:bg-[linear-gradient(to_top,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.92)_33%,rgba(0,0,0,0)_58%)]"
         style={
-          previewGradientBoostPercent
+          previewSplitLayout
             ? {
-                backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.92) ${
-                  33 + previewGradientBoostPercent
-                }%, rgba(0,0,0,0) ${58 + previewGradientBoostPercent}%)`,
+                backgroundImage: (() => {
+                  const [pr, pg, pb] = hexToRgb(previewGradientColor);
+                  const alpha = previewGradientIntensity / 100;
+                  return `linear-gradient(to bottom, rgba(${pr},${pg},${pb},${alpha}) 0%, rgba(${pr},${pg},${pb},0) ${previewTopGradientPercent}%, rgba(${pr},${pg},${pb},0) ${100 - previewBottomGradientPercent}%, rgba(${pr},${pg},${pb},${alpha}) 100%)`;
+                })(),
               }
-            : undefined
+            : previewGradientBoostPercent
+              ? {
+                  backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.92) ${
+                    33 + previewGradientBoostPercent
+                  }%, rgba(0,0,0,0) ${58 + previewGradientBoostPercent}%)`,
+                }
+              : undefined
         }
       />
 
-      <span
-        className={`absolute top-3 z-10 whitespace-nowrap text-[1.3rem] tracking-tight text-white [font-family:var(--font-script)] @[220px]:text-[2.4rem] ${
-          previewCenterWatermark ? "left-1/2 -translate-x-1/2" : "left-3"
-        }`}
-        style={{
-          textShadow: "0 1px 6px rgba(0,0,0,0.6)",
-          ...(previewSafeTopPercent ? { top: `${previewSafeTopPercent}%` } : undefined),
-          ...(previewSplitLayout ? { fontSize: "2.16rem" } : undefined), // -10% off @[220px]:text-[2.4rem]
-        }}
-      >
-        Rodolfo Etchevarria
-      </span>
+      {previewSplitLayout ? (
+        <div
+          className="pointer-events-none absolute inset-x-0 z-10 flex flex-col items-center gap-3"
+          style={{ top: `${previewSafeTopPercent}%`, paddingLeft: "25px", paddingRight: "25px" }}
+        >
+          <img src={DEFAULT_LOGO_SRC} alt="Logo" className="h-8 w-auto max-w-[55%] object-contain" />
+          <div className="flex flex-col items-center gap-0" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>
+            <p
+              className="text-center font-light leading-none text-white"
+              style={{ fontSize: `${previewYearMakeSizeRem}rem` }}
+            >
+              {car.year} {car.make}
+            </p>
+            <p
+              className="text-center font-normal leading-none text-white"
+              style={{ fontSize: `${previewModelSizeRem}rem`, marginTop: "-6px" }}
+            >
+              {car.model}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <span
+          className="absolute top-3 left-3 z-10 whitespace-nowrap text-[1.3rem] tracking-tight text-white [font-family:var(--font-script)] @[220px]:text-[2.4rem]"
+          style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}
+        >
+          Rodolfo Etchevarria
+        </span>
+      )}
 
       <Link
         href={`/inventory/${car.id}`}
@@ -257,98 +311,96 @@ export function CarCard({
         </button>
       )}
 
-      <div
-        className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5"
-        style={{
-          ...(previewLiftPercent ? { bottom: `${previewLiftPercent}%` } : undefined),
-          ...(previewSplitLayout
-            ? { paddingLeft: "calc(16px + 4%)", paddingRight: "calc(16px + 4%)", gap: "4px" }
-            : undefined),
-        }}
-      >
-        <div style={previewSplitLayout ? { marginTop: "11px" } : undefined}>
-          <h3
-            className="font-heading text-[1.05rem] font-normal leading-tight text-white @[220px]:text-[1.575rem]"
-            style={previewSplitLayout ? { lineHeight: 1.05 } : undefined}
-          >
-            {car.make} {car.model}
-          </h3>
-          <div
-            className="mt-0.5 flex items-center gap-1.5 text-[0.68rem] text-white/70 @[220px]:text-[0.8rem]"
-            style={previewSplitLayout ? { marginTop: "12px", lineHeight: 1.15 } : undefined}
-          >
-            <span
-              className="h-3 w-3 flex-shrink-0 rounded-none border border-white/40"
-              style={{ backgroundColor: car.colorHex }}
-            />
-            <span>{car.color}</span>
-            <span className="text-white/40">·</span>
-            <span>{BODY_TYPE_LABELS[car.bodyType] ?? car.bodyType}</span>
-          </div>
-        </div>
-
-        {shortDescription && (
-          <p
-            className="hidden line-clamp-2 text-[0.78rem] leading-snug text-white/70 @[220px]:block"
-            style={previewSplitLayout ? { lineHeight: 1.1 } : undefined}
-          >
-            {shortDescription}
+      {previewSplitLayout ? (
+        <div
+          className="absolute inset-x-0 bottom-0 flex flex-col gap-1"
+          style={{
+            bottom: `${previewLiftPercent}%`,
+            paddingLeft: "calc(16px + 4%)",
+            paddingRight: "calc(16px + 4%)",
+            gap: "4px",
+          }}
+        >
+          <div className="border-t border-white/15 pt-2" />
+          <p className="text-right text-[2.7rem] font-normal leading-none text-white">
+            {currency.format(estimateMonthlyPayment(car.price))}
+            <span className="text-[0.75rem] font-normal text-white/70">/mes</span>
           </p>
-        )}
-
-        {options.length > 0 && (
-          <div className="hidden flex-wrap gap-1.5 @[220px]:flex">
-            {options.map((option) => (
-              <span
-                key={option}
-                className="rounded-none border border-white/20 bg-white/10 px-2 py-0.5 text-[0.68rem] text-white/80"
-              >
-                {option}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div
-          className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.65rem] text-white/70 @[220px]:text-[0.75rem]"
-          style={previewSplitLayout ? { lineHeight: 1.15 } : undefined}
-        >
-          <div className="flex items-center gap-1.5">
-            <Calendar size={12} />
-            <span>{car.year}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Gauge size={12} />
-            <span>{mileageFormat.format(car.mileage)} km</span>
-          </div>
-          <div className="hidden items-center gap-1.5 @[220px]:flex">
-            <FuelIcon size={14} />
-            <span>{FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}</span>
-          </div>
-        </div>
-
-        {previewSplitLayout && <div className="border-t border-white/15 pt-2" />}
-
-        <div
-          className={`flex items-end justify-between gap-3 ${
-            previewSplitLayout ? "" : "border-t border-white/15 pt-1 @[220px]:pt-2"
-          }`}
-        >
-          <p className="whitespace-nowrap text-[0.65rem] text-white/60 @[220px]:text-[0.75rem]">
+          <p className="text-right text-[0.75rem] text-white/60">
             Precio {currency.format(car.price)}
           </p>
-          <p className="text-[1.1rem] font-semibold leading-none text-blue-400 @[220px]:text-[1.8rem]">
-            {currency.format(estimateMonthlyPayment(car.price))}
-            <span className="text-[0.65rem] font-normal text-white/70 @[220px]:text-[0.75rem]">/mes</span>
+          <p className="text-[0.62rem] text-white/40" style={{ lineHeight: 1.1 }}>
+            {CARD_PAYMENT_DISCLAIMER}
           </p>
         </div>
-        <p
-          className="hidden text-[0.62rem] leading-snug text-white/40 @[220px]:block"
-          style={previewSplitLayout ? { lineHeight: 1.1 } : undefined}
+      ) : (
+        <div
+          className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5"
+          style={previewLiftPercent ? { bottom: `${previewLiftPercent}%` } : undefined}
         >
-          {CARD_PAYMENT_DISCLAIMER}
-        </p>
-      </div>
+          <div>
+            <h3 className="font-heading text-[1.05rem] font-normal leading-tight text-white @[220px]:text-[1.575rem]">
+              {car.make} {car.model}
+            </h3>
+            <div className="mt-0.5 flex items-center gap-1.5 text-[0.68rem] text-white/70 @[220px]:text-[0.8rem]">
+              <span
+                className="h-3 w-3 flex-shrink-0 rounded-none border border-white/40"
+                style={{ backgroundColor: car.colorHex }}
+              />
+              <span>{car.color}</span>
+              <span className="text-white/40">·</span>
+              <span>{BODY_TYPE_LABELS[car.bodyType] ?? car.bodyType}</span>
+            </div>
+          </div>
+
+          {shortDescription && (
+            <p className="hidden line-clamp-2 text-[0.78rem] leading-snug text-white/70 @[220px]:block">
+              {shortDescription}
+            </p>
+          )}
+
+          {options.length > 0 && (
+            <div className="hidden flex-wrap gap-1.5 @[220px]:flex">
+              {options.map((option) => (
+                <span
+                  key={option}
+                  className="rounded-none border border-white/20 bg-white/10 px-2 py-0.5 text-[0.68rem] text-white/80"
+                >
+                  {option}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.65rem] text-white/70 @[220px]:text-[0.75rem]">
+            <div className="flex items-center gap-1.5">
+              <Calendar size={12} />
+              <span>{car.year}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Gauge size={12} />
+              <span>{mileageFormat.format(car.mileage)} km</span>
+            </div>
+            <div className="hidden items-center gap-1.5 @[220px]:flex">
+              <FuelIcon size={14} />
+              <span>{FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}</span>
+            </div>
+          </div>
+
+          <div className="flex items-end justify-between gap-3 border-t border-white/15 pt-1 @[220px]:pt-2">
+            <p className="whitespace-nowrap text-[0.65rem] text-white/60 @[220px]:text-[0.75rem]">
+              Precio {currency.format(car.price)}
+            </p>
+            <p className="text-[1.1rem] font-semibold leading-none text-blue-400 @[220px]:text-[1.8rem]">
+              {currency.format(estimateMonthlyPayment(car.price))}
+              <span className="text-[0.65rem] font-normal text-white/70 @[220px]:text-[0.75rem]">/mes</span>
+            </p>
+          </div>
+          <p className="hidden text-[0.62rem] leading-snug text-white/40 @[220px]:block">
+            {CARD_PAYMENT_DISCLAIMER}
+          </p>
+        </div>
+      )}
     </motion.article>
   );
 }
