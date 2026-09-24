@@ -63,7 +63,7 @@ export function ShowroomFilters({
   resultCount: number;
 }) {
   return (
-    <aside className="glass sticky top-24 flex h-fit flex-col gap-6 rounded-none p-6 sm:p-7">
+    <aside className="glass flex h-fit flex-col gap-6 rounded-none p-6 sm:p-7 lg:sticky lg:top-24">
       <div className="flex items-center justify-between gap-3">
         <span className="flex items-center gap-2.5">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none border border-border-strong text-foreground">

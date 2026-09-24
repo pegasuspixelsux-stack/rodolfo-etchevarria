@@ -49,7 +49,9 @@ export function Navbar() {
       <nav className="mx-auto flex h-18 max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link
           href="/"
-          className="text-[2rem] leading-none tracking-tight text-foreground [font-family:var(--font-script)]"
+          className={`text-[2rem] leading-none tracking-tight transition-colors duration-200 [font-family:var(--font-script)] ${
+            scrolled ? "text-foreground" : "text-white"
+          }`}
         >
           Rodolfo Etchevarria
         </Link>
@@ -59,7 +61,11 @@ export function Navbar() {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="group relative text-[0.9rem] text-white/80 transition-colors duration-200 hover:text-white"
+                className={`group relative text-[0.9rem] transition-colors duration-200 ${
+                  scrolled
+                    ? "text-foreground/80 hover:text-foreground"
+                    : "text-white/80 hover:text-white"
+                }`}
               >
                 {link.label}
                 <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-foreground transition-all duration-300 ease-out group-hover:w-full" />
