@@ -283,10 +283,8 @@ function drawCardPresetContent(
 
   // The bottom text block: absolute inset-x-0 bottom-0, top:38% (split layout) — the trailing
   // group's bottom sits flush against the SAFE AREA's bottom edge, not the true canvas
-  // bottom, so it survives Instagram's own feed crop. top:38% (not 53%, used before the safe
-  // area shrank the available window) leaves enough room for the leading group + gap +
-  // trailing group to actually fit without overflowing past safeBottom. p-4 (16px) all
-  // around, flex-col gap-2 (8px) between children.
+  // bottom, so it survives Instagram's own feed crop. p-4 (16px) all around, flex-col
+  // gap-2 (8px) between children.
   const GAP = rem(0.5); // gap-2 = 8px = 0.5rem
   const maxTextWidth = width - PAD * 2;
   const contentTop = height * 0.38 + PAD;
@@ -307,7 +305,7 @@ function drawCardPresetContent(
     topY += titleLineHeight;
   });
 
-  topY += 2 * scale; // mt-0.5
+  topY += 12 * scale; // mt-0.5 (2px) + an extra 10px under the title, generator-only
   const colorSize = rem(0.8); // @[220px]:text-[0.8rem]
   const colorLineHeight = colorSize * 1.5; // leading-normal
   ctx.font = `400 ${colorSize}px ${CARD_BODY_FONT}`;

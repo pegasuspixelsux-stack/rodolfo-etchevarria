@@ -270,7 +270,10 @@ export function CarCard({
           <h3 className="font-heading text-[1.05rem] font-normal leading-tight text-white @[220px]:text-[1.575rem]">
             {car.make} {car.model}
           </h3>
-          <div className="mt-0.5 flex items-center gap-1.5 text-[0.68rem] text-white/70 @[220px]:text-[0.8rem]">
+          <div
+            className="mt-0.5 flex items-center gap-1.5 text-[0.68rem] text-white/70 @[220px]:text-[0.8rem]"
+            style={previewSplitLayout ? { marginTop: "12px" } : undefined}
+          >
             <span
               className="h-3 w-3 flex-shrink-0 rounded-none border border-white/40"
               style={{ backgroundColor: car.colorHex }}
