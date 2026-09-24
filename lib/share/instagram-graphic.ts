@@ -263,17 +263,18 @@ function drawCardPresetContent(
   ctx.fillStyle = gradient;
   ctx.fillRect(0, height * 0.32, width, height - height * 0.32);
 
-  // Watermark: pinned just inside the safe area's top edge (not the canvas's own top-3),
-  // so Instagram's feed crop never clips it.
+  // Watermark: pinned near the safe area's top edge (not the canvas's own top-3) so
+  // Instagram's feed crop doesn't clip it — nudged 5% of the canvas height above that edge.
   const scriptFont = getScriptFontFamily();
   const watermarkSize = rem(2.4);
+  const watermarkTop = safeTop - height * 0.05;
   ctx.textBaseline = "alphabetic";
   ctx.textAlign = "center";
   ctx.fillStyle = "#ffffff";
   ctx.shadowColor = "rgba(0,0,0,0.6)";
   ctx.shadowBlur = 10 * scale;
   ctx.font = `${watermarkSize}px ${scriptFont}`;
-  ctx.fillText(DEFAULT_BRAND_NAME, width / 2, safeTop + PAD + ascentOf(ctx, DEFAULT_BRAND_NAME, watermarkSize));
+  ctx.fillText(DEFAULT_BRAND_NAME, width / 2, watermarkTop + PAD + ascentOf(ctx, DEFAULT_BRAND_NAME, watermarkSize));
   ctx.shadowColor = "transparent";
   ctx.shadowBlur = 0;
 
@@ -281,46 +282,105 @@ function drawCardPresetContent(
   const shortDescription = detail.editorial.dek;
   const options = detail.features.flatMap((group) => group.items).slice(0, 3);
 
-  // The bottom text block: absolute inset-x-0 bottom-0, top:38% (split layout) — the trailing
-  // group's bottom sits flush against the SAFE AREA's bottom edge, not the true canvas
-  // bottom, so it survives Instagram's own feed crop. p-4 (16px) all around, flex-col
-  // gap-2 (8px) between children.
+  // The bottom text block: absolute inset-x-0 bottom-0, content-sized (no fixed top), anchored
+  // by `bottom` — same as the live CarCard now that the flex-1 stretch spacer is gone. Every
+  // gap in the block (including divider-to-price) is the SAME uniform gap-2, so the block's
+  // total height is just measured once and the whole thing anchored from `contentBottom`.
+  // contentBottom sits 5% of the canvas height below the safe area's own bottom edge (the
+  // live preview's previewLiftPercent was reduced by that same 5%), and PAD (16px) all around.
   const GAP = rem(0.5); // gap-2 = 8px = 0.5rem
   const maxTextWidth = width - PAD * 2;
-  const contentTop = height * 0.38 + PAD;
-  const contentBottom = safeBottom - PAD;
-
-  // --- Leading group: title, description, options, specs, divider — stacked top-down from
-  // contentTop, each child separated by GAP, exactly like the flex column's natural flow. ---
-  let topY = contentTop;
+  const contentBottom = safeBottom + height * 0.05 - PAD;
 
   const titleSize = rem(1.575); // font-heading @[220px]:text-[1.575rem], font-normal
-  const titleLineHeight = titleSize * 1.25; // leading-tight
+  const titleLineHeight = titleSize * 1.15; // leading-tight, compressed
+  const colorSize = rem(0.8); // @[220px]:text-[0.8rem]
+  const colorLineHeight = colorSize * 1.3; // leading-normal, compressed
+  const specsSize = rem(0.75); // @[220px]:text-[0.75rem]
+  const specsLineHeight = specsSize * 1.3;
+  const descSize = rem(0.78); // text-[0.78rem], no @ variant
+  const descLineHeight = descSize * 1.2; // leading-snug, compressed
+  const chipSize = rem(0.68); // text-[0.68rem]
+  const chipPaddingX = rem(0.5); // px-2
+  const chipPaddingY = rem(0.125); // py-0.5
+  const chipBorder = 1 * scale;
+  const chipGap = rem(0.375); // gap-1.5, both axes
+  const chipLineHeight = chipSize * 1.3;
+  const chipHeight = chipLineHeight + chipPaddingY * 2 + chipBorder * 2;
+
+  const bodyLabel = BODY_TYPE_LABELS[item.bodyType] ?? item.bodyType;
+  const colorText = `${item.color}  ·  ${bodyLabel}`;
+  const fuelLabel = FUEL_TYPE_LABELS[item.fuelType] ?? item.fuelType;
+  const specsText = `${item.year}    ${mileageFormat.format(item.mileage)} km    ${fuelLabel}`;
+
+  ctx.font = `400 ${titleSize}px ${CARD_HEADING_FONT}`;
+  const titleLines = wrapText(ctx, `${item.make} ${item.model}`, maxTextWidth).slice(0, 2);
+  ctx.font = `400 ${descSize}px ${CARD_BODY_FONT}`;
+  const descriptionLines = shortDescription ? wrapText(ctx, shortDescription, maxTextWidth).slice(0, 2) : [];
+
+  type ChipRow = { text: string; width: number }[];
+  const chipRows: ChipRow[] = [[]];
+  if (options.length > 0) {
+    ctx.font = `400 ${chipSize}px ${CARD_BODY_FONT}`;
+    let rowWidth = 0;
+    for (const option of options) {
+      const chipWidth = ctx.measureText(option).width + chipPaddingX * 2 + chipBorder * 2;
+      if (rowWidth + chipWidth > maxTextWidth && chipRows[chipRows.length - 1].length > 0) {
+        chipRows.push([]);
+        rowWidth = 0;
+      }
+      chipRows[chipRows.length - 1].push({ text: option, width: chipWidth });
+      rowWidth += chipWidth + chipGap;
+    }
+  }
+
+  // --- Measure the leading group's total height first (title through the divider), then
+  // anchor the whole block so its LAST row (disclaimer) lands exactly on contentBottom —
+  // mirrors a content-sized flex column anchored by `bottom`, not a fixed top guess. ---
+  let leadingHeight = 11 * scale; // marginTop on the title wrapper, generator-only
+  leadingHeight += titleLineHeight * titleLines.length;
+  leadingHeight += 12 * scale; // mt-0.5 (2px) + an extra 10px under the title, generator-only
+  leadingHeight += colorLineHeight + GAP;
+  if (descriptionLines.length > 0) {
+    leadingHeight += descLineHeight * descriptionLines.length + GAP;
+  }
+  if (options.length > 0) {
+    leadingHeight += chipRows.length * chipHeight + (chipRows.length - 1) * chipGap + GAP;
+  }
+  leadingHeight += specsLineHeight + GAP; // specs row
+  // divider itself is a hairline with no height of its own beyond the GAP on either side
+
+  const disclaimerSize = rem(0.62);
+  const disclaimerLineHeight = disclaimerSize * 1.2; // leading-snug, compressed
+  ctx.font = `400 ${disclaimerSize}px ${CARD_BODY_FONT}`;
+  const disclaimerLines = wrapText(ctx, CARD_PAYMENT_DISCLAIMER, maxTextWidth).slice(0, 2);
+  const priceRowHeight = rem(1.8); // price row's own leading-none height dominates
+
+  const trailingHeight = priceRowHeight + GAP + disclaimerLineHeight * disclaimerLines.length;
+  const blockHeight = leadingHeight + GAP + trailingHeight;
+  const contentTop = contentBottom - blockHeight;
+
+  // --- Leading group: title, description, options, specs, divider — drawn top-down from
+  // contentTop using the heights just measured. ---
+  let topY = contentTop + 11 * scale; // marginTop on the title wrapper, generator-only
+
   ctx.font = `400 ${titleSize}px ${CARD_HEADING_FONT}`;
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "left";
-  const titleLines = wrapText(ctx, `${item.make} ${item.model}`, maxTextWidth).slice(0, 2);
   titleLines.forEach((line) => {
     ctx.fillText(line, PAD, topY + ascentOf(ctx, line, titleSize));
     topY += titleLineHeight;
   });
 
   topY += 12 * scale; // mt-0.5 (2px) + an extra 10px under the title, generator-only
-  const colorSize = rem(0.8); // @[220px]:text-[0.8rem]
-  const colorLineHeight = colorSize * 1.5; // leading-normal
   ctx.font = `400 ${colorSize}px ${CARD_BODY_FONT}`;
   ctx.fillStyle = "rgba(255,255,255,0.7)";
-  const bodyLabel = BODY_TYPE_LABELS[item.bodyType] ?? item.bodyType;
-  const colorText = `${item.color}  ·  ${bodyLabel}`;
   ctx.fillText(colorText, PAD, topY + ascentOf(ctx, colorText, colorSize));
   topY += colorLineHeight + GAP;
 
-  if (shortDescription) {
-    const descSize = rem(0.78); // text-[0.78rem], no @ variant
-    const descLineHeight = descSize * 1.375; // leading-snug
+  if (descriptionLines.length > 0) {
     ctx.font = `400 ${descSize}px ${CARD_BODY_FONT}`;
     ctx.fillStyle = "rgba(255,255,255,0.7)";
-    const descriptionLines = wrapText(ctx, shortDescription, maxTextWidth).slice(0, 2);
     descriptionLines.forEach((line) => {
       ctx.fillText(line, PAD, topY + ascentOf(ctx, line, descSize));
       topY += descLineHeight;
@@ -329,27 +389,8 @@ function drawCardPresetContent(
   }
 
   if (options.length > 0) {
-    const chipSize = rem(0.68); // text-[0.68rem]
-    const chipPaddingX = rem(0.5); // px-2
-    const chipPaddingY = rem(0.125); // py-0.5
-    const chipBorder = 1 * scale;
-    const chipGap = rem(0.375); // gap-1.5, both axes
-    const chipLineHeight = chipSize * 1.5;
-    const chipHeight = chipLineHeight + chipPaddingY * 2 + chipBorder * 2;
     ctx.font = `400 ${chipSize}px ${CARD_BODY_FONT}`;
-    type ChipRow = { text: string; width: number }[];
-    const rows: ChipRow[] = [[]];
-    let rowWidth = 0;
-    for (const option of options) {
-      const chipWidth = ctx.measureText(option).width + chipPaddingX * 2 + chipBorder * 2;
-      if (rowWidth + chipWidth > maxTextWidth && rows[rows.length - 1].length > 0) {
-        rows.push([]);
-        rowWidth = 0;
-      }
-      rows[rows.length - 1].push({ text: option, width: chipWidth });
-      rowWidth += chipWidth + chipGap;
-    }
-    for (const row of rows) {
+    for (const row of chipRows) {
       let chipX = PAD;
       for (const chip of row) {
         ctx.fillStyle = "rgba(255,255,255,0.1)";
@@ -367,17 +408,13 @@ function drawCardPresetContent(
     topY += GAP - chipGap;
   }
 
-  const specsSize = rem(0.75); // @[220px]:text-[0.75rem]
-  const specsLineHeight = specsSize * 1.5;
   ctx.font = `400 ${specsSize}px ${CARD_BODY_FONT}`;
   ctx.fillStyle = "rgba(255,255,255,0.7)";
   ctx.textAlign = "left";
-  const fuelLabel = FUEL_TYPE_LABELS[item.fuelType] ?? item.fuelType;
-  const specsText = `${item.year}    ${mileageFormat.format(item.mileage)} km    ${fuelLabel}`;
   ctx.fillText(specsText, PAD, topY + ascentOf(ctx, specsText, specsSize));
   topY += specsLineHeight + GAP;
 
-  // Divider: border-t (1px) + pt-2 (8px) — its own row in the flex column.
+  // Divider: border-t (1px) — its own row in the flex column.
   ctx.strokeStyle = "rgba(255,255,255,0.15)";
   ctx.lineWidth = 1 * scale;
   ctx.beginPath();
@@ -385,13 +422,9 @@ function drawCardPresetContent(
   ctx.lineTo(width - PAD, topY);
   ctx.stroke();
 
-  // --- Trailing group: price row, disclaimer — stacked bottom-up, anchored to contentBottom
-  // (the block's own bottom edge, i.e. true canvas bottom minus the 10% preview lift minus
-  // padding), matching the live preview's flex-1 spacer pushing these two rows to the floor. ---
-  const disclaimerSize = rem(0.62);
-  const disclaimerLineHeight = disclaimerSize * 1.375; // leading-snug
+  // --- Trailing group: price row, disclaimer — same uniform GAP below the divider as every
+  // other row pair (no more elastic stretch), ending exactly at contentBottom. ---
   ctx.font = `400 ${disclaimerSize}px ${CARD_BODY_FONT}`;
-  const disclaimerLines = wrapText(ctx, CARD_PAYMENT_DISCLAIMER, maxTextWidth).slice(0, 2);
   const disclaimerBlockTop = contentBottom - disclaimerLineHeight * disclaimerLines.length;
   ctx.fillStyle = "rgba(255,255,255,0.4)";
   ctx.textAlign = "left";

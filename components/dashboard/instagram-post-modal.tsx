@@ -228,13 +228,13 @@ export function InstagramPostModal({
                     <CarCard
                       car={item}
                       layout="portrait"
-                      previewLiftPercent={14.84}
+                      previewLiftPercent={9.84}
                       previewGradientBoostPercent={10}
                       previewImageShiftPercent={10}
                       previewHideInstagramIcon
                       previewCenterWatermark
                       previewSplitLayout
-                      previewSafeTopPercent={14.84}
+                      previewSafeTopPercent={9.84}
                     />
                   </motion.div>
                 ) : (

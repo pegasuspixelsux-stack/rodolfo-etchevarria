@@ -258,15 +258,9 @@ export function CarCard({
 
       <div
         className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 @[220px]:gap-2 @[220px]:p-4 @[380px]:p-5"
-        style={
-          previewSplitLayout
-            ? { top: "38%", bottom: `${previewLiftPercent}%` }
-            : previewLiftPercent
-              ? { bottom: `${previewLiftPercent}%` }
-              : undefined
-        }
+        style={previewLiftPercent ? { bottom: `${previewLiftPercent}%` } : undefined}
       >
-        <div>
+        <div style={previewSplitLayout ? { marginTop: "11px" } : undefined}>
           <h3 className="font-heading text-[1.05rem] font-normal leading-tight text-white @[220px]:text-[1.575rem]">
             {car.make} {car.model}
           </h3>
@@ -318,12 +312,7 @@ export function CarCard({
           </div>
         </div>
 
-        {previewSplitLayout && (
-          <>
-            <div className="border-t border-white/15 pt-2" />
-            <div className="flex-1" />
-          </>
-        )}
+        {previewSplitLayout && <div className="border-t border-white/15 pt-2" />}
 
         <div
           className={`flex items-end justify-between gap-3 ${
