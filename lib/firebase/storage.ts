@@ -25,3 +25,11 @@ export async function uploadHeroVideo(file: File): Promise<string> {
   await uploadBytes(fileRef, file);
   return getDownloadURL(fileRef);
 }
+
+export async function uploadHeroSlideshowImage(file: File): Promise<string> {
+  const storage = getFirebaseStorage();
+  const path = `site/hero-slideshow/${Date.now()}-${file.name}`;
+  const fileRef = ref(storage, path);
+  await uploadBytes(fileRef, file);
+  return getDownloadURL(fileRef);
+}

@@ -12,11 +12,13 @@ export type HeroMode = "slideshow" | "video";
 export interface SiteSettings {
   heroMode: HeroMode;
   heroVideoUrl: string | null;
+  heroSlideshowImages: string[];
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   heroMode: "slideshow",
   heroVideoUrl: null,
+  heroSlideshowImages: [],
 };
 
 function toSiteSettings(data: Record<string, unknown> | undefined): SiteSettings {
@@ -24,6 +26,9 @@ function toSiteSettings(data: Record<string, unknown> | undefined): SiteSettings
   return {
     heroMode: data.heroMode === "video" ? "video" : "slideshow",
     heroVideoUrl: typeof data.heroVideoUrl === "string" ? data.heroVideoUrl : null,
+    heroSlideshowImages: Array.isArray(data.heroSlideshowImages)
+      ? data.heroSlideshowImages.filter((url): url is string => typeof url === "string")
+      : [],
   };
 }
 

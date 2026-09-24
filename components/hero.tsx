@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 import { useSiteSettings, type SiteSettings } from "@/lib/firebase/site-settings";
 
-const SLIDES = [
+const DEFAULT_SLIDES = [
   {
     src: "https://images.unsplash.com/photo-1698251015050-a79d0220f539?auto=format&fit=crop&w=2400&q=80",
     alt: "A white BMW M2 drifting on a race track, tires smoking against a mountain backdrop",
@@ -31,14 +31,22 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
   const [slide, setSlide] = useState(0);
   const { settings } = useSiteSettings(initialSettings);
   const isVideoMode = settings.heroMode === "video" && Boolean(settings.heroVideoUrl);
+  const slides =
+    settings.heroSlideshowImages.length > 0
+      ? settings.heroSlideshowImages.map((src, index) => ({
+          src,
+          alt: `Foto ${index + 1} del carrusel principal`,
+        }))
+      : DEFAULT_SLIDES;
+  const activeSlide = slide % slides.length;
 
   useEffect(() => {
     if (isVideoMode) return;
     const id = setInterval(() => {
-      setSlide((current) => (current + 1) % SLIDES.length);
+      setSlide((current) => (current + 1) % slides.length);
     }, SLIDE_INTERVAL);
     return () => clearInterval(id);
-  }, [isVideoMode]);
+  }, [isVideoMode, slides.length]);
 
   return (
     <section
@@ -59,7 +67,7 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
       ) : (
         <AnimatePresence initial={false}>
           <motion.div
-            key={slide}
+            key={activeSlide}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -67,10 +75,10 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
             className="absolute inset-0"
           >
             <Image
-              src={SLIDES[slide].src}
-              alt={SLIDES[slide].alt}
+              src={slides[activeSlide].src}
+              alt={slides[activeSlide].alt}
               fill
-              priority={slide === 0}
+              priority={activeSlide === 0}
               sizes="100vw"
               className="object-cover object-center"
             />
@@ -89,14 +97,14 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
       >
         {!isVideoMode && (
           <motion.div variants={fadeUp} className="flex gap-2">
-            {SLIDES.map((item, index) => (
+            {slides.map((item, index) => (
               <button
                 key={item.src}
                 type="button"
                 aria-label={`Mostrar diapositiva ${index + 1}`}
                 onClick={() => setSlide(index)}
                 className={`h-1.5 rounded-none transition-all duration-300 ${
-                  index === slide
+                  index === activeSlide
                     ? "w-6 bg-foreground"
                     : "w-1.5 bg-foreground/40 hover:bg-foreground/70"
                 }`}
