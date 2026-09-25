@@ -89,7 +89,9 @@ export function Navbar() {
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
-            className="flex h-10 w-10 items-center justify-center rounded-none text-foreground"
+            className={`flex h-10 w-10 items-center justify-center rounded-none transition-colors duration-200 ${
+              scrolled ? "text-foreground" : "text-white"
+            }`}
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
