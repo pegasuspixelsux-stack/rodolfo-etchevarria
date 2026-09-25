@@ -49,7 +49,7 @@ export default async function CarDetailPage({
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <div className="h-24 bg-black sm:h-28" />
+      <div className="h-18 bg-black" />
       <Navbar />
       <main className="flex-1 bg-background">
         <div className="mx-auto max-w-[1000px] px-6 pt-8 sm:px-8">
