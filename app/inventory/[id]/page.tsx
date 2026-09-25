@@ -9,6 +9,7 @@ import { CarHeaderInfo } from "@/components/car-detail/car-header-info";
 import { EditorialDescription } from "@/components/car-detail/editorial-description";
 import { FeatureColumns } from "@/components/car-detail/feature-columns";
 import { CarInquiryForm } from "@/components/car-detail/car-inquiry-form";
+import { FinanceCalculator } from "@/components/finance-calculator";
 import { SimilarCarsSlider } from "@/components/car-detail/similar-cars-slider";
 
 function getSimilarCars(
@@ -55,6 +56,9 @@ export default async function CarDetailPage({
         )}
         {detail.features.length > 0 && <FeatureColumns features={detail.features} />}
         <CarInquiryForm car={car} />
+        <div className="mx-auto max-w-[1000px] px-6 py-14 sm:px-8">
+          <FinanceCalculator />
+        </div>
         <SimilarCarsSlider cars={similarCars} />
       </main>
       <Footer />
