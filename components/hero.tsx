@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
+import { MapPin } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 import { useSiteSettings, type SiteSettings } from "@/lib/firebase/site-settings";
 
@@ -68,10 +69,30 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
       )}
 
       <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+        className="absolute inset-x-0 bottom-0 z-10 px-4 pb-8 sm:px-8 sm:pb-12"
+      >
+        <div className="mx-auto flex w-full max-w-7xl">
+          <div className="flex flex-col gap-1 bg-black/60 px-4 py-3 text-white backdrop-blur-sm sm:px-5 sm:py-4">
+            <p className="font-heading text-lg font-medium leading-tight sm:text-xl">
+              {settings.dealerLocation}
+            </p>
+            <p className="flex items-center gap-1.5 text-[0.75rem] text-white/80">
+              <MapPin size={14} className="shrink-0" />
+              {settings.dealerAddress}
+            </p>
+            <p className="text-[0.75rem] text-white/80">{settings.dealerHours}</p>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
-        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center justify-center pb-8 text-center sm:pb-12"
+        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center justify-center pb-4 text-center sm:pb-12"
       >
         {!isVideoMode && hasSlides && (
           <motion.div variants={fadeUp} className="flex gap-2">

@@ -2,6 +2,7 @@ import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
 import { WhyChooseUs } from "@/components/why-choose-us";
 import { FinanceTabs } from "@/components/finance-tabs";
+import { ContactSection } from "@/components/contact-section";
 import { CarGrid } from "@/components/car-grid";
 import { PreFooterHero } from "@/components/pre-footer-hero";
 import { Footer } from "@/components/footer";
@@ -10,13 +11,15 @@ import { getSiteSettingsOnce, DEFAULT_SITE_SETTINGS } from "@/lib/firebase/site-
 import type { InventoryItem } from "@/lib/dashboard-data";
 
 export default async function Home() {
-  let initialCars: InventoryItem[] = [];
+  let initialCars: InventoryItem[] | undefined;
   try {
     initialCars = await getInventoryOnce();
   } catch {
     // Firestore may be unreachable or rules not yet published at build/render
-    // time — fall back to an empty seed and let the client-side subscription
-    // in useInventory() pick up data (and surface its own error) at runtime.
+    // time — leave initialCars undefined (rather than []) so useInventory()
+    // knows this isn't "zero items", starts in a loading state, and shows a
+    // skeleton instead of a blank grid while its client-side subscription
+    // fetches the real data.
   }
 
   let initialSiteSettings = DEFAULT_SITE_SETTINGS;
@@ -33,9 +36,10 @@ export default async function Home() {
       <main className="flex-1">
         <Hero initialSettings={initialSiteSettings} />
 
-        <CarGrid initialCars={initialCars} />
+        <CarGrid initialCars={initialCars} initialSettings={initialSiteSettings} />
         <WhyChooseUs />
         <FinanceTabs />
+        <ContactSection initialSettings={initialSiteSettings} />
         <PreFooterHero />
       </main>
       <Footer />

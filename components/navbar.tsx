@@ -7,8 +7,8 @@ import { Menu, X } from "lucide-react";
 import { easeOut } from "@/lib/motion";
 
 const NAV_LINKS = [
+  { label: "Inicio", href: "/" },
   { label: "Sala de Exhibición", href: "/showroom" },
-  { label: "Financiamiento", href: "/#financing" },
   { label: "Nosotros", href: "/#about" },
   { label: "Contacto", href: "/#contact" },
 ];
@@ -77,7 +77,7 @@ export function Navbar() {
         <div className="hidden items-center gap-4 lg:flex">
           <a
             href="/#contact"
-            className="inline-flex h-10 items-center rounded-none bg-foreground px-5 text-[0.85rem] font-medium text-accent-foreground transition-transform duration-200 ease-out hover:scale-[1.03] active:scale-[0.97]"
+            className="inline-flex h-10 items-center rounded-none bg-primary px-5 text-[0.85rem] font-medium text-primary-foreground transition-transform duration-200 ease-out hover:scale-[1.03] active:scale-[0.97]"
           >
             Agenda una Prueba de Manejo
           </a>
@@ -123,7 +123,7 @@ export function Navbar() {
                 <a
                   href="/#contact"
                   onClick={() => setMenuOpen(false)}
-                  className="flex h-11 w-full items-center justify-center rounded-none bg-foreground text-[0.9rem] font-medium text-accent-foreground"
+                  className="flex h-11 w-full items-center justify-center rounded-none bg-primary text-[0.9rem] font-medium text-primary-foreground"
                 >
                   Agenda una Prueba de Manejo
                 </a>

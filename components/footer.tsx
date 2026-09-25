@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Clock, MapPin, Phone } from "lucide-react";
 import {
   FacebookIcon,
   InstagramIcon,
@@ -11,12 +11,14 @@ import {
   YoutubeIcon,
 } from "@/components/social-icons";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ColorThemeToggle } from "@/components/color-theme-toggle";
+import { useSiteSettings } from "@/lib/firebase/site-settings";
 
 const QUICK_LINKS = [
-  { label: "Inventario", href: "/#inventory" },
-  { label: "Financiamiento", href: "/#financing" },
-  { label: "Permuta", href: "/#financing" },
-  { label: "Ofertas Especiales", href: "/#financing" },
+  { label: "Inicio", href: "/" },
+  { label: "Sala de Exhibición", href: "/showroom" },
+  { label: "Nosotros", href: "/#about" },
+  { label: "Contacto", href: "/#contact" },
 ];
 
 const SOCIALS = [
@@ -27,6 +29,7 @@ const SOCIALS = [
 ];
 
 export function Footer() {
+  const { settings } = useSiteSettings();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -38,7 +41,7 @@ export function Footer() {
   };
 
   return (
-    <footer id="contact" className="border-t border-border bg-background">
+    <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           <div className="flex flex-col gap-4">
@@ -91,15 +94,15 @@ export function Footer() {
             <ul className="flex flex-col gap-3 text-[0.9rem] text-muted">
               <li className="flex items-start gap-2.5">
                 <MapPin size={16} className="mt-0.5 shrink-0" />
-                <span>482 Meridian Avenue, San Francisco, CA 94107</span>
+                <span>{settings.dealerAddress}</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone size={16} className="shrink-0" />
-                <span>(415) 555-0148</span>
+                <span>{settings.dealerPhone}</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <Mail size={16} className="shrink-0" />
-                <span>Lun – Sáb, 9 a 19 hs</span>
+                <Clock size={16} className="shrink-0" />
+                <span>{settings.dealerHours}</span>
               </li>
             </ul>
           </div>
@@ -157,6 +160,7 @@ export function Footer() {
             <Link href="/login" className="transition-colors hover:text-foreground">
               Iniciar Sesión
             </Link>
+            <ColorThemeToggle />
             <ThemeToggle />
           </div>
         </div>
