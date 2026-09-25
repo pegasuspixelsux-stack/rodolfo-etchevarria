@@ -14,12 +14,14 @@ export function SimilarCarsSlider({ cars }: { cars: Car[] }) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
-      className="mx-auto max-w-7xl flex flex-col px-6 py-14 sm:px-8"
+      className="py-14"
     >
-      <h2 className="font-heading text-2xl font-normal tracking-tight text-foreground">
-        Vehículos similares
-      </h2>
-      <div className="mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4">
+      <div className="mx-auto max-w-7xl px-6 sm:px-8">
+        <h2 className="font-heading text-2xl font-normal tracking-tight text-foreground">
+          Vehículos similares
+        </h2>
+      </div>
+      <div className="mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 px-6 sm:px-8">
         {cars.map((car) => (
           <div key={car.id} className="w-52 flex-shrink-0 snap-start sm:w-60">
             <CarCard car={car} layout="portrait" />
