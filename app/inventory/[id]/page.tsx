@@ -8,6 +8,7 @@ import type { InventoryItem } from "@/lib/dashboard-data";
 import { carDetails, buildFallbackDetail } from "@/data/car-details";
 import { CarSlideshow } from "@/components/car-detail/car-slideshow";
 import { CarHeaderInfo } from "@/components/car-detail/car-header-info";
+import { QuickSpecs } from "@/components/car-detail/quick-specs";
 import { EditorialDescription } from "@/components/car-detail/editorial-description";
 import { FeatureColumns } from "@/components/car-detail/feature-columns";
 import { CarInquiryForm } from "@/components/car-detail/car-inquiry-form";
@@ -63,6 +64,7 @@ export default async function CarDetailPage({
         </div>
         <CarSlideshow images={detail.images} car={car} />
         <CarHeaderInfo car={car} />
+        <QuickSpecs car={car} detail={detail} />
         {detail.editorial.paragraphs.length > 0 && (
           <EditorialDescription editorial={detail.editorial} />
         )}
