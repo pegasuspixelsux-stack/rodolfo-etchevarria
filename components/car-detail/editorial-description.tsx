@@ -11,7 +11,7 @@ export function EditorialDescription({
 
   return (
     <div className="mx-auto max-w-[1000px] px-6 py-14 sm:px-8">
-      <div className="mx-auto max-w-2xl">
+      <div>
         {editorial.headline && (
           <h2 className="font-heading text-3xl font-normal leading-tight tracking-tight text-foreground sm:text-4xl">
             {editorial.headline}
@@ -34,7 +34,6 @@ export function EditorialDescription({
             <p key={index}>{paragraph}</p>
           ))}
         </div>
-      </div>
     </div>
   );
 }

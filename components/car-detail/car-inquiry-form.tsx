@@ -80,7 +80,7 @@ export function CarInquiryForm({ car }: { car: Car }) {
         viewport={{ once: true, margin: "-80px" }}
         className="mx-auto max-w-[1000px] px-6 py-14 sm:px-8"
       >
-        <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-none border border-border bg-surface p-10 text-center">
+        <div className="flex max-w-md flex-col items-center gap-3 rounded-none border border-border bg-surface p-10 text-center">
           <span className="flex h-12 w-12 items-center justify-center rounded-none bg-surface-2 text-foreground">
             <CheckCircle2 size={22} />
           </span>
@@ -114,7 +114,7 @@ export function CarInquiryForm({ car }: { car: Car }) {
       viewport={{ once: true, margin: "-80px" }}
       className="mx-auto max-w-[1000px] px-6 py-14 sm:px-8"
     >
-      <div className="mx-auto max-w-2xl rounded-none border border-border bg-surface p-8">
+      <div className="rounded-none border border-border bg-surface p-8">
         <h2 className="font-heading text-2xl font-normal tracking-tight text-foreground">
           ¿Te interesa este vehículo?
         </h2>
