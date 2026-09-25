@@ -80,7 +80,7 @@ export function WhyChooseUs() {
               variants={fadeUp}
               className="group relative flex flex-col gap-4 overflow-hidden rounded-none border border-border bg-surface/60 p-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-border-strong hover:bg-surface"
             >
-              <span className="glass relative flex h-11 w-11 items-center justify-center rounded-none text-foreground">
+              <span className="glass relative flex h-11 w-11 items-center justify-center rounded-none text-primary">
                 <Icon size={20} />
               </span>
               <div className="relative flex flex-col gap-1.5">

@@ -102,7 +102,7 @@ export function ContactSection({ initialSettings }: { initialSettings?: SiteSett
             <ul className="mt-4 flex max-w-md flex-col gap-5 border-t border-border pt-8">
               {contactDetails.map(({ label, value, icon: Icon, href }) => (
                 <li key={label} className="flex items-center gap-3.5">
-                  <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-none border border-border-strong text-amber-500">
+                  <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-none border border-border-strong text-primary">
                     <Icon size={18} />
                   </span>
                   <div className="flex min-w-0 flex-col gap-0.5">
@@ -110,7 +110,7 @@ export function ContactSection({ initialSettings }: { initialSettings?: SiteSett
                     {href ? (
                       <a
                         href={href}
-                        className="truncate text-[0.9rem] text-foreground transition-colors hover:text-amber-500"
+                        className="truncate text-[0.9rem] text-foreground transition-colors hover:text-primary"
                       >
                         {value}
                       </a>

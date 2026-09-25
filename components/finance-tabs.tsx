@@ -46,9 +46,14 @@ export function FinanceTabs() {
             className="glass relative overflow-hidden rounded-none p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-10"
           >
             <div className="relative">
-              <h3 className="mb-6 font-heading text-[1.05rem] font-normal text-foreground">
+              <h3 className="mb-3 font-heading text-[1.05rem] font-normal text-foreground">
                 Tasa tu Vehículo Actual
               </h3>
+              <p className="mb-6 text-[0.95rem] leading-relaxed text-foreground/80">
+                ¿Y si tu auto actual se convierte en la llave para el vehículo
+                que soñás manejar? Envianos tus datos y tasamos tu vehículo
+                para tomarlo como parte de pago en tu próxima compra.
+              </p>
               <TradeInForm />
             </div>
           </motion.div>

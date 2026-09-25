@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Hurricane, Inter } from "next/font/google";
+import Script from "next/script";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
@@ -38,19 +39,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${script.variable} ${heading.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `try {
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`try {
   var theme = localStorage.getItem('theme');
   if (theme === 'light') {
     document.documentElement.setAttribute('data-theme', 'light');
   }
-} catch (e) {}`,
-          }}
-        />
-      </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+} catch (e) {}`}
+        </Script>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

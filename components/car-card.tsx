@@ -312,7 +312,7 @@ export function CarCard({
           sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw"
           className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.08]"
         />
-        <span className="pointer-events-none absolute right-[3cqw] top-[3cqw] z-10 flex h-[clamp(24px,10cqw,36px)] w-[clamp(24px,10cqw,36px)] items-center justify-center bg-black/70 text-white">
+        <span className="pointer-events-none absolute right-[3cqw] top-[3cqw] z-10 flex h-[clamp(24px,10cqw,36px)] w-[clamp(24px,10cqw,36px)] items-center justify-center bg-primary text-primary-foreground">
           <ArrowUpRight size={16} className="h-[45%] w-[45%]" />
         </span>
         {mobileList && (
