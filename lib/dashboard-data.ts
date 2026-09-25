@@ -1,9 +1,47 @@
-import { cars, type Car } from "@/data/cars";
+import { cars, type Car, type CarFeatureGroup } from "@/data/cars";
+import { SHOT_POSITIONS } from "@/lib/vehicle-photo-shots";
 
 export type InventoryStatus = "Available" | "Reserved" | "Sold";
 
 export interface InventoryItem extends Car {
   status: InventoryStatus;
+}
+
+// Single source of truth for turning a raw Firestore inventory document into
+// an InventoryItem — was previously duplicated in lib/firebase/inventory.ts
+// and lib/firebase/inventory-read.ts, and the two copies had drifted (neither
+// mapped `features` back out, silently dropping every admin feature edit).
+export function toInventoryItem(id: string, data: Record<string, unknown>): InventoryItem {
+  const rawImages = Array.isArray(data.images) ? data.images : [];
+  const images = SHOT_POSITIONS.map((_, index) => {
+    const value = rawImages[index];
+    return typeof value === "string" && value ? value : null;
+  });
+
+  return {
+    id,
+    make: String(data.make ?? ""),
+    model: String(data.model ?? ""),
+    trim: String(data.trim ?? ""),
+    year: Number(data.year ?? new Date().getFullYear()),
+    price: Number(data.price ?? 0),
+    mileage: Number(data.mileage ?? 0),
+    transmission: String(data.transmission ?? ""),
+    fuelType: (data.fuelType as InventoryItem["fuelType"]) ?? "Gasoline",
+    bodyType: (data.bodyType as InventoryItem["bodyType"]) ?? "Sedan",
+    color: String(data.color ?? ""),
+    colorHex: String(data.colorHex ?? "#000000"),
+    status: (data.status as InventoryItem["status"]) ?? "Available",
+    image: String(data.image ?? ""),
+    images: images.some((url) => url) ? images : undefined,
+    description: typeof data.description === "string" ? data.description : undefined,
+    features: Array.isArray(data.features)
+      ? data.features.filter((item): item is string => typeof item === "string")
+      : undefined,
+    featureGroups: Array.isArray(data.featureGroups)
+      ? (data.featureGroups as CarFeatureGroup[])
+      : undefined,
+  };
 }
 
 const INVENTORY_STATUS_BY_ID: Record<string, InventoryStatus> = {

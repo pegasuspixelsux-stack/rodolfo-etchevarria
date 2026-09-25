@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, Gauge, ShieldCheck, Sparkles } from "lucide-react";
+import { CheckCircle2, Gauge, ShieldCheck, Sparkles, ShieldAlert, Car, Armchair } from "lucide-react";
 import type { CarFeatureGroup, FeatureIconKey } from "@/data/car-details";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
@@ -9,6 +9,9 @@ const ICONS: Record<FeatureIconKey, typeof Gauge> = {
   engine: Gauge,
   comfort: Sparkles,
   tech: ShieldCheck,
+  safety: ShieldAlert,
+  exteriorEquip: Car,
+  interiorEquip: Armchair,
 };
 
 export function FeatureColumns({ features }: { features: CarFeatureGroup[] }) {

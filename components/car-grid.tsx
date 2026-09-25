@@ -55,21 +55,25 @@ export function CarGrid({
           </p>
         </motion.div>
 
-        <div className="mb-8 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-2">
-          <div className="order-1 flex items-center gap-1 self-start border border-border-strong p-1 md:hidden">
-            <button
-              type="button"
-              onClick={() => setMobileView("list")}
-              aria-label="Ver en lista"
-              aria-pressed={mobileView === "list"}
-              className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
-                mobileView === "list"
-                  ? "bg-foreground text-accent-foreground"
-                  : "text-muted hover:text-foreground"
-              }`}
-            >
-              <Rows size={15} />
-            </button>
+        <div className="mb-8 flex flex-row items-center justify-between gap-2 md:flex-wrap">
+          <div className="flex min-w-0 flex-1 flex-nowrap gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:flex-wrap md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
+            {BODY_TYPE_PILLS.map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setBodyType(type)}
+                className={`flex-shrink-0 rounded-none border px-4 py-2 text-[0.85rem] font-medium transition-colors duration-200 ${
+                  bodyType === type
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border-strong text-muted hover:text-foreground"
+                }`}
+              >
+                {BODY_TYPE_LABELS[type]}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-shrink-0 items-center gap-1 border border-border-strong p-1 md:hidden">
             <button
               type="button"
               onClick={() => setMobileView("single")}
@@ -85,6 +89,19 @@ export function CarGrid({
             </button>
             <button
               type="button"
+              onClick={() => setMobileView("list")}
+              aria-label="Ver en lista"
+              aria-pressed={mobileView === "list"}
+              className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
+                mobileView === "list"
+                  ? "bg-foreground text-accent-foreground"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              <Rows size={15} />
+            </button>
+            <button
+              type="button"
               onClick={() => setMobileView("grid")}
               aria-label="Ver en dos columnas"
               aria-pressed={mobileView === "grid"}
@@ -96,23 +113,6 @@ export function CarGrid({
             >
               <Grid2x2 size={15} />
             </button>
-          </div>
-
-          <div className="order-2 flex flex-nowrap gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:flex-wrap md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
-            {BODY_TYPE_PILLS.map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setBodyType(type)}
-                className={`flex-shrink-0 rounded-none border px-4 py-2 text-[0.85rem] font-medium transition-colors duration-200 ${
-                  bodyType === type
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border-strong text-muted hover:text-foreground"
-                }`}
-              >
-                {BODY_TYPE_LABELS[type]}
-              </button>
-            ))}
           </div>
         </div>
 

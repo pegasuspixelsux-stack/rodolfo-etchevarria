@@ -1,16 +1,10 @@
-import type { Car } from "@/data/cars";
+import type { Car, CarFeatureGroup, FeatureIconKey } from "@/data/cars";
+
+export type { CarFeatureGroup, FeatureIconKey };
 
 export interface CarDetailImage {
   src: string;
   alt: string;
-}
-
-export type FeatureIconKey = "engine" | "comfort" | "tech";
-
-export interface CarFeatureGroup {
-  category: string;
-  icon: FeatureIconKey;
-  items: string[];
 }
 
 export interface CarDetail {
@@ -488,9 +482,20 @@ export const carDetails: Record<string, CarDetail> = {
 };
 
 export function buildFallbackDetail(car: Car): CarDetail {
+  const uploadedImages = (car.images ?? []).filter((url): url is string => Boolean(url));
+  const images =
+    uploadedImages.length > 0
+      ? uploadedImages.map((src, index) => ({
+          src,
+          alt: `${car.year} ${car.make} ${car.model} ${car.trim} — foto ${index + 1}`,
+        }))
+      : [{ src: car.image, alt: `${car.year} ${car.make} ${car.model} ${car.trim}` }];
+
   return {
-    images: [{ src: car.image, alt: `${car.year} ${car.make} ${car.model} ${car.trim}` }],
-    editorial: { headline: "", dek: "", paragraphs: [] },
-    features: [],
+    images,
+    editorial: car.description?.trim()
+      ? { headline: "", dek: "", paragraphs: [car.description.trim()] }
+      : { headline: "", dek: "", paragraphs: [] },
+    features: car.featureGroups ?? [],
   };
 }

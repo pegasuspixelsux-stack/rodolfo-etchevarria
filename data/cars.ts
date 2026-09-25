@@ -1,3 +1,11 @@
+export type FeatureIconKey = "engine" | "comfort" | "tech" | "safety" | "exteriorEquip" | "interiorEquip";
+
+export interface CarFeatureGroup {
+  category: string;
+  icon: FeatureIconKey;
+  items: string[];
+}
+
 export interface Car {
   id: string;
   make: string;
@@ -12,7 +20,11 @@ export interface Car {
   color: string;
   colorHex: string;
   image: string;
+  /** Ordered 1:1 with lib/vehicle-photo-shots.ts SHOT_POSITIONS; null = not yet captured. */
+  images?: (string | null)[];
+  description?: string;
   features?: string[];
+  featureGroups?: CarFeatureGroup[];
 }
 
 export const cars: Car[] = [

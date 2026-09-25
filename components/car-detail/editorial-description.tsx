@@ -12,12 +12,16 @@ export function EditorialDescription({
   return (
     <div className="mx-auto max-w-[1000px] px-6 py-14 sm:px-8">
       <div className="mx-auto max-w-2xl">
-        <h2 className="font-heading text-3xl font-normal leading-tight tracking-tight text-foreground sm:text-4xl">
-          {editorial.headline}
-        </h2>
-        <p className="mt-4 text-lg leading-relaxed text-muted">
-          {editorial.dek}
-        </p>
+        {editorial.headline && (
+          <h2 className="font-heading text-3xl font-normal leading-tight tracking-tight text-foreground sm:text-4xl">
+            {editorial.headline}
+          </h2>
+        )}
+        {editorial.dek && (
+          <p className="mt-4 text-lg leading-relaxed text-muted">
+            {editorial.dek}
+          </p>
+        )}
 
         <div className="mt-8 flex flex-col gap-6 text-[1.05rem] leading-[1.9] text-foreground">
           <p>

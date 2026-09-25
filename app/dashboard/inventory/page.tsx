@@ -3,16 +3,19 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Pencil, Plus, Search, Sparkles, Trash2 } from "lucide-react";
+import { Download, FileUp, Pencil, Plus, Search, Sparkles, Trash2 } from "lucide-react";
 import { Modal } from "@/components/dashboard/modal";
 import { StatusPill } from "@/components/dashboard/status-pill";
 import { DashboardField, dashboardInputClass } from "@/components/dashboard/form-field";
 import { InstagramPostModal } from "@/components/dashboard/instagram-post-modal";
+import { InventoryImportModal } from "@/components/dashboard/inventory-import-modal";
+import { VehiclePhotoGuide } from "@/components/dashboard/vehicle-photo-guide";
 import { useInventory } from "@/lib/firebase/inventory";
-import { uploadInventoryImage } from "@/lib/firebase/storage";
 import type { InventoryItem, InventoryStatus } from "@/lib/dashboard-data";
+import type { CarFeatureGroup, FeatureIconKey } from "@/data/cars";
+import { exportInventoryToExcel } from "@/lib/inventory-import-export";
 import { fadeUp, staggerContainer } from "@/lib/motion";
-import { ALLOWED_IMAGE_HOSTS, isAllowedImageUrl } from "@/lib/image-hosts";
+import { MAX_VEHICLE_PHOTOS } from "@/lib/vehicle-photo-shots";
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -51,30 +54,123 @@ const FUEL_TYPE_LABELS: Record<InventoryItem["fuelType"], string> = {
   Electric: "Eléctrico",
 };
 
-const FEATURE_OPTIONS: string[] = [
-  "Arranque sin llave (Smart Key)",
-  "Botón de encendido",
-  "Climatizador automático (bizona / trizona)",
-  "Asientos eléctricos",
-  "Asientos calefactables",
-  "Asientos ventilados",
-  "Techo solar / panorámico",
-  "Portón trasero eléctrico",
-  "Apple CarPlay / Android Auto inalámbrico",
-  "Cargador inalámbrico para celular",
-  "Tablero digital (Digital Cockpit)",
-  "Iluminación ambiental LED",
-  "Control de crucero adaptativo (ACC)",
-  "Frenado autónomo de emergencia (AEB)",
-  "Detector de punto ciego",
-  "Alerta de tráfico cruzado",
-  "Asistente de mantenimiento de carril",
-  "Cámara 360°",
-  "Sensores de estacionamiento",
-  "Vidrios polarizados / tintados de fábrica",
-  "Espejo retrovisor electrocrómico",
-  "Faros LED matriciales / adaptativos",
+const FEATURE_CATEGORY_PRESETS: { icon: FeatureIconKey; category: string; options: string[] }[] = [
+  {
+    icon: "engine",
+    category: "Especificaciones Técnicas",
+    options: [
+      "Turbo / sobrealimentado",
+      "Tracción integral (AWD/4x4)",
+      "Selector de modos de manejo",
+      "Suspensión adaptativa",
+      "Frenos de alto rendimiento",
+      "Escape deportivo",
+      "Paddle shifters",
+      "Control de crucero adaptativo (ACC)",
+    ],
+  },
+  {
+    icon: "comfort",
+    category: "Confort",
+    options: [
+      "Asientos eléctricos",
+      "Asientos calefaccionados",
+      "Asientos ventilados",
+      "Climatizador automático (bi/trizona)",
+      "Techo solar / panorámico",
+      "Volante calefaccionado",
+      "Memoria de asientos",
+      "Portón trasero eléctrico",
+    ],
+  },
+  {
+    icon: "safety",
+    category: "Seguridad",
+    options: [
+      "Frenado autónomo de emergencia (AEB)",
+      "Detector de punto ciego",
+      "Alerta de tráfico cruzado",
+      "Asistente de mantenimiento de carril",
+      "Cámara 360°",
+      "Sensores de estacionamiento",
+      "Airbags laterales / cortina",
+      "Control de estabilidad (ESC)",
+    ],
+  },
+  {
+    icon: "tech",
+    category: "Tecnología",
+    options: [
+      "Apple CarPlay / Android Auto inalámbrico",
+      "Cargador inalámbrico para celular",
+      "Tablero digital (Digital Cockpit)",
+      "Pantalla táctil grande",
+      "Sonido premium",
+      "Actualizaciones por aire (OTA)",
+      "Reconocimiento de voz",
+      "Wi-Fi a bordo",
+    ],
+  },
+  {
+    icon: "exteriorEquip",
+    category: "Equipamiento Exterior",
+    options: [
+      "Faros LED matriciales / adaptativos",
+      "Llantas de aleación",
+      "Vidrios polarizados de fábrica",
+      "Barras de techo",
+      "Espejos abatibles eléctricos",
+      "Sensor de lluvia",
+      "Pintura metalizada / especial",
+      "Enganche para remolque",
+    ],
+  },
+  {
+    icon: "interiorEquip",
+    category: "Equipamiento Interior",
+    options: [
+      "Tapizado en cuero",
+      "Iluminación ambiental LED",
+      "Espejo retrovisor electrocrómico",
+      "Cargador USB-C múltiple",
+      "Guantera refrigerada",
+      "Parabrisas acústico",
+      "Filtro de aire con carbón activado",
+      "Pedaleras deportivas",
+    ],
+  },
 ];
+
+type FeatureSelections = Record<FeatureIconKey, string[]>;
+
+const EMPTY_FEATURE_SELECTIONS: FeatureSelections = FEATURE_CATEGORY_PRESETS.reduce(
+  (acc, { icon }) => ({ ...acc, [icon]: [] }),
+  {} as FeatureSelections,
+);
+
+function featureGroupsToSelections(groups: CarFeatureGroup[] | undefined): FeatureSelections {
+  const result = { ...EMPTY_FEATURE_SELECTIONS };
+  const optionsByIcon = Object.fromEntries(
+    FEATURE_CATEGORY_PRESETS.map(({ icon, options }) => [icon, options]),
+  ) as Record<FeatureIconKey, string[]>;
+  (groups ?? []).forEach((group) => {
+    if (group.icon in result) {
+      result[group.icon] = group.items.filter((item) => optionsByIcon[group.icon].includes(item));
+    }
+  });
+  return result;
+}
+
+function selectionsToFeatureGroups(selections: FeatureSelections): CarFeatureGroup[] {
+  return FEATURE_CATEGORY_PRESETS.map(({ icon, category, options }) => ({
+    category,
+    icon,
+    items: options.filter((option) => selections[icon].includes(option)),
+  })).filter((group) => group.items.length > 0);
+}
+
+const DEFAULT_IMAGE_URL =
+  "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=80";
 
 type DraftVehicle = {
   make: string;
@@ -84,13 +180,14 @@ type DraftVehicle = {
   price: string;
   mileage: string;
   status: InventoryStatus;
-  image: string;
+  images: (string | null)[];
+  description: string;
   transmission: string;
   fuelType: InventoryItem["fuelType"];
   bodyType: InventoryItem["bodyType"];
   color: string;
   colorHex: string;
-  features: string[];
+  featureSelections: FeatureSelections;
 };
 
 const EMPTY_DRAFT: DraftVehicle = {
@@ -101,16 +198,19 @@ const EMPTY_DRAFT: DraftVehicle = {
   price: "",
   mileage: "",
   status: "Available",
-  image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=80",
+  images: Array(MAX_VEHICLE_PHOTOS).fill(null),
+  description: "",
   transmission: "Automatic",
   fuelType: "Gasoline",
   bodyType: "Sedan",
   color: "Jet Black",
   colorHex: "#0a0a0b",
-  features: [],
+  featureSelections: EMPTY_FEATURE_SELECTIONS,
 };
 
 function toDraft(item: InventoryItem): DraftVehicle {
+  const images = item.images ? [...item.images] : Array(MAX_VEHICLE_PHOTOS).fill(null);
+  while (images.length < MAX_VEHICLE_PHOTOS) images.push(null);
   return {
     make: item.make,
     model: item.model,
@@ -119,13 +219,14 @@ function toDraft(item: InventoryItem): DraftVehicle {
     price: String(item.price),
     mileage: String(item.mileage),
     status: item.status,
-    image: item.image,
+    images,
+    description: item.description ?? "",
     transmission: item.transmission,
     fuelType: item.fuelType,
     bodyType: item.bodyType,
     color: item.color,
     colorHex: item.colorHex,
-    features: item.features ?? [],
+    featureSelections: featureGroupsToSelections(item.featureGroups),
   };
 }
 
@@ -137,11 +238,10 @@ export default function InventoryPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftId, setDraftId] = useState<string>("");
   const [draft, setDraft] = useState<DraftVehicle>(EMPTY_DRAFT);
-  const [errors, setErrors] = useState<{ image?: string }>({});
-  const [uploading, setUploading] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [instagramItem, setInstagramItem] = useState<InventoryItem | null>(null);
   const [instagramOpen, setInstagramOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   const filtered = useMemo(() => {
     return inventory.filter((item) => {
@@ -155,11 +255,20 @@ export default function InventoryPage() {
 
   const isDraftValid = Boolean(draft.make.trim() && draft.model.trim() && draft.price.trim());
 
+  const toggleFeatureOption = (icon: FeatureIconKey, option: string) => {
+    setDraft((d) => {
+      const current = d.featureSelections[icon];
+      const next = current.includes(option)
+        ? current.filter((item) => item !== option)
+        : [...current, option];
+      return { ...d, featureSelections: { ...d.featureSelections, [icon]: next } };
+    });
+  };
+
   const openAddModal = () => {
     setEditingId(null);
     setDraftId(`vehicle-${Date.now()}`);
     setDraft(EMPTY_DRAFT);
-    setErrors({});
     setModalOpen(true);
   };
 
@@ -167,35 +276,14 @@ export default function InventoryPage() {
     setEditingId(item.id);
     setDraftId(item.id);
     setDraft(toDraft(item));
-    setErrors({});
     setModalOpen(true);
-  };
-
-  const handleImageUpload = async (file: File) => {
-    setUploading(true);
-    setErrors({});
-    try {
-      const url = await uploadInventoryImage(file, draftId);
-      setDraft((d) => ({ ...d, image: url }));
-    } catch (error) {
-      console.error("uploadInventoryImage failed:", error);
-      setErrors({ image: "No se pudo subir la imagen. Intenta de nuevo." });
-    } finally {
-      setUploading(false);
-    }
   };
 
   const handleSave = async () => {
     if (!isDraftValid) return;
 
-    const trimmedImage = draft.image.trim();
-    if (trimmedImage && !isAllowedImageUrl(trimmedImage)) {
-      setErrors({
-        image: `La URL de la imagen debe estar alojada en: ${ALLOWED_IMAGE_HOSTS.join(", ")}`,
-      });
-      return;
-    }
-    setErrors({});
+    const thumbnail = draft.images.find((url): url is string => Boolean(url)) ?? DEFAULT_IMAGE_URL;
+    const featureGroups = selectionsToFeatureGroups(draft.featureSelections);
 
     if (editingId) {
       const existing = inventory.find((item) => item.id === editingId);
@@ -207,13 +295,15 @@ export default function InventoryPage() {
         price: Number(draft.price) || existing?.price || 0,
         mileage: Number(draft.mileage) || existing?.mileage || 0,
         status: draft.status,
-        image: trimmedImage || existing?.image || EMPTY_DRAFT.image,
+        image: thumbnail,
+        images: draft.images,
+        description: draft.description.trim(),
+        featureGroups,
         transmission: draft.transmission.trim() || existing?.transmission || EMPTY_DRAFT.transmission,
         fuelType: draft.fuelType || existing?.fuelType || EMPTY_DRAFT.fuelType,
         bodyType: draft.bodyType || existing?.bodyType || EMPTY_DRAFT.bodyType,
         color: draft.color.trim() || existing?.color || EMPTY_DRAFT.color,
         colorHex: draft.colorHex.trim() || existing?.colorHex || EMPTY_DRAFT.colorHex,
-        features: draft.features,
       });
     } else {
       const newItem: InventoryItem = {
@@ -230,22 +320,15 @@ export default function InventoryPage() {
         color: draft.color.trim() || EMPTY_DRAFT.color,
         colorHex: draft.colorHex.trim() || EMPTY_DRAFT.colorHex,
         status: draft.status,
-        image: trimmedImage || EMPTY_DRAFT.image,
-        features: draft.features,
+        image: thumbnail,
+        images: draft.images,
+        description: draft.description.trim(),
+        featureGroups,
       };
       await addVehicle(newItem);
     }
 
     setModalOpen(false);
-  };
-
-  const toggleFeature = (feature: string) => {
-    setDraft((d) => ({
-      ...d,
-      features: d.features.includes(feature)
-        ? d.features.filter((f) => f !== feature)
-        : [...d.features, feature],
-    }));
   };
 
   const handleDelete = async (id: string) => {
@@ -264,14 +347,33 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Inventario</h1>
           <p className="mt-1 text-sm text-slate-500">{inventory.length} vehículos en el lote.</p>
         </div>
-        <button
-          type="button"
-          onClick={openAddModal}
-          className="flex h-11 items-center gap-2 rounded-none bg-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
-        >
-          <Plus size={16} />
-          Agregar Vehículo
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => void exportInventoryToExcel(inventory)}
+            disabled={inventory.length === 0}
+            className="flex h-11 items-center gap-2 rounded-none border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={16} />
+            Exportar
+          </button>
+          <button
+            type="button"
+            onClick={() => setImportOpen(true)}
+            className="flex h-11 items-center gap-2 rounded-none border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
+          >
+            <FileUp size={16} />
+            Importar
+          </button>
+          <button
+            type="button"
+            onClick={openAddModal}
+            className="flex h-11 items-center gap-2 rounded-none bg-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+          >
+            <Plus size={16} />
+            Agregar Vehículo
+          </button>
+        </div>
       </div>
 
       <motion.div variants={fadeUp} className="flex flex-col gap-3 sm:flex-row">
@@ -451,52 +553,66 @@ export default function InventoryPage() {
               <input value={draft.colorHex} onChange={(e) => setDraft((d) => ({ ...d, colorHex: e.target.value }))} className={dashboardInputClass} />
             </DashboardField>
           </div>
+          <DashboardField label="Descripción">
+            <textarea
+              value={draft.description}
+              onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
+              placeholder="Descripción detallada del vehículo para la página de la ficha…"
+              rows={5}
+              className={`${dashboardInputClass} h-auto resize-none py-2.5`}
+            />
+          </DashboardField>
+
+          <DashboardField label="Fotos del Vehículo (set guiado de 10 fotos)">
+            <VehiclePhotoGuide
+              carId={draftId}
+              value={draft.images}
+              onChange={(images) => setDraft((d) => ({ ...d, images }))}
+            />
+          </DashboardField>
+
           <DashboardField label="Características">
-            <div className="grid grid-cols-1 gap-x-4 gap-y-2 rounded-none border border-slate-200 p-3 sm:grid-cols-2">
-              {FEATURE_OPTIONS.map((feature) => (
-                <label
-                  key={feature}
-                  className="flex cursor-pointer items-center gap-2 text-sm text-slate-700"
-                >
-                  <input
-                    type="checkbox"
-                    checked={draft.features.includes(feature)}
-                    onChange={() => toggleFeature(feature)}
-                    className="h-4 w-4 flex-shrink-0 rounded-none border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  {feature}
-                </label>
-              ))}
+            <div className="flex flex-col gap-5 rounded-none border border-slate-200 p-3">
+              {FEATURE_CATEGORY_PRESETS.map(({ icon, category, options }) => {
+                const selected = draft.featureSelections[icon];
+                return (
+                  <div key={icon} className="flex flex-col gap-2">
+                    <span className="text-xs font-medium text-slate-600">
+                      {category}
+                      {selected.length > 0 && (
+                        <span className="ml-1.5 text-slate-400">({selected.length})</span>
+                      )}
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {options.map((option) => {
+                        const isActive = selected.includes(option);
+                        return (
+                          <button
+                            key={option}
+                            type="button"
+                            onClick={() => toggleFeatureOption(icon, option)}
+                            aria-pressed={isActive}
+                            className={`rounded-none border px-3 py-1.5 text-xs font-medium transition-colors ${
+                              isActive
+                                ? "border-indigo-600 bg-indigo-600 text-white"
+                                : "border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </DashboardField>
-          <DashboardField label="Subir Imagen">
-            <input
-              type="file"
-              accept="image/*"
-              disabled={uploading}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) void handleImageUpload(file);
-              }}
-              className={dashboardInputClass}
-            />
-            {uploading && <p className="text-xs text-slate-500">Subiendo imagen…</p>}
-          </DashboardField>
-          <DashboardField label="URL de Imagen">
-            <input
-              value={draft.image}
-              onChange={(e) => {
-                setDraft((d) => ({ ...d, image: e.target.value }));
-                setErrors({});
-              }}
-              className={dashboardInputClass}
-            />
-            {errors.image && <p className="text-xs text-red-600">{errors.image}</p>}
-          </DashboardField>
+
           <button
             type="button"
             onClick={handleSave}
-            disabled={!isDraftValid || uploading}
+            disabled={!isDraftValid}
             className="mt-2 flex h-11 items-center justify-center rounded-none bg-indigo-600 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-indigo-600"
           >
             {editingId ? "Guardar Cambios" : "Agregar Vehículo"}
@@ -508,6 +624,12 @@ export default function InventoryPage() {
         open={instagramOpen}
         onClose={() => setInstagramOpen(false)}
         item={instagramItem}
+      />
+
+      <InventoryImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        addVehicle={addVehicle}
       />
     </motion.div>
   );
