@@ -34,6 +34,7 @@ export function EditorialDescription({
             <p key={index}>{paragraph}</p>
           ))}
         </div>
+      </div>
     </div>
   );
 }
