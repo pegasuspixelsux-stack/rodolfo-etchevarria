@@ -4,7 +4,7 @@ Date: 2026-09-16
 
 ## Purpose
 
-Add a public, editorial-style vehicle detail page to DriveTime, reached from
+Add a public, editorial-style vehicle detail page to Dealio, reached from
 the homepage inventory grid's "View Details" button (currently a dead
 button with no destination). No backend exists in this project — this page
 follows the established pattern of the rest of the app: real base vehicle

@@ -77,8 +77,8 @@ export interface TeamUser {
 }
 
 export const seedUsers: TeamUser[] = [
-  { id: "user-1", name: "Alejandro Gonzalez", email: "alejandro@drivetime.com", role: "Admin", status: "Active" },
-  { id: "user-2", name: "Maria Chen", email: "maria.chen@drivetime.com", role: "Manager", status: "Active" },
-  { id: "user-3", name: "Robert Kim", email: "robert.kim@drivetime.com", role: "Sales", status: "Active" },
-  { id: "user-4", name: "Jasmine Patel", email: "jasmine.patel@drivetime.com", role: "Sales", status: "Invited" },
+  { id: "user-1", name: "Alejandro Gonzalez", email: "alejandro@dealio.com", role: "Admin", status: "Active" },
+  { id: "user-2", name: "Maria Chen", email: "maria.chen@dealio.com", role: "Manager", status: "Active" },
+  { id: "user-3", name: "Robert Kim", email: "robert.kim@dealio.com", role: "Sales", status: "Active" },
+  { id: "user-4", name: "Jasmine Patel", email: "jasmine.patel@dealio.com", role: "Sales", status: "Invited" },
 ];

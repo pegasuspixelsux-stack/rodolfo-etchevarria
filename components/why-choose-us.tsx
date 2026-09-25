@@ -27,7 +27,7 @@ const PILLARS = [
     icon: LifeBuoy,
     title: "Soporte de por Vida",
     description:
-      "Revisiones gratuitas y turnos prioritarios durante todo el tiempo que tengas tu vehículo DriveTime.",
+      "Revisiones gratuitas y turnos prioritarios durante todo el tiempo que tengas tu vehículo Dealio.",
   },
 ];
 
@@ -43,7 +43,7 @@ export function WhyChooseUs() {
           className="flex flex-col justify-center gap-6"
         >
           <motion.p variants={fadeUp} className="text-[0.9rem] font-medium text-muted">
-            Por Qué Elegir DriveTime
+            Por Qué Elegir Dealio
           </motion.p>
           <motion.h2
             variants={fadeUp}

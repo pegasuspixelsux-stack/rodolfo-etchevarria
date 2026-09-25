@@ -91,11 +91,11 @@ export async function shareCarToInstagram(item: Car): Promise<ShareCarOutcome> {
     preset: DEFAULT_PRESET,
   });
 
-  const filename = `${slugify(`${item.year}-${item.make}-${item.model}`)}-drivetime.png`;
+  const filename = `${slugify(`${item.year}-${item.make}-${item.model}`)}-dealio.png`;
   return shareImageOrOpenInstagram(
     blob,
     filename,
     `${item.make} ${item.model}`,
-    `${item.make} ${item.model} — ${defaultPriceText(item)} en DriveTime`,
+    `${item.make} ${item.model} — ${defaultPriceText(item)} en Dealio`,
   );
 }

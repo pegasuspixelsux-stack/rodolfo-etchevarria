@@ -606,7 +606,7 @@ export function InstagramPostModal({
                   <input
                     value={instagramHandle}
                     onChange={(e) => setInstagramHandle(e.target.value)}
-                    placeholder="@drivetime"
+                    placeholder="@dealio"
                     className="h-11 w-full rounded-none border border-slate-200 bg-white px-4 text-sm text-slate-900 focus-visible:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-100"
                   />
                 </div>

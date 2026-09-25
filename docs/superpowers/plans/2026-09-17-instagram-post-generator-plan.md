@@ -162,7 +162,7 @@ function drawWatermark(
   y: number,
   align: "left" | "right",
 ) {
-  const label = "DRIVETIME";
+  const label = "DEALIO";
   ctx.font = "600 22px system-ui, sans-serif";
   const textWidth = ctx.measureText(label).width;
   const paddingX = 20;
@@ -365,7 +365,7 @@ export function InstagramPostModal({
                   <span
                     className={`absolute flex items-center rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold tracking-wide text-slate-900 ${WATERMARK_POSITION_CLASS[preset]}`}
                   >
-                    DRIVETIME
+                    DEALIO
                   </span>
 
                   <div className="absolute inset-x-4 bottom-4">
@@ -563,7 +563,7 @@ Manual check in a browser, logged into the dashboard, on `/dashboard/inventory`:
 - Each row now shows a sparkle icon button alongside the pencil/trash icons.
 - Clicking it opens the Instagram post modal for that specific vehicle, pre-filled with its year/make/model title and a computed `.../mes` payment string.
 - Editing the título and precio/cuota fields updates the live preview text in real time.
-- Clicking each of the 3 "Diseño" preset cards moves the DRIVETIME watermark pill in the live preview: top-right (Logo Arriba), top-left (Logo Izquierda), and down near the bottom text block with nothing at the top (Todo Abajo).
+- Clicking each of the 3 "Diseño" preset cards moves the DEALIO watermark pill in the live preview: top-right (Logo Arriba), top-left (Logo Izquierda), and down near the bottom text block with nothing at the top (Todo Abajo).
 - Clicking a thumbnail in "Fotos del vehículo" swaps the preview's background photo.
 - Clicking "Descargar Imagen Final" produces a downloaded `.png` file (check the browser's downloads) named like `2023-bmw-m5-instagram-post.png`; open it and confirm it's a 1080×1080 image with the photo, gradient, watermark, and text baked in, in the position matching whichever preset was selected. This is the one behavior that cannot be verified via `curl`/`tsc` — flag explicitly if a real browser check wasn't possible in the environment doing this verification.
 - Closing the modal (X button or backdrop click) and reopening it for a DIFFERENT vehicle shows that vehicle's own data, not the previous one's.

@@ -135,7 +135,7 @@ export const PADDING = 56;
 
 // The dealership's brand mark, pulled from the global system configuration. Staff can
 // override it per-graphic (see "Identidad de Marca") without touching this default.
-export const DEFAULT_LOGO_SRC = "/drivetime-logo.svg";
+export const DEFAULT_LOGO_SRC = "/dealio-logo.svg";
 export const LOGO_MAX_WIDTH = 220;
 export const LOGO_MAX_HEIGHT = 64;
 

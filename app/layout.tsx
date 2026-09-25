@@ -26,9 +26,9 @@ const heading = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DriveTime — Encuentra tu próxima máquina de precisión",
+  title: "Dealio — Encuentra tu próxima máquina de precisión",
   description:
-    "DriveTime es una concesionaria de alta gama que ofrece una selección curada de sedanes, SUVs y vehículos de alto rendimiento diseñados con precisión.",
+    "Dealio es una concesionaria de alta gama que ofrece una selección curada de sedanes, SUVs y vehículos de alto rendimiento diseñados con precisión.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

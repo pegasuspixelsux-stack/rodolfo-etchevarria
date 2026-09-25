@@ -707,10 +707,10 @@ export function Sidebar({ currentUser }: { currentUser: CurrentUser }) {
         <Link
           href="/dashboard"
           className="text-lg font-semibold tracking-tight text-slate-900"
-          title="DriveTime"
+          title="Dealio"
         >
           <span className="lg:hidden">DT</span>
-          <span className="hidden lg:inline">DriveTime</span>
+          <span className="hidden lg:inline">Dealio</span>
         </Link>
       </div>
 
@@ -2735,10 +2735,10 @@ const messages = [
 ];
 
 const users = [
-  { id: "user-1", name: "Alejandro Gonzalez", email: "alejandro@drivetime.com", role: "Admin", status: "Active" },
-  { id: "user-2", name: "Maria Chen", email: "maria.chen@drivetime.com", role: "Manager", status: "Active" },
-  { id: "user-3", name: "Robert Kim", email: "robert.kim@drivetime.com", role: "Sales", status: "Active" },
-  { id: "user-4", name: "Jasmine Patel", email: "jasmine.patel@drivetime.com", role: "Sales", status: "Invited" },
+  { id: "user-1", name: "Alejandro Gonzalez", email: "alejandro@dealio.com", role: "Admin", status: "Active" },
+  { id: "user-2", name: "Maria Chen", email: "maria.chen@dealio.com", role: "Manager", status: "Active" },
+  { id: "user-3", name: "Robert Kim", email: "robert.kim@dealio.com", role: "Sales", status: "Active" },
+  { id: "user-4", name: "Jasmine Patel", email: "jasmine.patel@dealio.com", role: "Sales", status: "Invited" },
 ];
 
 async function main() {

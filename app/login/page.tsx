@@ -64,7 +64,7 @@ export default function LoginPage() {
           transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1], delay: 0.1 }}
           className="text-6xl font-semibold tracking-tight text-foreground"
         >
-          DriveTime
+          Dealio
         </motion.h1>
 
         <motion.p
@@ -73,7 +73,7 @@ export default function LoginPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-[0.85rem] text-muted-2"
         >
-          DriveTime v1.0
+          Dealio v1.0
         </motion.p>
       </div>
 
@@ -103,7 +103,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@drivetime.com"
+                placeholder="you@dealio.com"
                 className="h-12 w-full rounded-none border border-border-strong bg-surface px-4 text-[0.9rem] text-foreground placeholder:text-muted-2 transition-colors duration-200 hover:border-foreground/30 focus-visible:border-foreground/50 focus-visible:outline-none"
               />
               {errors.email && <p className="text-[0.78rem] text-red-400">{errors.email}</p>}

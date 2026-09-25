@@ -44,10 +44,10 @@ export function Sidebar({ currentUser }: { currentUser: CurrentUser }) {
         <Link
           href="/dashboard"
           className="text-lg font-semibold tracking-tight text-slate-900"
-          title="DriveTime"
+          title="Dealio"
         >
-          <span className="lg:hidden">DT</span>
-          <span className="hidden lg:inline">DriveTime</span>
+          <span className="lg:hidden">D</span>
+          <span className="hidden lg:inline">Dealio</span>
         </Link>
       </div>
 

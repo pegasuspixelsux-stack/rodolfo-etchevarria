@@ -4,7 +4,7 @@ Date: 2026-09-16
 
 ## Purpose
 
-Add a `/login` page and a `/dashboard` subsystem to DriveTime for internal
+Add a `/login` page and a `/dashboard` subsystem to Dealio for internal
 staff to manage inventory, leads, contact submissions, and team users. No
 backend/DB exists in this project (Next.js App Router, purely client-side
 mock data throughout the homepage) — this subsystem follows the same

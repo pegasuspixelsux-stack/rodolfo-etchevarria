@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a public, editorial-style vehicle detail page at `/inventory/[id]` to the DriveTime Next.js app, reached from the homepage's "View Details" button.
+**Goal:** Add a public, editorial-style vehicle detail page at `/inventory/[id]` to the Dealio Next.js app, reached from the homepage's "View Details" button.
 
 **Architecture:** `app/inventory/[id]/page.tsx` is an async Server Component that looks up the car in the existing `data/cars.ts` plus new per-car content in `data/car-details.ts`, computes a similar-cars list, and renders six client components in a fixed vertical order (slideshow → header → editorial → features → inquiry form → similar cars) inside the normal site `Navbar`/`Footer` chrome. The page is a self-contained grayscale ("zinc") light theme, independent of the homepage's dark/light toggle — same pattern the admin dashboard already established.
 

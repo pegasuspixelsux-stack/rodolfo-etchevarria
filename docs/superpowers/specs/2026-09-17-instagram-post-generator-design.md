@@ -71,7 +71,7 @@ and up.
   currently-selected gallery image, `object-cover`.
 - A bottom gradient overlay div (`bg-gradient-to-t from-black/80
   via-black/40 to-transparent`) for text legibility.
-- A "DRIVETIME" watermark pill, top-right, small rounded-full badge,
+- A "DEALIO" watermark pill, top-right, small rounded-full badge,
   semi-transparent light background over dark text (or vice versa —
   implementer's call on exact contrast, matching the brand pill style used
   elsewhere in this app, e.g. the homepage car card's body-type badge).
@@ -161,7 +161,7 @@ above) the watermark/text draw calls use:
    native rounded-rect primitive pre-`roundRect`, so use
    `ctx.roundRect(...)` if available — it's supported in all evergreen
    browsers this app targets — filled with a semi-transparent color) plus
-   the "DRIVETIME" label text, top-right with padding matching the preview.
+   the "DEALIO" label text, top-right with padding matching the preview.
 6. Draw the title text: bold, large (e.g. 56–64px), white, with a small
    word-wrap helper (split on spaces, measure with `ctx.measureText`,
    break to a new line when a line would exceed the canvas width minus

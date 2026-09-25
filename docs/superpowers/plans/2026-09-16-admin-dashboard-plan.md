@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a `/login` page and a full `/dashboard` admin subsystem (Control Panel, Inventory, Leads, Contact Us, Users) to the DriveTime Next.js app, entirely client-side/mock.
+**Goal:** Add a `/login` page and a full `/dashboard` admin subsystem (Control Panel, Inventory, Leads, Contact Us, Users) to the Dealio Next.js app, entirely client-side/mock.
 
 **Architecture:** A tiny `lib/auth.ts` (localStorage session flag) gates a client `app/dashboard/layout.tsx`, which renders a shared sidebar and one route per nav item. All dashboard state (inventory/leads/messages/users) is seeded from `lib/dashboard-data.ts` and persisted via a generic `useLocalStorage` hook, so edits survive reloads. The dashboard is visually self-contained (literal Tailwind `slate-*`/`indigo-*` classes), independent of the homepage's dark/light `ThemeProvider`. The login page reuses the homepage's existing CSS-variable theme and `.glass` utility.
 
@@ -258,10 +258,10 @@ export interface TeamUser {
 }
 
 export const seedUsers: TeamUser[] = [
-  { id: "user-1", name: "Alejandro Gonzalez", email: "alejandro@drivetime.com", role: "Admin", status: "Active" },
-  { id: "user-2", name: "Maria Chen", email: "maria.chen@drivetime.com", role: "Manager", status: "Active" },
-  { id: "user-3", name: "Robert Kim", email: "robert.kim@drivetime.com", role: "Sales", status: "Active" },
-  { id: "user-4", name: "Jasmine Patel", email: "jasmine.patel@drivetime.com", role: "Sales", status: "Invited" },
+  { id: "user-1", name: "Alejandro Gonzalez", email: "alejandro@dealio.com", role: "Admin", status: "Active" },
+  { id: "user-2", name: "Maria Chen", email: "maria.chen@dealio.com", role: "Manager", status: "Active" },
+  { id: "user-3", name: "Robert Kim", email: "robert.kim@dealio.com", role: "Sales", status: "Active" },
+  { id: "user-4", name: "Jasmine Patel", email: "jasmine.patel@dealio.com", role: "Sales", status: "Invited" },
 ];
 ```
 
@@ -576,7 +576,7 @@ export function Sidebar() {
     <aside className="flex h-full w-64 flex-shrink-0 flex-col border-r border-slate-200 bg-white">
       <div className="flex h-16 items-center px-6">
         <Link href="/dashboard" className="text-lg font-semibold tracking-tight text-slate-900">
-          DriveTime
+          Dealio
         </Link>
       </div>
 
@@ -781,7 +781,7 @@ export default function LoginPage() {
           transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1], delay: 0.1 }}
           className="text-6xl font-semibold tracking-tight text-foreground"
         >
-          DriveTime
+          Dealio
         </motion.h1>
 
         <motion.p
@@ -790,7 +790,7 @@ export default function LoginPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-[0.85rem] text-muted-2"
         >
-          DriveTime v1.0
+          Dealio v1.0
         </motion.p>
       </div>
 
@@ -803,7 +803,7 @@ export default function LoginPage() {
         >
           <motion.div variants={fadeUp} className="mb-8 text-center lg:text-left">
             <p className="text-[1.2rem] font-semibold tracking-tight text-foreground">
-              DriveTime
+              Dealio
             </p>
             <h2 className="mt-4 text-2xl font-semibold text-foreground">
               Sign in to your account
@@ -820,7 +820,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@drivetime.com"
+                placeholder="you@dealio.com"
                 className="h-12 w-full rounded-xl border border-border-strong bg-surface px-4 text-[0.9rem] text-foreground placeholder:text-muted-2 transition-colors duration-200 hover:border-foreground/30 focus-visible:border-foreground/50 focus-visible:outline-none"
               />
               {errors.email && <p className="text-[0.78rem] text-red-400">{errors.email}</p>}
