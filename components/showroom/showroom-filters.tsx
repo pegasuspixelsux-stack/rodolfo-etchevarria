@@ -29,6 +29,7 @@ const BODY_TYPE_LABELS: Record<string, string> = {
   Sedan: "Sedán",
   SUV: "SUV",
   Coupe: "Cupé",
+  Truck: "Camioneta",
 };
 
 const FUEL_TYPE_LABELS: Record<string, string> = {

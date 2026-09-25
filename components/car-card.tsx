@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Gauge, Calendar, Zap, Fuel, Phone, ArrowUpRight } from "lucide-react";
 import type { Car } from "@/data/cars";
+import { resolveCarSwatchColor } from "@/lib/car-color";
 import {
   CARD_PAYMENT_DISCLAIMER,
   DEFAULT_BOTTOM_GRADIENT_PERCENT,
@@ -36,6 +37,7 @@ const BODY_TYPE_LABELS: Record<string, string> = {
   Sedan: "Sedán",
   SUV: "SUV",
   Coupe: "Cupé",
+  Truck: "Camioneta",
 };
 
 const FUEL_TYPE_LABELS: Record<string, string> = {
@@ -163,7 +165,7 @@ export function CarCard({
             <div className="mt-0.5 hidden items-center gap-1.5 text-[0.85rem] text-muted sm:flex">
               <span
                 className="h-3 w-3 flex-shrink-0 rounded-none border border-border-strong"
-                style={{ backgroundColor: car.colorHex }}
+                style={{ backgroundColor: resolveCarSwatchColor(car.color, car.colorHex) }}
               />
               <span>{car.color}</span>
               <span className="text-muted/60">·</span>
@@ -363,7 +365,7 @@ export function CarCard({
           <span className="flex items-center gap-1">
             <span
               className="h-[1em] w-[1em] flex-shrink-0 rounded-none border border-foreground/20"
-              style={{ backgroundColor: car.colorHex }}
+              style={{ backgroundColor: resolveCarSwatchColor(car.color, car.colorHex) }}
             />
             {car.color}
           </span>
@@ -381,10 +383,10 @@ export function CarCard({
 
         <div className="flex items-end justify-between gap-3 border-t border-foreground/15 pt-2">
           <p className="whitespace-nowrap text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/60">
-            Precio {currency.format(car.price)}
+            Precio <span className="text-[0.7em]">US</span>{currency.format(car.price)}
           </p>
           <p className="text-[clamp(1.1rem,8.5cqw,2.1rem)] font-semibold leading-none text-foreground">
-            {currency.format(estimateMonthlyPayment(car.price))}
+            <span className="text-[0.4em]">US</span>{currency.format(estimateMonthlyPayment(car.price))}
             <span className="text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/70">/mes</span>
           </p>
         </div>

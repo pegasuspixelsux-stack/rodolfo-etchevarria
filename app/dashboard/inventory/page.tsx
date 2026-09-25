@@ -34,12 +34,13 @@ const STATUS_LABELS: Record<InventoryStatus, string> = {
   Sold: "Vendido",
 };
 
-const BODY_TYPE_OPTIONS: InventoryItem["bodyType"][] = ["Sedan", "SUV", "Coupe"];
+const BODY_TYPE_OPTIONS: InventoryItem["bodyType"][] = ["Sedan", "SUV", "Coupe", "Truck"];
 
 const BODY_TYPE_LABELS: Record<InventoryItem["bodyType"], string> = {
   Sedan: "Sedán",
   SUV: "SUV",
   Coupe: "Cupé",
+  Truck: "Camioneta",
 };
 
 const FUEL_TYPE_OPTIONS: InventoryItem["fuelType"][] = ["Gasoline", "Hybrid", "Electric"];

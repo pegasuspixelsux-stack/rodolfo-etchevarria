@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
-import { Rows, Grid2x2 } from "lucide-react";
+import { Rows, Square, Grid2x2 } from "lucide-react";
 import { CarCard } from "@/components/car-card";
+import { CarGridSkeleton } from "@/components/car-grid-skeleton";
 import { useInventory } from "@/lib/firebase/inventory";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 import type { InventoryItem } from "@/lib/dashboard-data";
@@ -28,6 +29,8 @@ function getIsMobileSnapshot() {
 function getIsMobileServerSnapshot() {
   return false;
 }
+
+type MobileView = "list" | "single" | "grid";
 
 const DEFAULT_STATE: ShowroomFilterState = {
   search: "",
@@ -62,7 +65,7 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
 
   const [filters, setFilters] = useState<ShowroomFilterState>(DEFAULT_STATE);
   const [loadedPages, setLoadedPages] = useState(1);
-  const [mobileColumns, setMobileColumns] = useState<1 | 2>(1);
+  const [mobileView, setMobileView] = useState<MobileView>("list");
   const isMobile = useSyncExternalStore(
     subscribeToMobileBreakpoint,
     getIsMobileSnapshot,
@@ -164,11 +167,11 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
           <div className="mb-4 flex items-center justify-end gap-1 border border-border-strong p-1 md:hidden">
             <button
               type="button"
-              onClick={() => setMobileColumns(1)}
-              aria-label="Ver en una columna"
-              aria-pressed={mobileColumns === 1}
+              onClick={() => setMobileView("list")}
+              aria-label="Ver en lista"
+              aria-pressed={mobileView === "list"}
               className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
-                mobileColumns === 1
+                mobileView === "list"
                   ? "bg-foreground text-accent-foreground"
                   : "text-muted hover:text-foreground"
               }`}
@@ -177,11 +180,24 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
             </button>
             <button
               type="button"
-              onClick={() => setMobileColumns(2)}
-              aria-label="Ver en dos columnas"
-              aria-pressed={mobileColumns === 2}
+              onClick={() => setMobileView("single")}
+              aria-label="Ver en columna única"
+              aria-pressed={mobileView === "single"}
               className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
-                mobileColumns === 2
+                mobileView === "single"
+                  ? "bg-foreground text-accent-foreground"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              <Square size={15} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileView("grid")}
+              aria-label="Ver en dos columnas"
+              aria-pressed={mobileView === "grid"}
+              className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
+                mobileView === "grid"
                   ? "bg-foreground text-accent-foreground"
                   : "text-muted hover:text-foreground"
               }`}
@@ -190,7 +206,7 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
             </button>
           </div>
 
-          {!loading && filtered.length === 0 && !error && (
+          {!loading && cars.length > 0 && filtered.length === 0 && !error && (
             <div className="flex min-h-[300px] flex-col items-center justify-center gap-2 rounded-none border border-dashed border-border-strong text-center">
               <p className="text-[1rem] font-medium text-foreground">
                 No encontramos vehículos con estos filtros
@@ -207,13 +223,16 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
             className={`grid gap-3 sm:gap-6 lg:grid-cols-3 ${
-              mobileColumns === 1 ? "grid-cols-1" : "grid-cols-2"
+              mobileView === "grid" ? "grid-cols-2" : "grid-cols-1"
             }`}
           >
-            {!loading &&
+            {loading && cars.length === 0 ? (
+              <CarGridSkeleton count={6} />
+            ) : (
               visibleCars.map((car) => (
-                <CarCard key={car.id} car={car} layout="portrait" mobileList={mobileColumns === 1} />
-              ))}
+                <CarCard key={car.id} car={car} layout="portrait" mobileList={mobileView === "list"} />
+              ))
+            )}
           </motion.div>
 
           {hasMore && (

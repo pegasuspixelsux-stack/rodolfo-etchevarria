@@ -8,7 +8,7 @@ export interface Car {
   mileage: number;
   transmission: string;
   fuelType: "Gasoline" | "Hybrid" | "Electric";
-  bodyType: "Sedan" | "SUV" | "Coupe";
+  bodyType: "Sedan" | "SUV" | "Coupe" | "Truck";
   color: string;
   colorHex: string;
   image: string;
