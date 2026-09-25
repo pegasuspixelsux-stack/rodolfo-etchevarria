@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { getInventoryOnce } from "@/lib/firebase/inventory-read";
@@ -47,8 +49,18 @@ export default async function CarDetailPage({
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
+      <div className="h-24 bg-black sm:h-28" />
       <Navbar />
-      <main className="flex-1 bg-background pt-24 sm:pt-28">
+      <main className="flex-1 bg-background">
+        <div className="mx-auto max-w-[1000px] px-6 pt-8 sm:px-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
+          >
+            <ChevronLeft size={16} />
+            Volver al sitio
+          </Link>
+        </div>
         <CarSlideshow images={detail.images} car={car} />
         <CarHeaderInfo car={car} />
         {detail.editorial.paragraphs.length > 0 && (
