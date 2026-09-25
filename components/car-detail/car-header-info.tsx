@@ -22,7 +22,7 @@ export function CarHeaderInfo({ car }: { car: Car }) {
 
   return (
     <div className="mx-auto max-w-[1000px] px-6 py-8 sm:px-8">
-      <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
+      <div className="flex flex-row items-start justify-between gap-6 sm:items-end">
         <div>
           <h1 className="font-heading text-3xl font-normal tracking-tight text-foreground sm:text-4xl">
             {car.year} {car.make} {car.model}
@@ -30,7 +30,7 @@ export function CarHeaderInfo({ car }: { car: Car }) {
           <p className="mt-1 text-[0.95rem] text-muted">{car.trim}</p>
         </div>
 
-        <div className="text-left sm:text-right">
+        <div className="text-right">
           <p className="text-3xl font-semibold tracking-tight text-foreground">
             {currency.format(monthly)}
             <span className="text-base font-normal text-muted">/mes</span>
