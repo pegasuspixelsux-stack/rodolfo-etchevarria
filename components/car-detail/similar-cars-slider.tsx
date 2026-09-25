@@ -14,7 +14,7 @@ export function SimilarCarsSlider({ cars }: { cars: Car[] }) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
-      className="mx-auto flex w-full flex-col px-6 py-14 sm:px-8"
+      className="mx-auto max-w-7xl flex flex-col px-6 py-14 sm:px-8"
     >
       <h2 className="font-heading text-2xl font-normal tracking-tight text-foreground">
         Vehículos similares
