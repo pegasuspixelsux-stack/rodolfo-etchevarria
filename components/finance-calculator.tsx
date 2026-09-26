@@ -99,7 +99,8 @@ export function FinanceCalculator() {
         </div>
       </div>
 
-      <div className="rounded-none border border-border bg-surface/70 p-6 sm:p-7">
+      <div className="flex flex-col gap-6">
+        <div className="rounded-none border border-border bg-surface/70 p-6 sm:p-7">
           <p className="text-[0.85rem] font-medium text-muted">
             Cuota Mensual Estimada
           </p>
@@ -114,6 +115,23 @@ export function FinanceCalculator() {
           </motion.p>
           <p className="mt-1 text-[0.8rem] text-muted-2">por mes</p>
         </div>
+
+        <div className="flex flex-wrap gap-3">
+          {[
+            { logo: "ITAÚ" },
+            { logo: "SANTANDER" },
+            { logo: "BBVA" },
+            { logo: "SCOTIABANK" },
+          ].map((bank) => (
+            <div
+              key={bank.logo}
+              className="flex flex-1 min-w-[120px] items-center justify-center rounded-none border border-border bg-surface/70 px-4 py-3 text-[0.75rem] font-semibold text-muted sm:text-[0.8rem]"
+            >
+              {bank.logo}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
