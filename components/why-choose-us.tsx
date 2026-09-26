@@ -69,7 +69,7 @@ export function WhyChooseUs() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="relative aspect-square overflow-hidden rounded-none"
+            className="hidden md:block relative aspect-square overflow-hidden rounded-none"
           >
             <Image
               src={SHOWROOM_IMAGE}
