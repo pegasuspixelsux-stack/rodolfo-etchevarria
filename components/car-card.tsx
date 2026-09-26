@@ -335,10 +335,12 @@ export function CarCard({
           </div>
         )}
 
-        {/* Top-right corner arrow badge */}
-        <div className="pointer-events-none absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
-          <ArrowUpRight size={14} />
-        </div>
+        {/* Top-right corner arrow badge (hide on mobile list view) */}
+        {!mobileList && (
+          <div className="pointer-events-none absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <ArrowUpRight size={14} />
+          </div>
+        )}
 
         {/* Dealer branding & phone stripe at bottom */}
         <div className={`absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-2 bg-black/85 px-3 ${
@@ -358,10 +360,17 @@ export function CarCard({
 
       {/* Card Content (5-row hierarchy) */}
       <div
-        className={`flex flex-col bg-surface-2 text-foreground ${
+        className={`relative flex flex-col bg-surface-2 text-foreground ${
           mobileList ? "w-1/2 px-3 py-2 md:w-full md:flex-1 md:justify-start md:gap-3 md:p-4" : "flex-1 justify-start gap-3 px-3 py-4 sm:p-4"
         } ${mobileList ? "justify-between gap-0.5" : ""}`}
       >
+        {/* Mobile arrow badge (top-right corner) */}
+        {mobileList && (
+          <div className="pointer-events-none absolute right-2 top-2 z-10 text-primary">
+            <ArrowUpRight size={16} />
+          </div>
+        )}
+
         {/* Top group: Year, Make & Model, Features */}
         <div className={`flex flex-col ${mobileList ? "gap-0.5 md:gap-3" : "gap-3"}`}>
           {/* Row 1: Year (left) + Arrow indicator (right) */}
