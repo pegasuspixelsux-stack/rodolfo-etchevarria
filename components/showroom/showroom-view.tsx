@@ -222,8 +222,8 @@ export function ShowroomView({ initialCars }: { initialCars?: InventoryItem[] })
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-80px" }}
-            className={`grid gap-3 sm:gap-6 lg:grid-cols-3 ${
-              mobileView === "grid" ? "grid-cols-2" : "grid-cols-1"
+            className={`grid gap-3 sm:gap-6 ${
+              mobileView === "grid" ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
             }`}
           >
             {loading && cars.length === 0 ? (
