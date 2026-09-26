@@ -32,21 +32,6 @@ export function CarGrid({
   return (
     <section id="inventory" className="bg-background px-3 pb-28 pt-[5%] sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="mb-8 flex flex-col items-start gap-2 md:mb-12 md:flex-row md:items-end md:justify-between md:gap-6"
-        >
-          <h2 className="font-heading text-2xl font-normal tracking-tight text-foreground sm:text-4xl">
-            {settings.gridHeading}
-          </h2>
-          <p className="max-w-md text-left text-[0.95rem] text-muted md:text-right">
-            {settings.gridSupportText}
-          </p>
-        </motion.div>
-
         <div className="mb-8 flex flex-row items-center justify-between gap-3">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
