@@ -39,21 +39,12 @@ export function PreFooterHero() {
           asesor para encontrar el auto ideal para ti.
         </motion.p>
 
-        <motion.div
-          variants={fadeUp}
-          className="mt-2 flex flex-col gap-3 sm:flex-row"
-        >
+        <motion.div variants={fadeUp} className="mt-2">
           <a
-            href="#contact"
+            href="/showroom"
             className="flex h-12 items-center justify-center rounded-none bg-foreground px-7 text-[0.9rem] font-medium text-accent-foreground transition-transform duration-200 ease-out hover:scale-[1.03] active:scale-[0.97]"
           >
-            Visitar el Showroom
-          </a>
-          <a
-            href="#contact"
-            className="glass flex h-12 items-center justify-center rounded-none px-7 text-[0.9rem] font-medium text-foreground transition-colors duration-200 hover:bg-surface-2"
-          >
-            Hablar con un Asesor
+            Sala de Exhibición
           </a>
         </motion.div>
       </motion.div>
