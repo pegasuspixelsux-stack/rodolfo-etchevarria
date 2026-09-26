@@ -68,66 +68,68 @@ export function FinanceTabs() {
         </div>
 
         {/* Tab Content */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-stretch"
-        >
-          {/* Calculator Tab */}
-          {activeTab === "calculator" && (
-            <>
-              <motion.div
-                variants={fadeUp}
-                className="glass relative overflow-hidden rounded-none p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-10"
-              >
-                <FinanceCalculator />
-              </motion.div>
+        {activeTab === "calculator" && (
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-stretch"
+          >
+            <motion.div
+              variants={fadeUp}
+              className="glass relative overflow-hidden rounded-none p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-10"
+            >
+              <FinanceCalculator />
+            </motion.div>
 
-              <motion.div variants={fadeUp} className="relative overflow-hidden">
-                <Image
-                  src={CALCULATOR_IMAGE}
-                  alt="Financial Calculator"
-                  fill
-                  sizes="(min-width: 768px) 400px, 100vw"
-                  quality={85}
-                  className="object-cover object-center"
-                />
-              </motion.div>
-            </>
-          )}
+            <motion.div variants={fadeUp} className="relative overflow-hidden">
+              <Image
+                src={CALCULATOR_IMAGE}
+                alt="Financial Calculator"
+                fill
+                sizes="(min-width: 768px) 400px, 100vw"
+                quality={85}
+                className="object-cover object-center"
+              />
+            </motion.div>
+          </motion.div>
+        )}
 
-          {/* Trade-In Tab */}
-          {activeTab === "tradein" && (
-            <>
-              <motion.div variants={fadeUp} className="relative overflow-hidden md:order-2">
-                <Image
-                  src={TRADEIN_IMAGE}
-                  alt="Trade-In Your Vehicle"
-                  fill
-                  sizes="(min-width: 768px) 400px, 100vw"
-                  quality={85}
-                  className="object-cover object-center"
-                />
-              </motion.div>
+        {activeTab === "tradein" && (
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-stretch"
+          >
+            <motion.div variants={fadeUp} className="relative overflow-hidden md:order-2">
+              <Image
+                src={TRADEIN_IMAGE}
+                alt="Trade-In Your Vehicle"
+                fill
+                sizes="(min-width: 768px) 400px, 100vw"
+                quality={85}
+                className="object-cover object-center"
+              />
+            </motion.div>
 
-              <motion.div
-                variants={fadeUp}
-                className="glass relative overflow-hidden rounded-none p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-10 md:order-1"
-              >
-                <h3 className="mb-3 font-heading text-[1.05rem] font-normal text-foreground">
-                  Trade-In Your Vehicle
-                </h3>
-                <p className="mb-6 text-[0.95rem] leading-relaxed text-foreground/80">
-                  Turn your current vehicle into the key to your dream car. Submit your information and we'll
-                  provide an instant valuation to apply toward your next purchase.
-                </p>
-                <TradeInForm />
-              </motion.div>
-            </>
-          )}
-        </motion.div>
+            <motion.div
+              variants={fadeUp}
+              className="glass relative overflow-hidden rounded-none p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-10 md:order-1"
+            >
+              <h3 className="mb-3 font-heading text-[1.05rem] font-normal text-foreground">
+                Trade-In Your Vehicle
+              </h3>
+              <p className="mb-6 text-[0.95rem] leading-relaxed text-foreground/80">
+                Turn your current vehicle into the key to your dream car. Submit your information and we'll
+                provide an instant valuation to apply toward your next purchase.
+              </p>
+              <TradeInForm />
+            </motion.div>
+          </motion.div>
+        )}
       </div>
     </section>
   );
