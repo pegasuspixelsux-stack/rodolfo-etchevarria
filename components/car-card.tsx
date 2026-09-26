@@ -328,13 +328,13 @@ export function CarCard({
         </div>
 
         {/* Dealer branding & phone stripe at bottom */}
-        <div className={`absolute inset-x-0 bottom-0 z-10 flex flex-col items-start justify-center gap-1 bg-black/85 px-3 ${
+        <div className={`absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-2 bg-black/85 px-3 ${
           !mobileList ? "py-4" : "py-2"
         }`}>
           <span className={`truncate text-white [font-family:var(--font-script)] ${
             !mobileList ? "text-[0.8rem]" : "text-[0.65rem]"
           }`}>{DEALER_NAME}</span>
-          <span className={`flex items-center gap-1 font-medium text-white ${
+          <span className={`flex shrink-0 items-center gap-1 font-medium text-white ${
             !mobileList ? "text-[0.7rem]" : "text-[0.55rem]"
           }`}>
             <Phone className={!mobileList ? "h-4 w-4" : "h-3 w-3"} />
