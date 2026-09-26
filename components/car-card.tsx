@@ -355,24 +355,30 @@ export function CarCard({
 
       {/* Card Content (5-row hierarchy) */}
       <div
-        className={`flex flex-1 flex-col gap-3 bg-surface-2 p-4 text-foreground ${
-          mobileList ? "justify-center md:justify-start" : "justify-start"
+        className={`flex flex-1 flex-col gap-2 bg-surface-2 text-foreground ${
+          mobileList ? "justify-center gap-1 p-2 md:justify-start md:gap-3 md:p-4" : "justify-start gap-3 p-4"
         }`}
       >
         {/* Row 1: Year (left) + Arrow indicator (right) */}
         <div className="flex items-center justify-between">
-          <span className="text-[0.7rem] font-bold uppercase tracking-wide text-muted">
+          <span className={`font-bold uppercase tracking-wide text-muted ${
+            mobileList ? "text-[0.6rem] md:text-[0.7rem]" : "text-[0.7rem]"
+          }`}>
             {car.year}
           </span>
         </div>
 
         {/* Row 2: Make & Model (large, bold heading) */}
-        <h2 className="text-lg font-bold leading-tight text-foreground text-left">
+        <h2 className={`font-bold leading-tight text-foreground text-left ${
+          mobileList ? "text-sm md:text-lg" : "text-lg"
+        }`}>
           {car.make} {car.model}
         </h2>
 
         {/* Row 3: Feature strip (color • km • fuel) */}
-        <div className="flex flex-wrap items-center gap-1.5 text-[0.8rem] font-medium text-muted justify-start">
+        <div className={`flex flex-wrap items-center font-medium text-muted justify-start ${
+          mobileList ? "gap-1 text-[0.65rem] md:gap-1.5 md:text-[0.8rem]" : "gap-1.5 text-[0.8rem]"
+        }`}>
           <span className="flex items-center gap-1">
             <span
               className="h-2.5 w-2.5 rounded-full border border-muted-2 flex-shrink-0"
@@ -387,24 +393,38 @@ export function CarCard({
         </div>
 
         {/* Row 4: Pricing block (cash price left, monthly payment right) */}
-        <div className="flex items-end justify-between gap-3 pt-3">
+        <div className={`flex items-end justify-between gap-2 ${
+          mobileList ? "md:gap-3 md:pt-3" : "pt-3"
+        }`}>
           <div className="flex flex-col gap-0.5">
-            <p className="text-[0.7rem] font-medium text-muted">Precio</p>
-            <p className="text-[0.95rem] font-semibold text-foreground">
+            <p className={`font-medium text-muted ${
+              mobileList ? "text-[0.6rem] md:text-[0.7rem]" : "text-[0.7rem]"
+            }`}>Precio</p>
+            <p className={`font-semibold text-foreground ${
+              mobileList ? "text-[0.75rem] md:text-[0.95rem]" : "text-[0.95rem]"
+            }`}>
               {currency.format(car.price)}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[0.7rem] font-medium text-muted">Cuota Est.</p>
-            <p className="text-2xl font-bold leading-none text-foreground">
+            <p className={`font-medium text-muted ${
+              mobileList ? "text-[0.6rem] md:text-[0.7rem]" : "text-[0.7rem]"
+            }`}>Cuota Est.</p>
+            <p className={`font-bold leading-none text-foreground ${
+              mobileList ? "text-lg md:text-2xl" : "text-2xl"
+            }`}>
               {currency.format(estimateMonthlyPayment(car.price))}
-              <span className="text-[0.65rem] font-medium text-muted">/mes</span>
+              <span className={`font-medium text-muted ${
+                mobileList ? "text-[0.5rem] md:text-[0.65rem]" : "text-[0.65rem]"
+              }`}>/mes</span>
             </p>
           </div>
         </div>
 
         {/* Row 5: Fine print disclaimer */}
-        <p className="text-[0.65rem] leading-tight text-muted/60">
+        <p className={`leading-tight text-muted/60 ${
+          mobileList ? "text-[0.55rem] md:text-[0.65rem]" : "text-[0.65rem]"
+        }`}>
           {CARD_PAYMENT_DISCLAIMER}
         </p>
       </div>
