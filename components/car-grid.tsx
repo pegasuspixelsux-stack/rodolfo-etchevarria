@@ -96,7 +96,7 @@ export function CarGrid({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className={`grid gap-1.5 sm:gap-3 md:gap-6 md:grid-cols-4 ${
+          className={`grid gap-3 sm:gap-6 md:grid-cols-4 ${
             mobileView === "grid" ? "grid-cols-2" : "grid-cols-1"
           }`}
         >
