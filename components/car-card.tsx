@@ -335,7 +335,7 @@ export function CarCard({
             !mobileList ? "text-[0.75rem]" : "text-[0.65rem]"
           }`}>{DEALER_NAME}</span>
           <span className={`flex shrink-0 items-center gap-1 font-medium text-white ${
-            !mobileList ? "text-[0.75rem]" : "text-[0.55rem]"
+            !mobileList ? "text-[0.625rem]" : "text-[0.55rem]"
           }`}>
             <Phone className={!mobileList ? "h-4 w-4" : "h-3 w-3"} />
             {DEALER_PHONE}
