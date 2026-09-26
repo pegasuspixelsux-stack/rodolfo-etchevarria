@@ -1,8 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { HandCoins, LifeBuoy, ShieldCheck, Tag } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
+
+const SHOWROOM_IMAGE = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80";
 
 const PILLARS = [
   {
@@ -34,37 +37,58 @@ const PILLARS = [
 export function WhyChooseUs() {
   return (
     <section id="about" className="bg-background px-3 py-24 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-14 lg:grid-cols-2 lg:gap-20">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="flex flex-col justify-center gap-6"
-        >
-          <motion.p variants={fadeUp} className="text-[0.9rem] font-medium text-muted">
-            Nosotros
-          </motion.p>
-          <motion.h2
-            variants={fadeUp}
-            className="text-balance font-heading text-2xl font-normal leading-tight tracking-tight text-foreground sm:text-4xl"
+      <div className="mx-auto flex max-w-7xl flex-col gap-14">
+        {/* Top Section: Text and Image */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="flex flex-col justify-center gap-6"
           >
-            Why Choose Rodolfo Etchevarria
-          </motion.h2>
-          <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-foreground/80">
-            At Rodolfo Etchevarria, we believe buying a vehicle should be an exciting, transparent experience — not a stressful negotiation. Every car in our inventory undergoes rigorous inspection, and we price fairly with zero hidden costs.
-          </motion.p>
-          <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-foreground/80">
-            Whether you're financing your purchase or trading in your current vehicle, our team is here to guide you every step of the way. We're committed to finding the perfect car at terms that work for you.
-          </motion.p>
-        </motion.div>
+            <motion.p variants={fadeUp} className="text-[0.9rem] font-medium text-muted">
+              Nosotros
+            </motion.p>
+            <motion.h2
+              variants={fadeUp}
+              className="text-balance font-heading text-2xl font-normal leading-tight tracking-tight text-foreground sm:text-4xl"
+            >
+              Why Choose Rodolfo Etchevarria
+            </motion.h2>
+            <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-foreground/80">
+              At Rodolfo Etchevarria, we believe buying a vehicle should be an exciting, transparent experience — not a stressful negotiation. Every car in our inventory undergoes rigorous inspection, and we price fairly with zero hidden costs.
+            </motion.p>
+            <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-foreground/80">
+              Whether you're financing your purchase or trading in your current vehicle, our team is here to guide you every step of the way. We're committed to finding the perfect car at terms that work for you.
+            </motion.p>
+          </motion.div>
 
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="relative aspect-square overflow-hidden rounded-none"
+          >
+            <Image
+              src={SHOWROOM_IMAGE}
+              alt="Rodolfo Etchevarria Showroom"
+              fill
+              sizes="(min-width: 1024px) 400px, 100vw"
+              quality={85}
+              className="object-cover object-center"
+            />
+          </motion.div>
+        </div>
+
+        {/* Bottom Section: 4-Column Pillars */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="flex flex-col gap-4"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
         >
           {PILLARS.map(({ icon: Icon, title, description }) => (
             <motion.div
