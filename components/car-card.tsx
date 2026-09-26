@@ -309,7 +309,7 @@ export function CarCard({
       {/* Image Container with Dealer Branding Stripe */}
       <div
         className={`relative overflow-hidden bg-surface-2 ${
-          mobileList ? "aspect-square w-1/2 flex-shrink-0 md:w-full" : "aspect-square w-full"
+          mobileList ? "aspect-square w-1/2 flex-shrink-0 md:aspect-auto md:w-full" : "aspect-square w-full"
         }`}
       >
         <Image
