@@ -42,7 +42,7 @@ export function Footer() {
 
   return (
     <footer className="border-t border-border bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+      <div className="mx-auto max-w-7xl px-3 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           <div className="flex flex-col gap-4">
             <span className="text-[2rem] leading-none tracking-tight text-foreground [font-family:var(--font-script)]">

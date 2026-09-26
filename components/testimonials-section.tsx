@@ -33,7 +33,7 @@ const TESTIMONIALS = [
 
 export function TestimonialsSection() {
   return (
-    <section className="bg-background px-6 py-24 sm:px-6 lg:px-8">
+    <section className="bg-background px-3 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <motion.div
           variants={fadeUp}
@@ -52,13 +52,13 @@ export function TestimonialsSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-4"
+          className="flex gap-6 overflow-x-auto pb-4 sm:grid sm:grid-cols-2 md:grid-cols-4"
         >
           {TESTIMONIALS.map((testimonial) => (
             <motion.div
               key={testimonial.name}
               variants={fadeUp}
-              className="flex w-[75vw] flex-shrink-0 flex-col gap-4 rounded-none border border-border bg-surface-2 p-6 sm:w-full sm:p-8 md:w-full"
+              className="flex w-[75vw] flex-shrink-0 flex-col gap-4 rounded-none border border-border bg-surface-2 p-6 sm:w-full sm:flex-shrink sm:p-8 md:w-full"
             >
               <div className="flex items-center gap-1">
                 {Array.from({ length: testimonial.rating }).map((_, i) => (

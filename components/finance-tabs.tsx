@@ -25,7 +25,7 @@ export function FinanceTabs() {
   const [activeTab, setActiveTab] = useState<TabType>("calculator");
 
   return (
-    <section id="financing" className="bg-background px-6 py-24 sm:px-6 lg:px-8">
+    <section id="financing" className="bg-background px-3 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <motion.div
           variants={fadeUp}
