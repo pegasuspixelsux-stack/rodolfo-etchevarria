@@ -99,8 +99,8 @@ export function FinanceCalculator() {
         </div>
       </div>
 
-      <div className="flex flex-col justify-between gap-6 rounded-none border border-border bg-surface/70 p-6 sm:p-7">
-        <div>
+      <div className="flex flex-col gap-6">
+        <div className="rounded-none border border-border bg-surface/70 p-6 sm:p-7">
           <p className="text-[0.85rem] font-medium text-muted">
             Cuota Mensual Estimada
           </p>
@@ -116,30 +116,24 @@ export function FinanceCalculator() {
           <p className="mt-1 text-[0.8rem] text-muted-2">por mes</p>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-border pt-5 text-[0.85rem]">
-          <div className="flex items-center justify-between">
-            <span className="text-muted">Monto del préstamo</span>
-            <span className="font-medium text-foreground">
-              {currency.format(principal)}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-muted">Interés total</span>
-            <span className="font-medium text-foreground">
-              {currency.format(Math.max(totalInterest, 0))}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-muted">Costo total</span>
-            <span className="font-medium text-foreground">
-              {currency.format(Math.max(totalCost, 0))}
-            </span>
+        <div className="rounded-none border border-border bg-surface/70 p-6 sm:p-7">
+          <p className="mb-4 text-[0.85rem] font-medium text-muted">Nuestros Bancos Asociados</p>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { logo: "ITAÚ" },
+              { logo: "SANTANDER" },
+              { logo: "BBVA" },
+              { logo: "SCOTIABANK" },
+            ].map((bank) => (
+              <div
+                key={bank.logo}
+                className="flex flex-1 items-center justify-center rounded-none border border-border bg-surface px-4 py-3 text-[0.75rem] font-semibold text-muted sm:text-[0.8rem]"
+              >
+                {bank.logo}
+              </div>
+            ))}
           </div>
         </div>
-
-        <p className="text-[0.75rem] leading-relaxed text-muted-2">
-          Solo a modo de estimación. Las tasas y condiciones finales dependen de la aprobación crediticia.
-        </p>
       </div>
     </div>
   );
