@@ -296,13 +296,20 @@ export function CarCard({
   return (
     <motion.article
       variants={fadeUp}
-      className={`@container group relative flex overflow-hidden rounded-none bg-surface-2 ${
+      className={`@container group relative flex cursor-pointer overflow-hidden rounded-lg border border-border bg-white shadow-sm transition-all duration-300 hover:shadow-md ${
         mobileList ? "flex-row md:flex-col" : "flex-col"
       }`}
     >
+      <Link
+        href={`/inventory/${car.id}`}
+        aria-label={`View ${car.make} ${car.model} details`}
+        className="absolute inset-0 z-20"
+      />
+
+      {/* Image Container with Dealer Branding Stripe */}
       <div
-        className={`relative aspect-square overflow-hidden ${
-          mobileList ? "w-1/2 flex-shrink-0 md:w-full" : "w-full"
+        className={`relative overflow-hidden bg-surface-2 ${
+          mobileList ? "aspect-square w-1/2 flex-shrink-0 md:w-full" : "aspect-square w-full"
         }`}
       >
         <Image
@@ -310,87 +317,80 @@ export function CarCard({
           alt={`${car.year} ${car.make} ${car.model} ${car.trim}`}
           fill
           sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw"
-          className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.08]"
+          className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
         />
-        <span className="pointer-events-none absolute right-[3cqw] top-[3cqw] z-10 flex h-[clamp(24px,10cqw,36px)] w-[clamp(24px,10cqw,36px)] items-center justify-center bg-primary text-primary-foreground">
-          <ArrowUpRight size={16} className="h-[45%] w-[45%]" />
-        </span>
-        {mobileList && (
-          <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-1 bg-black/80 px-2 py-1 text-white md:hidden">
-            <span className="min-w-0 truncate text-[0.6rem] leading-none [font-family:var(--font-script)]">{DEALER_NAME}</span>
-            <span className="flex shrink-0 items-center gap-0.5 text-[0.5rem] font-medium leading-none">
-              <Phone className="h-2.5 w-2.5 flex-shrink-0" />
-              {DEALER_PHONE}
-            </span>
-          </div>
-        )}
+
+        {/* Top-right corner arrow badge */}
+        <div className="pointer-events-none absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
+          <ArrowUpRight size={18} />
+        </div>
+
+        {/* Dealer branding & phone stripe at bottom */}
+        <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-2 bg-black/85 px-3 py-2">
+          <span className="truncate text-[0.65rem] leading-none text-white [font-family:var(--font-script)]">{DEALER_NAME}</span>
+          <span className="flex shrink-0 items-center gap-1 text-[0.55rem] font-medium text-white">
+            <Phone className="h-3 w-3" />
+            {DEALER_PHONE}
+          </span>
+        </div>
       </div>
 
-      <Link
-        href={`/inventory/${car.id}`}
-        aria-label={`Ver detalles de ${car.make} ${car.model}`}
-        className="absolute inset-0 z-20"
-      />
-
+      {/* Card Content (5-row hierarchy) */}
       <div
-        className={`h-[clamp(16px,7cqw,24px)] items-center justify-between gap-2 bg-black px-[3cqw] text-white ${
-          mobileList ? "hidden md:flex" : "flex"
-        }`}
-      >
-        <span className="truncate text-[clamp(0.65rem,4cqw,0.95rem)] leading-none [font-family:var(--font-script)]">{DEALER_NAME}</span>
-        <span className="flex shrink-0 items-center gap-1 text-[clamp(0.45rem,3cqw,0.65rem)] font-medium">
-          <Phone className="h-[1em] w-[1em]" />
-          {DEALER_PHONE}
-        </span>
-      </div>
-
-      <div
-        className={`@container flex flex-1 flex-col gap-[2cqw] bg-surface-2 p-[clamp(0.5rem,4cqw,1.25rem)] text-foreground ${
+        className={`flex flex-1 flex-col gap-3 bg-surface-2 p-4 text-foreground ${
           mobileList ? "justify-center md:justify-start" : "justify-start"
         }`}
       >
-        <p
-          className={`text-[clamp(0.85rem,7cqw,1.75rem)] font-semibold leading-tight ${
-            mobileList ? "text-left md:text-center" : "text-center"
-          }`}
-        >
-          {car.year} {car.make} {car.model}
-        </p>
+        {/* Row 1: Year (left) + Arrow indicator (right) */}
+        <div className="flex items-center justify-between">
+          <span className="text-[0.7rem] font-bold uppercase tracking-wide text-muted">
+            {car.year} Model
+          </span>
+        </div>
 
-        <div
-          className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/70 ${
-            mobileList ? "justify-start md:justify-center" : "justify-center"
-          }`}
-        >
+        {/* Row 2: Make & Model (large, bold heading) */}
+        <h2 className={`text-lg font-bold leading-tight text-foreground ${
+          mobileList ? "text-left md:text-center" : "text-center"
+        }`}>
+          {car.make} {car.model}
+        </h2>
+
+        {/* Row 3: Feature strip (color • km • fuel) */}
+        <div className={`flex flex-wrap items-center gap-1.5 text-[0.8rem] font-medium text-muted ${
+          mobileList ? "justify-start md:justify-center" : "justify-center"
+        }`}>
           <span className="flex items-center gap-1">
             <span
-              className="h-[1em] w-[1em] flex-shrink-0 rounded-none border border-foreground/20"
+              className="h-2.5 w-2.5 rounded-full border border-muted-2 flex-shrink-0"
               style={{ backgroundColor: resolveCarSwatchColor(car.color, car.colorHex) }}
             />
             {car.color}
           </span>
-          <span className="text-foreground/40">·</span>
-          <span className="flex items-center gap-1">
-            <Gauge className="h-[1em] w-[1em]" />
-            {mileageFormat.format(car.mileage)} km
-          </span>
-          <span className="text-foreground/40">·</span>
-          <span className="flex items-center gap-1">
-            <FuelIcon className="h-[1em] w-[1em]" />
-            {FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}
-          </span>
+          <span className="text-muted/50">•</span>
+          <span>{mileageFormat.format(car.mileage)} km</span>
+          <span className="text-muted/50">•</span>
+          <span>{FUEL_TYPE_LABELS[car.fuelType] ?? car.fuelType}</span>
         </div>
 
-        <div className="flex items-end justify-between gap-3 border-t border-foreground/15 pt-2">
-          <p className="whitespace-nowrap text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/60">
-            Precio <span className="text-[0.7em]">US</span>{currency.format(car.price)}
-          </p>
-          <p className="text-[clamp(1.1rem,8.5cqw,2.1rem)] font-semibold leading-none text-foreground">
-            <span className="text-[0.4em]">US</span>{currency.format(estimateMonthlyPayment(car.price))}
-            <span className="text-[clamp(0.55rem,3.5cqw,0.85rem)] font-medium text-foreground/70">/mes</span>
-          </p>
+        {/* Row 4: Pricing block (cash price left, monthly payment right) */}
+        <div className="flex items-end justify-between gap-3 border-t border-foreground/10 pt-3">
+          <div className="flex flex-col gap-0.5">
+            <p className="text-[0.7rem] font-medium text-muted">Cash Price</p>
+            <p className="text-[0.95rem] font-semibold text-foreground">
+              {currency.format(car.price)}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-[0.7rem] font-medium text-muted">Est. Monthly</p>
+            <p className="text-2xl font-bold leading-none text-foreground">
+              {currency.format(estimateMonthlyPayment(car.price))}
+              <span className="text-[0.65rem] font-medium text-muted">/mo</span>
+            </p>
+          </div>
         </div>
-        <p className="text-[clamp(0.5rem,3cqw,0.7rem)] leading-snug text-foreground/40">
+
+        {/* Row 5: Fine print disclaimer */}
+        <p className="text-[0.65rem] leading-tight text-muted/60">
           {CARD_PAYMENT_DISCLAIMER}
         </p>
       </div>
