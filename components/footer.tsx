@@ -148,18 +148,20 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-[0.82rem] text-muted-2 sm:flex-row">
+        <div className="mt-14 flex flex-col gap-4 border-t border-border pt-8 text-[0.82rem] text-muted-2 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Rodolfo Etchevarria. Todos los derechos reservados.</p>
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
-            <Link href="#" className="transition-colors hover:text-foreground">
-              Política de Privacidad
-            </Link>
-            <Link href="#" className="transition-colors hover:text-foreground">
-              Términos de Servicio
-            </Link>
-            <Link href="/login" className="transition-colors hover:text-foreground">
-              Iniciar Sesión
-            </Link>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex items-center justify-center gap-6">
+              <Link href="#" className="transition-colors hover:text-foreground">
+                Política de Privacidad
+              </Link>
+              <Link href="#" className="transition-colors hover:text-foreground">
+                Términos de Servicio
+              </Link>
+              <Link href="/login" className="transition-colors hover:text-foreground">
+                Iniciar Sesión
+              </Link>
+            </div>
             <div className="flex gap-3">
               <ColorThemeToggle />
               <ThemeToggle />
