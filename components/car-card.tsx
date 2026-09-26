@@ -296,7 +296,7 @@ export function CarCard({
   return (
     <motion.article
       variants={fadeUp}
-      className={`@container group relative flex cursor-pointer overflow-hidden rounded-lg bg-white shadow-sm transition-all duration-300 hover:shadow-md ${
+      className={`@container group relative flex cursor-pointer overflow-hidden rounded-none bg-white shadow-sm transition-all duration-300 hover:shadow-md ${
         mobileList ? "flex-row md:flex-col" : "flex-col"
       }`}
     >
