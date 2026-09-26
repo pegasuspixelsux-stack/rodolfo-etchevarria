@@ -1,9 +1,12 @@
+import { TopStripe } from "@/components/top-stripe";
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
+import { SearchBar } from "@/components/search-bar";
 import { WhyChooseUs } from "@/components/why-choose-us";
 import { FinanceTabs } from "@/components/finance-tabs";
 import { ContactSection } from "@/components/contact-section";
 import { CarGrid } from "@/components/car-grid";
+import { TestimonialsSection } from "@/components/testimonials-section";
 import { PreFooterHero } from "@/components/pre-footer-hero";
 import { Footer } from "@/components/footer";
 import { getInventoryOnce } from "@/lib/firebase/inventory-read";
@@ -32,12 +35,18 @@ export default async function Home() {
 
   return (
     <>
+      <TopStripe />
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 pt-9 sm:pt-0">
         <Hero initialSettings={initialSiteSettings} />
+
+        <div className="bg-background py-6 sm:py-8">
+          <SearchBar />
+        </div>
 
         <CarGrid initialCars={initialCars} initialSettings={initialSiteSettings} />
         <WhyChooseUs />
+        <TestimonialsSection />
         <FinanceTabs />
         <ContactSection initialSettings={initialSiteSettings} />
         <PreFooterHero />

@@ -33,7 +33,7 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+      className={`fixed inset-x-0 top-9 z-50 transition-colors duration-300 ${
         scrolled
           ? "backdrop-blur-md bg-background/80 border-b border-border"
           : "bg-transparent border-b border-transparent"
@@ -79,7 +79,7 @@ export function Navbar() {
             href="/#contact"
             className="inline-flex h-10 items-center rounded-none bg-primary px-5 text-[0.85rem] font-medium text-primary-foreground transition-transform duration-200 ease-out hover:scale-[1.03] active:scale-[0.97]"
           >
-            Agenda una Prueba de Manejo
+            💵 Sell / Trade
           </a>
         </div>
 
@@ -125,7 +125,7 @@ export function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   className="flex h-11 w-full items-center justify-center rounded-none bg-primary text-[0.9rem] font-medium text-primary-foreground"
                 >
-                  Agenda una Prueba de Manejo
+                  💵 Sell / Trade
                 </a>
               </li>
             </ul>

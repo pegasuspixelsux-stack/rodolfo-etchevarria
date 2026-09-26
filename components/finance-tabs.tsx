@@ -5,6 +5,13 @@ import { fadeUp, staggerContainer } from "@/lib/motion";
 import { FinanceCalculator } from "@/components/finance-calculator";
 import { TradeInForm } from "@/components/trade-in-form";
 
+const FINANCING_PARTNERS = [
+  { name: "Banco Itaú", logo: "ITAÚ" },
+  { name: "Santander", logo: "SANTANDER" },
+  { name: "BBVA", logo: "BBVA" },
+  { name: "Scotiabank", logo: "SCOTIABANK" },
+];
+
 export function FinanceTabs() {
   return (
     <section id="financing" className="bg-background px-3 py-24 sm:px-6 lg:px-8">
@@ -14,12 +21,32 @@ export function FinanceTabs() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="mb-10 flex flex-col items-center gap-3 text-center"
+          className="mb-16 flex flex-col items-center gap-8 text-center"
         >
-          <p className="text-[0.9rem] font-medium text-muted">Planifica tu Compra</p>
-          <h2 className="text-balance font-heading text-2xl font-normal tracking-tight text-foreground sm:text-4xl">
-            Estima tus Cuotas o Tasa tu Vehículo Actual
-          </h2>
+          <div className="flex flex-col gap-3">
+            <p className="text-[0.9rem] font-medium text-muted">Financing Partners</p>
+            <h2 className="text-balance font-heading text-2xl font-normal tracking-tight text-foreground sm:text-4xl">
+              Estimate Your Payment or Trade-In Your Vehicle
+            </h2>
+          </div>
+
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="flex w-full flex-wrap items-center justify-center gap-6 sm:gap-8"
+          >
+            {FINANCING_PARTNERS.map(({ name, logo }) => (
+              <motion.div
+                key={name}
+                variants={fadeUp}
+                className="flex items-center justify-center rounded-none border border-border bg-surface/40 px-4 py-2.5"
+              >
+                <span className="text-[0.75rem] font-semibold text-muted sm:text-[0.85rem]">{logo}</span>
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.div>
 
         <motion.div
