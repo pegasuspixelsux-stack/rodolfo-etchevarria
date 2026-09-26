@@ -1,7 +1,6 @@
 import { TopStripe } from "@/components/top-stripe";
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
-import { SearchBar } from "@/components/search-bar";
 import { WhyChooseUs } from "@/components/why-choose-us";
 import { FinanceTabs } from "@/components/finance-tabs";
 import { ContactSection } from "@/components/contact-section";
@@ -39,10 +38,6 @@ export default async function Home() {
       <Navbar />
       <main className="flex-1 pt-9 sm:pt-0">
         <Hero initialSettings={initialSiteSettings} />
-
-        <div className="bg-background py-6 sm:py-8">
-          <SearchBar />
-        </div>
 
         <CarGrid initialCars={initialCars} initialSettings={initialSiteSettings} />
         <WhyChooseUs />
