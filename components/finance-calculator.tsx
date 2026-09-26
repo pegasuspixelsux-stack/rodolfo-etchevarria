@@ -114,8 +114,6 @@ export function FinanceCalculator() {
           </motion.p>
           <p className="mt-1 text-[0.8rem] text-muted-2">por mes</p>
         </div>
-
-      </div>
     </div>
   );
 }
