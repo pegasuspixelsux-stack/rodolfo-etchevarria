@@ -34,13 +34,13 @@ const PILLARS = [
 export function WhyChooseUs() {
   return (
     <section id="about" className="bg-background px-3 py-24 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-14 lg:grid-cols-2 lg:gap-20">
+      <div className="mx-auto max-w-7xl">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="flex flex-col justify-center gap-6"
+          className="mb-12 flex flex-col gap-6"
         >
           <motion.p variants={fadeUp} className="text-[0.9rem] font-medium text-muted">
             Nosotros
@@ -51,12 +51,14 @@ export function WhyChooseUs() {
           >
             Why Choose Eximar Motors
           </motion.h2>
-          <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-muted">
-            At Eximar Motors, we believe buying a vehicle should be an exciting, transparent experience — not a stressful negotiation. Every car in our inventory undergoes rigorous inspection, and we price fairly with zero hidden costs.
-          </motion.p>
-          <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-muted">
-            Whether you're financing your purchase or trading in your current vehicle, our team is here to guide you every step of the way. We're committed to finding the perfect car at terms that work for you.
-          </motion.p>
+          <motion.div variants={fadeUp} className="grid max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
+            <p className="text-[0.98rem] leading-relaxed text-muted">
+              At Eximar Motors, we believe buying a vehicle should be an exciting, transparent experience — not a stressful negotiation. Every car in our inventory undergoes rigorous inspection, and we price fairly with zero hidden costs.
+            </p>
+            <p className="text-[0.98rem] leading-relaxed text-muted">
+              Whether you're financing your purchase or trading in your current vehicle, our team is here to guide you every step of the way. We're committed to finding the perfect car at terms that work for you.
+            </p>
+          </motion.div>
         </motion.div>
 
         <motion.div
@@ -64,7 +66,7 @@ export function WhyChooseUs() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="flex flex-col gap-4"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2"
         >
           {PILLARS.map(({ icon: Icon, title, description }) => (
             <motion.div
