@@ -356,7 +356,7 @@ export function CarCard({
       {/* Card Content (5-row hierarchy) */}
       <div
         className={`flex flex-col bg-surface-2 text-foreground ${
-          mobileList ? "w-1/2 px-3 py-2 md:w-full md:flex-1 md:justify-start md:gap-3 md:p-4" : "flex-1 justify-start gap-3 p-4"
+          mobileList ? "w-1/2 px-3 py-2 md:w-full md:flex-1 md:justify-start md:gap-3 md:p-4" : "flex-1 justify-start gap-3 px-1.5 py-4 sm:p-4"
         } ${mobileList ? "justify-between gap-0.5" : ""}`}
       >
         {/* Top group: Year, Make & Model, Features */}
