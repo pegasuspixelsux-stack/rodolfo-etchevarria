@@ -327,8 +327,8 @@ export function CarCard({
 
         {/* Top-left corner star badge (featured) */}
         {isFeatured && (
-          <div className="pointer-events-none absolute left-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-yellow-400 text-yellow-900">
-            <Star size={18} fill="currentColor" />
+          <div className="pointer-events-none absolute left-3 top-3 z-10">
+            <Star size={24} fill="gold" stroke="gold" />
           </div>
         )}
 
