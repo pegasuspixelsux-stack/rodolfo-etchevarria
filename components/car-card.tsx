@@ -370,7 +370,7 @@ export function CarCard({
 
         {/* Row 2: Make & Model (large, bold heading) */}
         <h2 className={`font-bold leading-tight text-foreground text-left ${
-          mobileList ? "text-sm md:text-lg" : "text-lg"
+          mobileList ? "text-base md:text-lg" : "text-lg"
         }`}>
           {car.make} {car.model}
         </h2>
