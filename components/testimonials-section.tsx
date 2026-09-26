@@ -52,7 +52,7 @@ export function TestimonialsSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-4"
+          className="flex flex-nowrap gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-4"
         >
           {TESTIMONIALS.map((testimonial) => (
             <motion.div
