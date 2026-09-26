@@ -316,8 +316,8 @@ export function CarCard({
           src={car.image}
           alt={`${car.year} ${car.make} ${car.model} ${car.trim}`}
           fill
-          priority={false}
-          sizes="(min-width: 1024px) 320px, (min-width: 640px) 400px, 100vw"
+          sizes="100vw"
+          quality={80}
           className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
         />
 
