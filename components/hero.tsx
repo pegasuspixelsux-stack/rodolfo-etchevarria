@@ -84,30 +84,28 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
         </div>
       </motion.div>
 
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={staggerContainer}
-        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center justify-center pb-4 text-center sm:pb-12"
-      >
-        {!isVideoMode && hasSlides && (
-          <motion.div variants={fadeUp} className="flex gap-2">
-            {slides.map((item, index) => (
-              <button
-                key={item.src}
-                type="button"
-                aria-label={`Mostrar diapositiva ${index + 1}`}
-                onClick={() => setSlide(index)}
-                className={`h-1.5 rounded-none transition-all duration-300 ${
-                  index === activeSlide
-                    ? "w-6 bg-foreground"
-                    : "w-1.5 bg-foreground/40 hover:bg-foreground/70"
-                }`}
-              />
-            ))}
-          </motion.div>
-        )}
-      </motion.div>
+      {!isVideoMode && hasSlides && (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          className="absolute right-4 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-2 sm:right-8"
+        >
+          {slides.map((item, index) => (
+            <button
+              key={item.src}
+              type="button"
+              aria-label={`Mostrar diapositiva ${index + 1}`}
+              onClick={() => setSlide(index)}
+              className={`h-1.5 rounded-none transition-all duration-300 ${
+                index === activeSlide
+                  ? "w-6 bg-foreground"
+                  : "w-1.5 bg-foreground/40 hover:bg-foreground/70"
+              }`}
+            />
+          ))}
+        </motion.div>
+      )}
     </section>
   );
 }
