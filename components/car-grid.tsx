@@ -22,7 +22,7 @@ export function CarGrid({
   const { items: cars, loading, error } = useInventory(initialCars);
   const { settings } = useSiteSettings(initialSettings);
   const [searchQuery, setSearchQuery] = useState("");
-  const [mobileView, setMobileView] = useState<MobileView>("list");
+  const [mobileView, setMobileView] = useState<MobileView>("grid");
   const visibleCars = cars.filter((car) =>
     `${car.year} ${car.make} ${car.model}`
       .toLowerCase()
@@ -104,7 +104,7 @@ export function CarGrid({
             <CarGridSkeleton />
           ) : (
             visibleCars.map((car) => (
-              <CarCard key={car.id} car={car} layout="portrait" mobileList={mobileView === "list"} />
+              <CarCard key={car.id} car={car} layout="portrait" mobileList={true} />
             ))
           )}
         </motion.div>
