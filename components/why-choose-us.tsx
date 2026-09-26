@@ -51,10 +51,10 @@ export function WhyChooseUs() {
           >
             Why Choose Rodolfo Etchevarria
           </motion.h2>
-          <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-muted">
+          <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-foreground/80">
             At Rodolfo Etchevarria, we believe buying a vehicle should be an exciting, transparent experience — not a stressful negotiation. Every car in our inventory undergoes rigorous inspection, and we price fairly with zero hidden costs.
           </motion.p>
-          <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-muted">
+          <motion.p variants={fadeUp} className="max-w-lg text-[0.98rem] leading-relaxed text-foreground/80">
             Whether you're financing your purchase or trading in your current vehicle, our team is here to guide you every step of the way. We're committed to finding the perfect car at terms that work for you.
           </motion.p>
         </motion.div>
