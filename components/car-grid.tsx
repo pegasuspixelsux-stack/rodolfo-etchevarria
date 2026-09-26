@@ -2,23 +2,13 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Rows, Square, Grid2x2 } from "lucide-react";
+import { Rows, Square, Grid2x2, Search } from "lucide-react";
 import { useInventory } from "@/lib/firebase/inventory";
 import { useSiteSettings, type SiteSettings } from "@/lib/firebase/site-settings";
 import { CarCard } from "@/components/car-card";
 import { CarGridSkeleton } from "@/components/car-grid-skeleton";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 import type { InventoryItem } from "@/lib/dashboard-data";
-
-const BODY_TYPE_PILLS = ["All", "Sedan", "SUV", "Coupe", "Truck"] as const;
-
-const BODY_TYPE_LABELS: Record<(typeof BODY_TYPE_PILLS)[number], string> = {
-  All: "Todos",
-  Sedan: "Sedán",
-  SUV: "SUV",
-  Coupe: "Cupé",
-  Truck: "Camionetas",
-};
 
 type MobileView = "list" | "single" | "grid";
 
@@ -31,11 +21,13 @@ export function CarGrid({
 }) {
   const { items: cars, loading, error } = useInventory(initialCars);
   const { settings } = useSiteSettings(initialSettings);
-  const [bodyType, setBodyType] =
-    useState<(typeof BODY_TYPE_PILLS)[number]>("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [mobileView, setMobileView] = useState<MobileView>("list");
-  const visibleCars =
-    bodyType === "All" ? cars : cars.filter((car) => car.bodyType === bodyType);
+  const visibleCars = cars.filter((car) =>
+    `${car.year} ${car.make} ${car.model}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
 
   return (
     <section id="inventory" className="bg-background px-3 pb-28 pt-[5%] sm:px-6 lg:px-8">
@@ -55,29 +47,23 @@ export function CarGrid({
           </p>
         </motion.div>
 
-        <div className="mb-8 flex flex-row items-center justify-between gap-2 md:flex-wrap">
-          <div className="flex min-w-0 flex-1 flex-nowrap gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:flex-wrap md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
-            {BODY_TYPE_PILLS.map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setBodyType(type)}
-                className={`flex-shrink-0 rounded-none border px-4 py-2 text-[0.85rem] font-medium transition-colors duration-200 ${
-                  bodyType === type
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border-strong text-muted hover:text-foreground"
-                }`}
-              >
-                {BODY_TYPE_LABELS[type]}
-              </button>
-            ))}
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <input
+              type="text"
+              placeholder="Search make, model, or year..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-none border border-border-strong bg-surface px-10 py-2.5 text-[0.9rem] text-foreground placeholder:text-muted focus-visible:border-foreground/50 focus-visible:outline-none"
+            />
           </div>
 
-          <div className="flex flex-shrink-0 items-center gap-1 border border-border-strong p-1 md:hidden">
+          <div className="flex flex-shrink-0 items-center gap-1 border border-border-strong p-1">
             <button
               type="button"
               onClick={() => setMobileView("single")}
-              aria-label="Ver en columna única"
+              aria-label="Single column view"
               aria-pressed={mobileView === "single"}
               className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
                 mobileView === "single"
@@ -90,7 +76,7 @@ export function CarGrid({
             <button
               type="button"
               onClick={() => setMobileView("list")}
-              aria-label="Ver en lista"
+              aria-label="List view"
               aria-pressed={mobileView === "list"}
               className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
                 mobileView === "list"
@@ -103,7 +89,7 @@ export function CarGrid({
             <button
               type="button"
               onClick={() => setMobileView("grid")}
-              aria-label="Ver en dos columnas"
+              aria-label="Grid view"
               aria-pressed={mobileView === "grid"}
               className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
                 mobileView === "grid"
