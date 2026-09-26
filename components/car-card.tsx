@@ -296,7 +296,7 @@ export function CarCard({
   return (
     <motion.article
       variants={fadeUp}
-      className={`@container group relative flex cursor-pointer overflow-hidden rounded-lg border border-border bg-white shadow-sm transition-all duration-300 hover:shadow-md ${
+      className={`@container group relative flex cursor-pointer overflow-hidden rounded-lg bg-white shadow-sm transition-all duration-300 hover:shadow-md ${
         mobileList ? "flex-row md:flex-col" : "flex-col"
       }`}
     >
@@ -349,16 +349,12 @@ export function CarCard({
         </div>
 
         {/* Row 2: Make & Model (large, bold heading) */}
-        <h2 className={`text-lg font-bold leading-tight text-foreground ${
-          mobileList ? "text-left md:text-center" : "text-center"
-        }`}>
+        <h2 className="text-lg font-bold leading-tight text-foreground text-left">
           {car.make} {car.model}
         </h2>
 
         {/* Row 3: Feature strip (color • km • fuel) */}
-        <div className={`flex flex-wrap items-center gap-1.5 text-[0.8rem] font-medium text-muted ${
-          mobileList ? "justify-start md:justify-center" : "justify-center"
-        }`}>
+        <div className="flex flex-wrap items-center gap-1.5 text-[0.8rem] font-medium text-muted justify-start">
           <span className="flex items-center gap-1">
             <span
               className="h-2.5 w-2.5 rounded-full border border-muted-2 flex-shrink-0"
@@ -373,7 +369,7 @@ export function CarCard({
         </div>
 
         {/* Row 4: Pricing block (cash price left, monthly payment right) */}
-        <div className="flex items-end justify-between gap-3 border-t border-foreground/10 pt-3">
+        <div className="flex items-end justify-between gap-3 pt-3">
           <div className="flex flex-col gap-0.5">
             <p className="text-[0.7rem] font-medium text-muted">Cash Price</p>
             <p className="text-[0.95rem] font-semibold text-foreground">
