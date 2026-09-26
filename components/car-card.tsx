@@ -344,7 +344,7 @@ export function CarCard({
         {/* Row 1: Year (left) + Arrow indicator (right) */}
         <div className="flex items-center justify-between">
           <span className="text-[0.7rem] font-bold uppercase tracking-wide text-muted">
-            {car.year} Model
+            {car.year}
           </span>
         </div>
 
