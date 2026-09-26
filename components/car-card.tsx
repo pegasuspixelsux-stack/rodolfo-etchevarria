@@ -327,14 +327,14 @@ export function CarCard({
 
         {/* Top-left corner star badge (featured) */}
         {isFeatured && (
-          <div className="pointer-events-none absolute left-3 top-3 z-10">
-            <Star size={24} fill="gold" stroke="gold" />
+          <div className="pointer-events-none absolute left-2 top-2 z-10">
+            <Star size={18} fill="gold" stroke="gold" />
           </div>
         )}
 
         {/* Top-right corner arrow badge */}
-        <div className="pointer-events-none absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
-          <ArrowUpRight size={18} />
+        <div className="pointer-events-none absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
+          <ArrowUpRight size={14} />
         </div>
 
         {/* Dealer branding & phone stripe at bottom */}
