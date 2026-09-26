@@ -367,7 +367,7 @@ export function CarCard({
           {/* Row 1: Year (left) + Arrow indicator (right) */}
           <div className="flex items-center justify-between">
             <span className={`font-bold uppercase tracking-wide text-muted ${
-              isCompact ? "text-[0.55rem]" : mobileList ? "text-[0.6rem] md:text-[0.7rem]" : "text-[0.7rem]"
+              isCompact ? "text-[0.5rem]" : mobileList ? "text-[0.6rem] md:text-[0.7rem]" : "text-[0.7rem]"
             }`}>
               {car.year}
             </span>
@@ -375,14 +375,14 @@ export function CarCard({
 
           {/* Row 2: Make & Model (large, bold heading) */}
           <h2 className={`font-bold leading-tight text-foreground text-left ${
-            isCompact ? "text-sm" : mobileList ? "text-base md:text-lg" : "text-lg"
+            isCompact ? "text-xs" : mobileList ? "text-base md:text-lg" : "text-lg"
           }`}>
             {car.make} {car.model}
           </h2>
 
           {/* Row 3: Feature strip (color • km • fuel) */}
           <div className={`flex flex-wrap items-center font-medium text-muted justify-start ${
-            isCompact ? "gap-1 text-[0.6rem]" : mobileList ? "gap-1 text-[0.65rem] md:gap-1.5 md:text-[0.8rem]" : "gap-1.5 text-[0.8rem]"
+            isCompact ? "gap-0.5 text-[0.55rem]" : mobileList ? "gap-1 text-[0.65rem] md:gap-1.5 md:text-[0.8rem]" : "gap-1.5 text-[0.8rem]"
           }`}>
             <span className="flex items-center gap-1">
               <span
@@ -401,27 +401,27 @@ export function CarCard({
         {/* Bottom group: Pricing and Disclaimer */}
         <div className={`flex flex-col ${mobileList ? "gap-0.5 md:gap-3 md:pt-3" : "gap-3 pt-3"}`}>
           {/* Row 4: Pricing block (cash price left, monthly payment right) */}
-          <div className="flex items-end justify-between gap-2">
+          <div className="flex items-end justify-between gap-1">
             <div className="flex flex-col gap-0.5">
               <p className={`font-medium text-muted ${
-                isCompact ? "text-[0.55rem]" : mobileList ? "text-[0.6rem] md:text-[0.7rem]" : "text-[0.7rem]"
+                isCompact ? "text-[0.5rem]" : mobileList ? "text-[0.6rem] md:text-[0.7rem]" : "text-[0.7rem]"
               }`}>Precio</p>
               <p className={`font-semibold text-foreground ${
-                isCompact ? "text-[0.65rem]" : mobileList ? "text-[0.75rem] md:text-[0.95rem]" : "text-[0.95rem]"
+                isCompact ? "text-[0.6rem]" : mobileList ? "text-[0.75rem] md:text-[0.95rem]" : "text-[0.95rem]"
               }`}>
                 {currency.format(car.price)}
               </p>
             </div>
             <div className="text-right">
               <p className={`font-medium text-muted ${
-                isCompact ? "text-[0.55rem]" : mobileList ? "text-[0.6rem] md:text-[0.7rem]" : "text-[0.7rem]"
+                isCompact ? "text-[0.5rem]" : mobileList ? "text-[0.6rem] md:text-[0.7rem]" : "text-[0.7rem]"
               }`}>Cuota Est.</p>
               <p className={`font-bold leading-none text-foreground ${
-                isCompact ? "text-base" : mobileList ? "text-lg md:text-2xl" : "text-2xl"
+                isCompact ? "text-sm" : mobileList ? "text-lg md:text-2xl" : "text-2xl"
               }`}>
                 {currency.format(estimateMonthlyPayment(car.price))}
                 <span className={`font-medium text-muted ${
-                  isCompact ? "text-[0.45rem]" : mobileList ? "text-[0.5rem] md:text-[0.65rem]" : "text-[0.65rem]"
+                  isCompact ? "text-[0.4rem]" : mobileList ? "text-[0.5rem] md:text-[0.65rem]" : "text-[0.65rem]"
                 }`}>/mes</span>
               </p>
             </div>
@@ -429,7 +429,7 @@ export function CarCard({
 
           {/* Row 5: Fine print disclaimer */}
           <p className={`leading-tight text-muted/60 ${
-            isCompact ? "text-[0.5rem]" : mobileList ? "text-[0.55rem] md:text-[0.65rem]" : "text-[0.65rem]"
+            isCompact ? "text-[0.45rem]" : mobileList ? "text-[0.55rem] md:text-[0.65rem]" : "text-[0.65rem]"
           }`}>
             {CARD_PAYMENT_DISCLAIMER}
           </p>
