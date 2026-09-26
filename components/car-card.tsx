@@ -309,15 +309,16 @@ export function CarCard({
       {/* Image Container with Dealer Branding Stripe */}
       <div
         className={`relative overflow-hidden bg-surface-2 ${
-          mobileList ? "aspect-square w-1/2 flex-shrink-0 md:aspect-auto md:w-full" : "aspect-square w-full"
+          mobileList ? "aspect-square w-1/2 flex-shrink-0 md:w-full" : "aspect-square w-full"
         }`}
       >
         <Image
           src={car.image}
           alt={`${car.year} ${car.make} ${car.model} ${car.trim}`}
           fill
-          sizes="100vw"
-          quality={80}
+          sizes="(min-width: 768px) 100%, 100vw"
+          quality={85}
+          unoptimized={false}
           className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
         />
 
