@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Hurricane, Inter } from "next/font/google";
 import Script from "next/script";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TopStripe } from "@/components/top-stripe";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   }
 } catch (e) {}`}
         </Script>
+        <TopStripe />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

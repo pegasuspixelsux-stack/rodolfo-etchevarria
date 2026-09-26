@@ -1,4 +1,3 @@
-import { TopStripe } from "@/components/top-stripe";
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
 import { WhyChooseUs } from "@/components/why-choose-us";
@@ -34,7 +33,6 @@ export default async function Home() {
 
   return (
     <>
-      <TopStripe />
       <Navbar />
       <main className="flex-1 pt-9 sm:pt-0">
         <Hero initialSettings={initialSiteSettings} />
