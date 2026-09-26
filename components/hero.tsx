@@ -68,6 +68,8 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
         )
       )}
 
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent" />
+
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -76,7 +78,7 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
       >
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 text-left">
           <div className="w-1/2">
-            <h1 className="font-heading text-3xl font-normal leading-tight text-white sm:text-5xl">
+            <h1 className="font-heading text-2xl font-normal leading-tight text-white sm:text-3xl">
               Premium Vehicles
             </h1>
             <p className="text-[0.95rem] leading-relaxed text-white/90">
