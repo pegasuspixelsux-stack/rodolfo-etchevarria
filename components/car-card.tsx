@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Gauge, Calendar, Zap, Fuel, Phone, ArrowUpRight } from "lucide-react";
+import { Gauge, Calendar, Zap, Fuel, Phone, ArrowUpRight, Star } from "lucide-react";
 import type { Car } from "@/data/cars";
 import { resolveCarSwatchColor } from "@/lib/car-color";
 import {
@@ -62,6 +62,7 @@ export function CarCard({
   car,
   layout = "portrait",
   mobileList = false,
+  isFeatured = false,
   previewLiftPercent = 0,
   previewImageShiftPercent = 0,
   previewSplitLayout = false,
@@ -81,6 +82,8 @@ export function CarCard({
    * reverts to the normal vertical card at `md` and above regardless of this flag. Meant
    * for the inventory grid's mobile one-column view. */
   mobileList?: boolean;
+  /** Show a featured star badge on top-left corner */
+  isFeatured?: boolean;
   /** Shifts the bottom text block up by this many percent of the card's height.
    * Only meant for the dashboard's "Estilo Card" IG preview — leave at 0 everywhere else. */
   previewLiftPercent?: number;
@@ -321,6 +324,13 @@ export function CarCard({
           unoptimized={false}
           className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
         />
+
+        {/* Top-left corner star badge (featured) */}
+        {isFeatured && (
+          <div className="pointer-events-none absolute left-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-yellow-400 text-yellow-900">
+            <Star size={18} fill="currentColor" />
+          </div>
+        )}
 
         {/* Top-right corner arrow badge */}
         <div className="pointer-events-none absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
