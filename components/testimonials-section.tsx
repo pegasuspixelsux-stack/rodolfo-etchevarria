@@ -17,6 +17,18 @@ const TESTIMONIALS = [
     rating: 5,
     text: "Proceso ágil y sin complicaciones. El financiamiento fue flexible y adaptado a mis posibilidades. El auto llegó en perfecto estado, tal como se describía.",
   },
+  {
+    name: "Carlos Martínez",
+    role: "Cliente verificado",
+    rating: 5,
+    text: "Servicio impecable de principio a fin. El equipo respondió todas mis preguntas y me ayudó a encontrar exactamente lo que buscaba. Muy satisfecho con mi compra.",
+  },
+  {
+    name: "Ana Hernández",
+    role: "Cliente verificado",
+    rating: 5,
+    text: "Excelente atención y vehículos de calidad. El proceso de financiamiento fue rápido y transparente. Recomiendo ampliamente Rodolfo Etchevarria a todos mis amigos.",
+  },
 ];
 
 export function TestimonialsSection() {
@@ -40,7 +52,7 @@ export function TestimonialsSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 gap-6 md:grid-cols-2"
+          className="grid grid-cols-1 gap-6 md:grid-cols-4"
         >
           {TESTIMONIALS.map((testimonial) => (
             <motion.div
