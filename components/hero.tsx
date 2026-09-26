@@ -89,7 +89,7 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
           initial="hidden"
           animate="visible"
           variants={fadeUp}
-          className="absolute right-4 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-2 sm:right-8"
+          className="absolute right-4 top-1/2 z-10 flex -translate-y-1/2 flex-row gap-2 rotate-90 sm:right-8"
         >
           {slides.map((item, index) => (
             <button
