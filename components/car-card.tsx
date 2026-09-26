@@ -332,7 +332,7 @@ export function CarCard({
           !mobileList ? "py-3" : "py-2"
         }`}>
           <span className={`truncate text-white [font-family:var(--font-script)] ${
-            !mobileList ? "text-[0.9rem]" : "text-[0.65rem]"
+            !mobileList ? "text-[1.125rem]" : "text-[0.65rem]"
           }`}>{DEALER_NAME}</span>
           <span className={`flex shrink-0 items-center gap-1 font-medium text-white ${
             !mobileList ? "text-[0.75rem]" : "text-[0.55rem]"
