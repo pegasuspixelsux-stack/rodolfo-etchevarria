@@ -63,7 +63,7 @@ export function CarGrid({
               onClick={() => setMobileView("list")}
               aria-label="List view"
               aria-pressed={mobileView === "list"}
-              className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
+              className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 sm:hidden ${
                 mobileView === "list"
                   ? "bg-foreground text-accent-foreground"
                   : "text-muted hover:text-foreground"
