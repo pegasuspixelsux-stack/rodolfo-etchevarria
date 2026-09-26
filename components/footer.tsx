@@ -150,7 +150,7 @@ export function Footer() {
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-[0.82rem] text-muted-2 sm:flex-row">
           <p>© {new Date().getFullYear()} Rodolfo Etchevarria. Todos los derechos reservados.</p>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
             <Link href="#" className="transition-colors hover:text-foreground">
               Política de Privacidad
             </Link>
@@ -160,8 +160,10 @@ export function Footer() {
             <Link href="/login" className="transition-colors hover:text-foreground">
               Iniciar Sesión
             </Link>
-            <ColorThemeToggle />
-            <ThemeToggle />
+            <div className="flex gap-3">
+              <ColorThemeToggle />
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>
