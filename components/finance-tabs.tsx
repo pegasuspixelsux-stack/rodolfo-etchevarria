@@ -41,23 +41,6 @@ export function FinanceTabs() {
             </h2>
           </div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            className="flex w-full flex-wrap items-center justify-center gap-6 sm:gap-8"
-          >
-            {FINANCING_PARTNERS.map(({ name, logo }) => (
-              <motion.div
-                key={name}
-                variants={fadeUp}
-                className="flex items-center justify-center rounded-none border border-border bg-surface/40 px-4 py-2.5"
-              >
-                <span className="text-[0.75rem] font-semibold text-muted sm:text-[0.85rem]">{logo}</span>
-              </motion.div>
-            ))}
-          </motion.div>
         </motion.div>
 
         {/* Tab Buttons */}
