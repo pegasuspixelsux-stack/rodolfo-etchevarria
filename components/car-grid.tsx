@@ -37,7 +37,7 @@ export function CarGrid({
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input
               type="text"
-              placeholder="Search make, model, or year..."
+              placeholder="Buscar marca, modelo, o año..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full rounded-none border border-border-strong bg-surface px-10 py-2.5 text-[0.9rem] text-foreground placeholder:text-muted focus-visible:border-foreground/50 focus-visible:outline-none"
@@ -48,7 +48,7 @@ export function CarGrid({
             <button
               type="button"
               onClick={() => setMobileView("single")}
-              aria-label="Single column view"
+              aria-label="Vista de una columna"
               aria-pressed={mobileView === "single"}
               className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
                 mobileView === "single"
@@ -61,7 +61,7 @@ export function CarGrid({
             <button
               type="button"
               onClick={() => setMobileView("list")}
-              aria-label="List view"
+              aria-label="Vista de lista"
               aria-pressed={mobileView === "list"}
               className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 sm:hidden ${
                 mobileView === "list"
@@ -74,7 +74,7 @@ export function CarGrid({
             <button
               type="button"
               onClick={() => setMobileView("grid")}
-              aria-label="Grid view"
+              aria-label="Vista de cuadrícula"
               aria-pressed={mobileView === "grid"}
               className={`flex h-8 w-8 items-center justify-center transition-colors duration-200 ${
                 mobileView === "grid"

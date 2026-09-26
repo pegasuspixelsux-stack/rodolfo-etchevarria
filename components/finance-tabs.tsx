@@ -35,9 +35,9 @@ export function FinanceTabs() {
           className="mb-16 flex flex-col items-center gap-8 text-center"
         >
           <div className="flex flex-col gap-3">
-            <p className="text-[0.9rem] font-medium text-muted">Financing Partners</p>
+            <p className="text-[0.9rem] font-medium text-muted">Socios de Financiamiento</p>
             <h2 className="text-balance font-heading text-2xl font-normal tracking-tight text-foreground sm:text-4xl">
-              Estimate Your Payment or Trade-In Your Vehicle
+              Estima tu Pago o Canjea tu Vehículo
             </h2>
           </div>
 
@@ -63,7 +63,7 @@ export function FinanceTabs() {
                 : "text-muted hover:text-foreground"
             }`}
           >
-            Trade-In Your Vehicle
+            Canjea tu Vehículo
           </button>
         </div>
 
@@ -107,7 +107,7 @@ export function FinanceTabs() {
             <motion.div variants={fadeUp} className="relative overflow-hidden md:order-2">
               <Image
                 src={TRADEIN_IMAGE}
-                alt="Trade-In Your Vehicle"
+                alt="Canjea tu Vehículo"
                 fill
                 sizes="(min-width: 768px) 400px, 100vw"
                 quality={85}
@@ -120,7 +120,7 @@ export function FinanceTabs() {
               className="glass relative overflow-hidden rounded-none p-6 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.7)] sm:p-10 md:order-1"
             >
               <h3 className="mb-3 font-heading text-[1.05rem] font-normal text-foreground">
-                Trade-In Your Vehicle
+                Canjea tu Vehículo
               </h3>
               <p className="mb-6 text-[0.95rem] leading-relaxed text-foreground/80">
                 Turn your current vehicle into the key to your dream car. Submit your information and we'll

@@ -17,7 +17,7 @@ export function SearchBar() {
         <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
         <input
           type="text"
-          placeholder="Search make, model, or keyword..."
+          placeholder="Buscar marca, modelo, o palabra clave..."
           className="w-full rounded-none border border-border-strong bg-surface px-12 py-4 text-[0.95rem] text-foreground placeholder:text-muted focus-visible:border-foreground/50 focus-visible:outline-none"
         />
       </div>

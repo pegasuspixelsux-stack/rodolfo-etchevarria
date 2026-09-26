@@ -79,10 +79,10 @@ export function Hero({ initialSettings }: { initialSettings?: SiteSettings }) {
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 text-left">
           <div className="w-1/2">
             <h1 className="font-heading text-2xl font-normal leading-tight text-white sm:text-3xl">
-              Premium Vehicles
+              Vehículos Premium
             </h1>
             <p className="text-[0.95rem] leading-relaxed text-white/90">
-              Handpicked inventory of certified vehicles, meticulously inspected and ready to drive home.
+              Inventario seleccionado de vehículos certificados, meticulosamente inspeccionados y listos para conducir.
             </p>
           </div>
         </div>

@@ -28,7 +28,7 @@ const PILLARS = [
   },
   {
     icon: LifeBuoy,
-    title: "Instant Trade-Ins",
+    title: "Canjes Instantáneos",
     description:
       "Get an immediate valuation for your current vehicle and apply it directly to your purchase.",
   },
