@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { HandCoins, LifeBuoy, ShieldCheck, Tag } from "lucide-react";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
-const SHOWROOM_IMAGE = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80";
+const SHOWROOM_IMAGE = "https://images.unsplash.com/photo-1552820728-8ac41f1ce891?auto=format&fit=crop&w=800&q=80";
 
 const PILLARS = [
   {
