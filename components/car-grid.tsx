@@ -30,7 +30,7 @@ export function CarGrid({
   );
 
   return (
-    <section id="inventory" className="bg-background px-3 pb-28 pt-[5%] sm:px-6 lg:px-8">
+    <section id="inventory" className="bg-background px-6 pb-28 pt-[5%] sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-row items-center justify-between gap-3">
           <div className="relative flex-1">

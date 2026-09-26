@@ -36,7 +36,7 @@ const PILLARS = [
 
 export function WhyChooseUs() {
   return (
-    <section id="about" className="bg-background px-3 py-24 sm:px-6 lg:px-8">
+    <section id="about" className="bg-background px-6 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-14">
         {/* Top Section: Text and Image */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">

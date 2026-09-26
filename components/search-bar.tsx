@@ -11,7 +11,7 @@ export function SearchBar() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      className="mx-auto w-full max-w-7xl px-3 sm:px-6 lg:px-8"
+      className="mx-auto w-full max-w-7xl px-6 sm:px-6 lg:px-8"
     >
       <div className="relative">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
