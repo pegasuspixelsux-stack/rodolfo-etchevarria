@@ -371,16 +371,16 @@ export function CarCard({
         {/* Row 4: Pricing block (cash price left, monthly payment right) */}
         <div className="flex items-end justify-between gap-3 pt-3">
           <div className="flex flex-col gap-0.5">
-            <p className="text-[0.7rem] font-medium text-muted">Cash Price</p>
+            <p className="text-[0.7rem] font-medium text-muted">Precio Cash</p>
             <p className="text-[0.95rem] font-semibold text-foreground">
               {currency.format(car.price)}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[0.7rem] font-medium text-muted">Est. Monthly</p>
+            <p className="text-[0.7rem] font-medium text-muted">Cuota Est.</p>
             <p className="text-2xl font-bold leading-none text-foreground">
               {currency.format(estimateMonthlyPayment(car.price))}
-              <span className="text-[0.65rem] font-medium text-muted">/mo</span>
+              <span className="text-[0.65rem] font-medium text-muted">/mes</span>
             </p>
           </div>
         </div>
