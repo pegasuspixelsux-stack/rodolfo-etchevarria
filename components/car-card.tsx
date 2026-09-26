@@ -355,8 +355,8 @@ export function CarCard({
 
       {/* Card Content (5-row hierarchy) */}
       <div
-        className={`flex flex-1 flex-col gap-2 bg-surface-2 text-foreground ${
-          mobileList ? "justify-center gap-1 p-2 md:justify-start md:gap-3 md:p-4" : "justify-start gap-3 p-4"
+        className={`flex flex-col gap-2 bg-surface-2 text-foreground ${
+          mobileList ? "w-1/2 justify-center gap-1 p-2 md:w-full md:flex-1 md:justify-start md:gap-3 md:p-4" : "flex-1 justify-start gap-3 p-4"
         }`}
       >
         {/* Row 1: Year (left) + Arrow indicator (right) */}
