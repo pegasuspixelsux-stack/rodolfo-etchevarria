@@ -104,7 +104,14 @@ export function CarGrid({
             <CarGridSkeleton />
           ) : (
             visibleCars.map((car, index) => (
-              <CarCard key={car.id} car={car} layout="portrait" mobileList={mobileView === "list"} isFeatured={index < 8} />
+              <CarCard
+                key={car.id}
+                car={car}
+                layout="portrait"
+                mobileList={mobileView === "list"}
+                isCompact={mobileView === "grid"}
+                isFeatured={index < 8}
+              />
             ))
           )}
         </motion.div>
